@@ -1,0 +1,9 @@
+當前待做事項
+1.refine previous code flow
+2.技術線運算
+3.周,月,年線計算
+4.整合技術線 & 圖像顯示
+
+版本更新資訊:
+2018/4/29
+refine download data code flow
