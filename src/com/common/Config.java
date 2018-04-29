@@ -1,40 +1,55 @@
 package com.common;
 
 public class Config {
-    public final static String outputDataDir = "F:\\Stock\\data\\";
-    public final static String OtcTechDownloadUrl = "http://www.gretai.org.tw/ch/stock/aftertrading/DAILY_CLOSE_quotes/stk_quote_download.php?";
-    public final static String OtcFundDownloadUrl = "http://www.tpex.org.tw/web/stock/aftertrading/peratio_analysis/pera_download.php?";
-    public final static String TwseTechDownloadUrl = "http://www.twse.com.tw/exchangeReport/MI_INDEX";
-    public final static String TwseFundDownloadUrl = "http://www.twse.com.tw/exchangeReport/BWIBBU_d";
 
-    // TWSE:上市, OTC:上櫃, TECH:技術面, FUND:基本面
-    public final static String OTC_TECH = "otc_tech_";
-    public final static String OTC_FUND = "otc_fund_";
-    public final static String TWSE_TECH = "twse_tech_";
-    public final static String TWSE_FUND = "twse_fund_";
+    // 資料分析參數
+    public static class DataAnalyze {
+        public final static String outputDataDir = "F:\\Stock\\data\\";
+        public final static int DOWNLOAD_FILE_SIZE = 10 * 1024; // 10Kb
+        public final static int DOWNLOAD_DELAY = 3000; // 3 sec
 
-    public final static int TECH_ANAL = 0;
-    public final static int FUND_ANAL = 1;
-    public final static int TECH_KDJ = 3;
-    public final static int TECH_CCI = 4;
+        public static final int OTC_TECH = 0, // 上櫃盤後
+                TWSE_TECH = 2, // 上市盤後
+                TWSE_FUND = 3, // 上市基本面
+                OTC_FUND = 1, // 上櫃基本面
+                DATA_MAX = 4;
 
-    public final static int TWSE = 0;
-    public final static int OTC = 1;
+        public static final int TECH_ANAL = 0, // 技術面分析
+                FUND_ANAL = 1; // 基本面分析
 
-    public final static int DOWNLOAD_FILE_SIZE = 10 * 1024; // 10Kb
-    public final static int DOWNLOAD_DELAY = 3000; // 3 sec
+        public static final int TWSE = 0, // 上市
+                OTC = 1; // 上櫃
 
-    public final static int EXIT_ERROR = -1;
-    public final static int TRANSCATION_DATA_NORMAL = 1;
-    public final static int TRANSCATION_DATA_EXCEPTION = 2;
+        public static final String[] downloadUrl = {
+                "http://www.gretai.org.tw/ch/stock/aftertrading/DAILY_CLOSE_quotes/stk_quote_download.php?", // otc_tech
+                "http://www.tpex.org.tw/web/stock/aftertrading/peratio_analysis/pera_download.php?", // otc_fund
+                "http://www.twse.com.tw/exchangeReport/MI_INDEX", //twse_tech
+                "http://www.twse.com.tw/exchangeReport/BWIBBU_d" }; //twse_fund
+
+        // TWSE:上市, OTC:上櫃, TECH:技術面, FUND:基本面
+        public static final String[] downloadName = { "otc_tech", "otc_fund", "twse_tech", "twse_fund" };
+    }
 
     // 技術分析參數
-    public final static int KDJ_DAY = 9;
-    public final static int KDJ_RSV_WEIGHT = 3;
-    public final static int KDJ_KT_WEIGHT = 3;
-    public final static int CCI_DAY = 14;
+    public class TechnicalAnalyze {
+        public static final int TECH_ANAL = 0, FUND_ANAL = 1, TECH_KDJ = 3, TECH_CCI = 4;
 
-    public final static double CCI_UPPER_BOUND = 999.99d;
-    public final static double CCI_LOWER_BOUND = -999.99d;
+        public class KDJ {
+            public static final int KDJ_DAY = 9, KDJ_RSV_WEIGHT = 3, KDJ_KT_WEIGHT = 3;
+        }
 
+        public class CCI {
+            public final static int CCI_DAY = 14;
+            public final static double CCI_UPPER_BOUND = 999.99d, // 上限
+                    CCI_LOWER_BOUND = -999.99d; // 下限
+        }
+
+    }
+
+    // 錯誤處理
+    public class ErrorHandle {
+        public static final int EXIT_ERROR = -1, // exit error
+                TRANSCATION_DATA_OK = 0, // download ok
+                TRANSCATION_DATA_EXCEPTION = 1; // download error
+    }
 }
