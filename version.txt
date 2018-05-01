@@ -5,5 +5,8 @@
 4.整合技術線 & 圖像顯示
 
 版本更新資訊:
+2018/5/1
+Add main stock data downloader
+
 2018/4/29
-refine download data code flow
+Refine download data code flow

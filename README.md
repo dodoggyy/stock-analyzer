@@ -13,7 +13,7 @@ ex:
 *Please input end day:
 *2017/7/31
 
-*如此便會下載"上市櫃該區間的盤後資料"並將之存入到資料庫
+*如此便會下載"上市櫃該區間的盤後資料"並將之存入到資料庫[未完成]
 
 
 #### 需求 ####
@@ -24,6 +24,9 @@ ex:
 #### 使用 ####
 `撈每日盤後資料並彙整`
  * [Download Data]
+
+`中控操作`
+ * [Main Downloader]
 
 `路徑,檔名相關設定`
  * [Configure setting]
@@ -41,3 +44,4 @@ ex:
 
 [Configure setting]:https://bitbucket.org/dodoggyy/stock-analyzer-ex/src/acf55b4a4fa002cae1a4660c3314fa7e62d3d38c/src/com/common/Config.java
 
+[Main Downloader]:https://bitbucket.org/dodoggyy/stock-analyzer-ex/src/acf55b4a4fa002cae1a4660c3314fa7e62d3d38c/src/com/data/DataHandlerMain.java

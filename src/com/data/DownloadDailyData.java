@@ -12,30 +12,45 @@ import java.net.URLEncoder;
 
 import com.common.Config;
 
+/**
+ * Taiwan stock data downloader<T>
+ * @author Chris Lin
+ * @version 1.0 1 May 2018
+ *
+ * @param aDownloadDir 更改下載位置,預設讀config
+ */
 public class DownloadDailyData {
-    static final String SEL_TYPE = "ALLBUT0999";
+    private int mDataLength;
+    private String mDownloadDir;
+    
+    final static String[] SEL_TYPE = { "ALLBUT0999", "ALL" };
 
     public static void main(String[] args) {
         // download data from TWSE and OTC
-        String mDownloadDir = Config.DataAnalyze.outputDataDir;
-        String mDate = "2018/4/27";
-
-        DownloadDailyData.downloadData(mDate, mDownloadDir);
+        String mDate = "2018/4/26";
+        DownloadDailyData mDonloader = new DownloadDailyData();
+        mDonloader.downloadData(mDate);
     }
 
-    public static void downloadData(String aDownloadDate, String aDownloadDirectory) {
-        Config mCon = new Config();
-        int mDataLength = Config.DataAnalyze.DATA_MAX;
-
-        String mDir = "";
+    public DownloadDailyData() {
+        mDataLength = Config.DataAnalyze.DATA_MAX;
+        mDownloadDir = Config.DataAnalyze.outputDataDir;
+    }
+    
+    public DownloadDailyData(String aDownloadDir) {
+        mDataLength = Config.DataAnalyze.DATA_MAX;
+        mDownloadDir = aDownloadDir;
+    }
+    
+    public void downloadData(String aDownloadDate) {
         String mFilename[] = new String[mDataLength];
         String mUrl[] = new String[mDataLength];
         String mUrlParm[] = new String[mDataLength];
         String mPostParm[] = { "response", "date", "type" };
-        String mPostData[] = { "csv", "", SEL_TYPE };
-        String mNow, mYr, mYr2, mMth, mDay = "";
+        String mPostData[] = { "csv", "", "" };
+        String mNow, mYr, mYrOtc, mMth, mDay = "";
         String mDate = "";
-        String aStr[];
+        String mStr[];
 
         File mFile = null;
         HttpURLConnection mConnection = null;
@@ -43,22 +58,27 @@ public class DownloadDailyData {
         System.setErr(System.out);
         System.out.println("\r\n*****Download Daily data(csv file) *****");
 
-        // 下載日期, 存放位置 ex: "2018/4/29", "F:\\Stock\\data\\";
+        // 下載日期ex: "2018/4/29"
         mNow = aDownloadDate;
-        mDir = aDownloadDirectory;
-        System.out.println(mNow + " Dir:" + mDir);
+        System.out.println(mNow + " Dir:" + mDownloadDir);
 
         // 日期區間格式處理
-        aStr = mNow.split("/");
-        mYr2 = String.valueOf(Integer.valueOf(aStr[0]) - 1911);
-        mYr = aStr[0];
-        mMth = String.valueOf(Integer.valueOf(aStr[1]) + 100).substring(1);
-        mDay = String.valueOf(Integer.valueOf(aStr[2]) + 100).substring(1);
+        mStr = mNow.split("/");
+        mYrOtc = String.valueOf(Integer.valueOf(mStr[0]) - 1911); // OTC年份格式處理
+        mYr = mStr[0];
+        mMth = String.valueOf(Integer.valueOf(mStr[1]) + 100).substring(1);
+        mDay = String.valueOf(Integer.valueOf(mStr[2]) + 100).substring(1);
         mDate = mYr + "-" + mMth + "-" + mDay;
 
         for (int i = 0; i < mDataLength; i++) {
             mFilename[i] = Config.DataAnalyze.downloadName[i] + "_" + mDate + ".csv";
-            mUrl[i] = Config.DataAnalyze.downloadUrl[i];
+            if (i == Config.DataAnalyze.OTC_TECH || i == Config.DataAnalyze.OTC_FUND) {
+                mUrl[i] = String.format(Config.DataAnalyze.downloadUrl[i] + "l=zh-tw&d=%s/%s/%s&s=0,asc,0", mYrOtc,
+                        mMth, mDay);
+            } else {
+                mUrl[i] = Config.DataAnalyze.downloadUrl[i];
+            }
+
         }
 
         for (int i = 0; i < mDataLength; i++) {
@@ -66,7 +86,9 @@ public class DownloadDailyData {
                 if (i == Config.DataAnalyze.TWSE_TECH || i == Config.DataAnalyze.TWSE_FUND) {
                     mPostData[1] = mYr + mMth + mDay;
                     if (i == Config.DataAnalyze.TWSE_FUND) {
-                        mPostData[2] = "ALL";
+                        mPostData[2] = SEL_TYPE[1];
+                    } else {
+                        mPostData[2] = SEL_TYPE[0];
                     }
                     for (int j = 0; j < mPostParm.length; j++) {
                         mUrlParm[i] += "&" + mPostParm[j] + "=" + URLEncoder.encode(mPostData[j], "UTF-8");
@@ -75,14 +97,14 @@ public class DownloadDailyData {
                     mConnection = excutePost(mUrl[i], mUrlParm[i]);
                     // System.out.println(mUrlParm[i]);
                     // System.out.println(mDir + mFilename[i]);
-                    downloadFromUrl("", mDir + mFilename[i], mConnection);
+                    downloadFromUrl("", mDownloadDir + mFilename[i], mConnection);
                 } else if (i == Config.DataAnalyze.OTC_TECH || i == Config.DataAnalyze.OTC_FUND) {
                     mConnection = null;
                     // System.out.println(mDir + mFilename[i]);
-                    downloadFromUrl(mUrl[i], mDir + mFilename[i], mConnection);
+                    downloadFromUrl(mUrl[i], mDownloadDir + mFilename[i], mConnection);
                 }
 
-                mFile = new File(mDir, mFilename[i]);
+                mFile = new File(mDownloadDir, mFilename[i]);
 
                 // if file size less than FILE_SIZE, then delete it
                 if (mFile.length() < Config.DataAnalyze.DOWNLOAD_FILE_SIZE) {

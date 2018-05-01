@@ -6,7 +6,7 @@ public class Config {
     public static class DataAnalyze {
         public final static String outputDataDir = "F:\\Stock\\data\\";
         public final static int DOWNLOAD_FILE_SIZE = 10 * 1024; // 10Kb
-        public final static int DOWNLOAD_DELAY = 3000; // 3 sec
+        public final static int DOWNLOAD_DELAY = 2000; // 2 sec
 
         public static final int OTC_TECH = 0, // 上櫃盤後
                 TWSE_TECH = 2, // 上市盤後
@@ -19,6 +19,9 @@ public class Config {
 
         public static final int TWSE = 0, // 上市
                 OTC = 1; // 上櫃
+        
+        public static final int DOWNLOAD_SPECIFIED_RANGE = 2, // 指定特定區間
+                DOWNLOAD_DB_UPDATE = 1; // 資料庫更新
 
         public static final String[] downloadUrl = {
                 "http://www.gretai.org.tw/ch/stock/aftertrading/DAILY_CLOSE_quotes/stk_quote_download.php?", // otc_tech
@@ -50,6 +53,7 @@ public class Config {
     public class ErrorHandle {
         public static final int EXIT_ERROR = -1, // exit error
                 TRANSCATION_DATA_OK = 0, // download ok
-                TRANSCATION_DATA_EXCEPTION = 1; // download error
+                TRANSCATION_DATA_EXCEPTION = 1, // download error
+                EXIT_TIMEOUT = 2;
     }
 }
