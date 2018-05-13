@@ -14,15 +14,17 @@ import com.common.Config;
 
 /**
  * Taiwan stock data downloader<T>
+ * 
  * @author Chris Lin
  * @version 1.0 1 May 2018
  *
- * @param aDownloadDir 更改下載位置,預設讀config
+ * @param aDownloadDir
+ *            更改下載位置,預設讀config
  */
 public class DownloadDailyData {
     private int mDataLength;
     private String mDownloadDir;
-    
+
     final static String[] SEL_TYPE = { "ALLBUT0999", "ALL" };
 
     public static void main(String[] args) {
@@ -36,12 +38,12 @@ public class DownloadDailyData {
         mDataLength = Config.DataAnalyze.DATA_MAX;
         mDownloadDir = Config.DataAnalyze.outputDataDir;
     }
-    
+
     public DownloadDailyData(String aDownloadDir) {
         mDataLength = Config.DataAnalyze.DATA_MAX;
         mDownloadDir = aDownloadDir;
     }
-    
+
     public void downloadData(String aDownloadDate) {
         String mFilename[] = new String[mDataLength];
         String mUrl[] = new String[mDataLength];

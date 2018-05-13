@@ -40,8 +40,8 @@ ex:
 
 
 
-[Download Data]:https://bitbucket.org/dodoggyy/stock-analyzer-ex/src/acf55b4a4fa002cae1a4660c3314fa7e62d3d38c/src/com/data/DownloadDailyData.java
+[Download Data]:https://bitbucket.org/dodoggyy/stock-analyzer-ex/src/master/src/com/data/DownloadDailyData.java
 
-[Configure setting]:https://bitbucket.org/dodoggyy/stock-analyzer-ex/src/acf55b4a4fa002cae1a4660c3314fa7e62d3d38c/src/com/common/Config.java
+[Configure setting]:https://bitbucket.org/dodoggyy/stock-analyzer-ex/src/master/src/com/common/Config.java
 
-[Main Downloader]:https://bitbucket.org/dodoggyy/stock-analyzer-ex/src/acf55b4a4fa002cae1a4660c3314fa7e62d3d38c/src/com/data/DataHandlerMain.java
+[Main Downloader]:https://bitbucket.org/dodoggyy/stock-analyzer-ex/src/master/src/com/data/DataHandlerMain.java

@@ -91,5 +91,9 @@ public class DataHandlerMain {
 
         return bRet;
     }
+    
+    public boolean writeData2DB(int aDowloadType) {
+        return true;
+    }
 
 }

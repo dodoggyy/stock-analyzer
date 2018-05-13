@@ -4,7 +4,7 @@ public class Config {
 
     // 資料分析參數
     public static class DataAnalyze {
-        public final static String outputDataDir = "F:\\Stock\\data\\";
+        public final static String outputDataDir = "D:\\Stock\\data\\";
         public final static int DOWNLOAD_FILE_SIZE = 10 * 1024; // 10Kb
         public final static int DOWNLOAD_DELAY = 2000; // 2 sec
 
