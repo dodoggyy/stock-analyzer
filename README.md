@@ -1,7 +1,7 @@
 # Stock Analyzer Ex
 
 #### Goal:
-Implementation to analyze stock<br>
+Implementation to analyze stock
 * 抓取上市櫃每日盤後資料以及財報(月、年)作 基本面和技術面分析
 * 抓取即時報價做高頻交易
 

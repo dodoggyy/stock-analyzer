@@ -46,7 +46,7 @@ public class DataHandlerMain {
             System.out.println("Please input end day:");
             mEndDay = mScanner.next();
             DataHandlerMain mDataHandler = new DataHandlerMain(mBeginDay, mEndDay);
-            mDataHandler.writeData(mDowloadType);
+            mDataHandler.downloadData(mDowloadType);
         }
     }
 
@@ -55,7 +55,7 @@ public class DataHandlerMain {
         mEndDay = aEndDay;
     }
 
-    public boolean writeData(int aDowloadType) {
+    public boolean downloadData(int aDowloadType) {
         int mTotalDay = 0;
         boolean bRet = false;
         ArrayList<String> mDateArray = new ArrayList<String>();
@@ -91,9 +91,4 @@ public class DataHandlerMain {
 
         return bRet;
     }
-    
-    public boolean writeData2DB(int aDowloadType) {
-        return true;
-    }
-
 }
