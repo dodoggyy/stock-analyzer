@@ -13,15 +13,14 @@ import java.util.Comparator;
 import com.common.Config;
 import com.common.Utility;
 
-public class TWSETechParserHandler extends BaseParserHandler {
-
+public class OTCTechParserHandler extends BaseParserHandler {
     private BufferedReader mBufferReader;
     private int mfileType;
     private String mDownloadName;
 
-    public TWSETechParserHandler() {
+    public OTCTechParserHandler() {
         this.ImportDir = new File(Config.DataAnalyze.outputDataDir);
-        mDownloadName = Config.DataAnalyze.downloadName[Config.DataAnalyze.TWSE_TECH];
+        mDownloadName = Config.DataAnalyze.downloadName[Config.DataAnalyze.OTC_TECH];
 
         if (!this.ImportDir.exists()) {
             System.err.println("沒有這個目錄 " + ImportDir);
@@ -41,10 +40,11 @@ public class TWSETechParserHandler extends BaseParserHandler {
     }
 
     public static void main(String[] args) {
-        TWSETechParserHandler techParser = new TWSETechParserHandler();
+        // TODO Auto-generated method stub
+        OTCTechParserHandler techParser = new OTCTechParserHandler();
         techParser.parseAllFileData();
     }
-
+    
     public boolean parseAllFileData() {
         String mFileName = "", mFileExt = "";
         int mSeparateIndex = 0;
@@ -66,13 +66,18 @@ public class TWSETechParserHandler extends BaseParserHandler {
     }
 
     @Override
+    boolean writeData2DB() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
     boolean parseFileData(File aFile, String aDate) {
         // TODO Auto-generated method stub
+        int mLines = 0;
         String mTmpLine = "";
         String[] mStrArr;
         mfileType = Config.ErrorHandle.ERROR_MAX;
-        boolean bIsBegin = false;
-        boolean bIsValid = false;
         try {
             // csv file need to set decode as MS950 to prevent garbled
             mfileType = (aFile.getName().contains("BUT")) ? Config.ErrorHandle.TRANSCATION_DATA_EXCEPTION
@@ -82,39 +87,17 @@ public class TWSETechParserHandler extends BaseParserHandler {
 
             try {
                 while ((mTmpLine = mBufferReader.readLine()) != null) {
-                    if (!bIsBegin) {
-                        if (mfileType == Config.ErrorHandle.TRANSCATION_DATA_NORMAL && mTmpLine.contains("每日收盤行情")) {
-                            mBufferReader.readLine();
-                            bIsBegin = true;
-                        } else if (mfileType == Config.ErrorHandle.TRANSCATION_DATA_EXCEPTION
-                                && mTmpLine.contains("恢復交易者。")) {
-                            mTmpLine = mBufferReader.readLine();
-                            mBufferReader.readLine();
-                            mBufferReader.readLine();
-                            bIsBegin = true;
-                        }
-
-                    } else {
-                        // 解決字串中的,號，如"200,450,000"==> 200450000
+                    if (mTmpLine.contains("管理股票")) {
+                        break;
+                    }
+                    mLines++;
+                    if (mLines >= 3) {
                         mStrArr = Utility.removeMessyChar(mTmpLine).split(",");
-                        bIsValid = true;
-
-                        // 略過非證券資料的列 e.g.欄位不符合TWSE資料, 指數資料, 證券標題
-                        if ((mStrArr.length < 8) || (mStrArr[0].length() != 4) || (mStrArr[0].equals("證券代號"))
-                                || (mStrArr[0].length() == 0)) {
-                            bIsValid = false;
-                        }
-
-                        // update or insert to database table stock
-                        if (bIsValid) {
-                            for (int i = 0; i < mStrArr.length; i++) {
-                                // 刪除多餘頭尾空白
-                                mStrArr[i] = mStrArr[i].trim();
-                            }
-
-                            // 證券代號0,證券名稱1,成交股數2,成交筆數3,成交金額4,開盤價5,最高價6,最低價7,收盤價8
-                            System.out.printf("代號:%s, 收盤:%s, 成交股數:%s, 開盤:%s,最高:%s, 最低:%s\n", mStrArr[0], mStrArr[8],
-                                    mStrArr[2], mStrArr[5], mStrArr[6], mStrArr[7]);
+                        if (mStrArr.length < 9 || mStrArr[0].length() != 4) {
+                         // filter 非股票部分(權證)
+                        } else {
+                         // 代號0,名稱1,收盤2 ,漲跌3,開盤4 ,最高5 ,最低6,均價7 ,成交股數8
+                         System.out.printf("代號:%s, 收盤:%s, 開盤:%s, 最高:%s,最低:%s\n",mStrArr[0],mStrArr[2],mStrArr[4],mStrArr[5],mStrArr[6]);
                         }
                     }
                 }
@@ -131,13 +114,6 @@ public class TWSETechParserHandler extends BaseParserHandler {
             e.printStackTrace();
         }
         return true;
-    }
-
-    @Override
-    boolean writeData2DB() {
-        // TODO Auto-generated method stub
-
-        return false;
     }
 
 }

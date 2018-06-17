@@ -4,10 +4,11 @@ public class Config {
 
     // 資料分析參數
     public static class DataAnalyze {
-        public final static String outputDataDir = "D:\\Stock\\data\\";
+        public final static String outputDataDir = "F:\\Stock\\data\\";
         public final static int DOWNLOAD_FILE_SIZE = 10 * 1024; // 10Kb
         public final static int DOWNLOAD_DELAY = 2000; // 2 sec
         public final static int DATE_LENGTH = 10; // e.g.2018-06-11
+        public final static int OLD_TWSE_FUND_LENGTH = 5;
         public final static String csvFilter = ".csv;.CSV";
 
         public static final int OTC_TECH = 0, // 上櫃盤後
@@ -56,6 +57,7 @@ public class Config {
         public static final int EXIT_ERROR = -1, // exit error
                 TRANSCATION_DATA_NORMAL = 0, // parser data normal case
                 TRANSCATION_DATA_EXCEPTION = 1, // special case for parser data
-                EXIT_TIMEOUT = 2;
+                EXIT_TIMEOUT = 2,
+                ERROR_MAX = 3;
     }
 }

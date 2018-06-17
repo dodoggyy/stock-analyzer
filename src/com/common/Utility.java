@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 public class Utility {
+
     public static void scheduleDelay(int aDelayTime) {
 
         try {
@@ -15,7 +16,7 @@ public class Utility {
             System.exit(Config.ErrorHandle.EXIT_TIMEOUT);
         }
     }
-    
+
     public static String getTodayDate() {
         Date mDate = new Date();
         SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy/M/dd");
@@ -25,7 +26,7 @@ public class Utility {
 
         return mDateStr;
     }
-    
+
     /**
      * 移除雜亂的字元，如"\"",",","=","--"等並取代
      *
@@ -64,7 +65,7 @@ public class Utility {
 
         return mStrReturn;
     }
-    
+
     public static void initStr(StringBuilder aStringBuilder) {
         if (aStringBuilder.length() != 0) {
             aStringBuilder.delete(0, aStringBuilder.length());

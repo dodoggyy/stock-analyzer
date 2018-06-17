@@ -13,15 +13,15 @@ import java.util.Comparator;
 import com.common.Config;
 import com.common.Utility;
 
-public class TWSETechParserHandler extends BaseParserHandler {
+public class TWSEFundParserHandler extends BaseParserHandler {
 
     private BufferedReader mBufferReader;
     private int mfileType;
     private String mDownloadName;
 
-    public TWSETechParserHandler() {
+    public TWSEFundParserHandler() {
         this.ImportDir = new File(Config.DataAnalyze.outputDataDir);
-        mDownloadName = Config.DataAnalyze.downloadName[Config.DataAnalyze.TWSE_TECH];
+        mDownloadName = Config.DataAnalyze.downloadName[Config.DataAnalyze.TWSE_FUND];
 
         if (!this.ImportDir.exists()) {
             System.err.println("沒有這個目錄 " + ImportDir);
@@ -41,8 +41,9 @@ public class TWSETechParserHandler extends BaseParserHandler {
     }
 
     public static void main(String[] args) {
-        TWSETechParserHandler techParser = new TWSETechParserHandler();
-        techParser.parseAllFileData();
+        // TODO Auto-generated method stub
+        TWSEFundParserHandler fundParser = new TWSEFundParserHandler();
+        fundParser.parseAllFileData();
     }
 
     public boolean parseAllFileData() {
@@ -66,6 +67,12 @@ public class TWSETechParserHandler extends BaseParserHandler {
     }
 
     @Override
+    boolean writeData2DB() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
     boolean parseFileData(File aFile, String aDate) {
         // TODO Auto-generated method stub
         String mTmpLine = "";
@@ -83,13 +90,7 @@ public class TWSETechParserHandler extends BaseParserHandler {
             try {
                 while ((mTmpLine = mBufferReader.readLine()) != null) {
                     if (!bIsBegin) {
-                        if (mfileType == Config.ErrorHandle.TRANSCATION_DATA_NORMAL && mTmpLine.contains("每日收盤行情")) {
-                            mBufferReader.readLine();
-                            bIsBegin = true;
-                        } else if (mfileType == Config.ErrorHandle.TRANSCATION_DATA_EXCEPTION
-                                && mTmpLine.contains("恢復交易者。")) {
-                            mTmpLine = mBufferReader.readLine();
-                            mBufferReader.readLine();
+                        if (mTmpLine.contains("證券代號")) {
                             mBufferReader.readLine();
                             bIsBegin = true;
                         }
@@ -99,9 +100,8 @@ public class TWSETechParserHandler extends BaseParserHandler {
                         mStrArr = Utility.removeMessyChar(mTmpLine).split(",");
                         bIsValid = true;
 
-                        // 略過非證券資料的列 e.g.欄位不符合TWSE資料, 指數資料, 證券標題
-                        if ((mStrArr.length < 8) || (mStrArr[0].length() != 4) || (mStrArr[0].equals("證券代號"))
-                                || (mStrArr[0].length() == 0)) {
+                        // 略過非證券資料的列 e.g.欄位不符合TWSE資料
+                        if ((mStrArr.length < 5) || (mStrArr[0].length() == 0)) {
                             bIsValid = false;
                         }
 
@@ -112,9 +112,16 @@ public class TWSETechParserHandler extends BaseParserHandler {
                                 mStrArr[i] = mStrArr[i].trim();
                             }
 
-                            // 證券代號0,證券名稱1,成交股數2,成交筆數3,成交金額4,開盤價5,最高價6,最低價7,收盤價8
-                            System.out.printf("代號:%s, 收盤:%s, 成交股數:%s, 開盤:%s,最高:%s, 最低:%s\n", mStrArr[0], mStrArr[8],
-                                    mStrArr[2], mStrArr[5], mStrArr[6], mStrArr[7]);
+                            // 證券代號0,證券名稱1,殖利率2,股利年度3,本益比4,股價淨值比5,財報年季6
+                            System.out.printf("代號:%s, 殖利率:%s,本益比:%s,股價淨值比:%s\n", mStrArr[0], mStrArr[2], mStrArr[4],
+                                    mStrArr[5]);
+
+                            // TWSE舊資料欄位不一致 20170413以前
+                            if (mStrArr.length == Config.DataAnalyze.OLD_TWSE_FUND_LENGTH) {
+                                // fixed me
+                            } else {
+                                // fixed me
+                            }
                         }
                     }
                 }
@@ -131,13 +138,6 @@ public class TWSETechParserHandler extends BaseParserHandler {
             e.printStackTrace();
         }
         return true;
-    }
-
-    @Override
-    boolean writeData2DB() {
-        // TODO Auto-generated method stub
-
-        return false;
     }
 
 }
