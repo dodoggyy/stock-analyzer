@@ -38,8 +38,22 @@ public abstract class DatabaseHandler {
 
     // close SQL related object
     abstract void closeObject();
+    
+    // init prepare SQL cmd
+    abstract void initPrepareSql();
 
     // generate SQL command
     abstract void generateSqlCmd();
+    
+    // generate SQL prepare string command for batch
+    abstract void generateSqlPrepareStrCmd(int aColumn, String aFieldValue)throws SQLException;
+    
+    // generate SQL prepare integer command for batch
+    abstract void generateSqlPrepareIntCmd(int aColumn, int aFieldValue)throws SQLException;
+    
+    // add SQL command for batch
+    abstract void addSqlPrepareCmd2Batch() throws SQLException;
 
+    // execute SQL prepare command for batch
+    abstract void executeSqlPrepareCmd() throws SQLException;
 }

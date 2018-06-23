@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -44,7 +45,7 @@ public class OTCTechParserHandler extends BaseParserHandler {
         OTCTechParserHandler techParser = new OTCTechParserHandler();
         techParser.parseAllFileData();
     }
-    
+
     public boolean parseAllFileData() {
         String mFileName = "", mFileExt = "";
         int mSeparateIndex = 0;
@@ -63,12 +64,6 @@ public class OTCTechParserHandler extends BaseParserHandler {
             }
         }
         return true;
-    }
-
-    @Override
-    boolean writeData2DB() {
-        // TODO Auto-generated method stub
-        return false;
     }
 
     @Override
@@ -94,10 +89,11 @@ public class OTCTechParserHandler extends BaseParserHandler {
                     if (mLines >= 3) {
                         mStrArr = Utility.removeMessyChar(mTmpLine).split(",");
                         if (mStrArr.length < 9 || mStrArr[0].length() != 4) {
-                         // filter 非股票部分(權證)
+                            // filter 非股票部分(權證)
                         } else {
-                         // 代號0,名稱1,收盤2 ,漲跌3,開盤4 ,最高5 ,最低6,均價7 ,成交股數8
-                         System.out.printf("代號:%s, 收盤:%s, 開盤:%s, 最高:%s,最低:%s\n",mStrArr[0],mStrArr[2],mStrArr[4],mStrArr[5],mStrArr[6]);
+                            // 代號0,名稱1,收盤2 ,漲跌3,開盤4 ,最高5 ,最低6,均價7 ,成交股數8
+                            System.out.printf("代號:%s, 收盤:%s, 成交股數:%s, 開盤:%s, 最高:%s,最低:%s\n", mStrArr[0], mStrArr[2], mStrArr[8], mStrArr[4],
+                                    mStrArr[5], mStrArr[6]);
                         }
                     }
                 }
@@ -114,6 +110,12 @@ public class OTCTechParserHandler extends BaseParserHandler {
             e.printStackTrace();
         }
         return true;
+    }
+
+    @Override
+    boolean writeData2DB(String aDate, String[] aStrArr) throws SQLException {
+        // TODO Auto-generated method stub
+        return false;
     }
 
 }

@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -66,12 +67,6 @@ public class OTCFundParserHandler extends BaseParserHandler {
     }
 
     @Override
-    boolean writeData2DB() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
     boolean parseFileData(File aFile, String aDate) {
         // TODO Auto-generated method stub
         int mLines = 0;
@@ -114,6 +109,12 @@ public class OTCFundParserHandler extends BaseParserHandler {
             e.printStackTrace();
         }
         return true;
+    }
+
+    @Override
+    boolean writeData2DB(String aDate, String[] aStrArr) throws SQLException {
+        // TODO Auto-generated method stub
+        return false;
     }
 
 }

@@ -28,6 +28,10 @@ Implementation of stock analyzer
  `資料庫處理`
  * [Database handler]
 
+## Authors
+
+* **Chris Lin** - *Initial work* - [chris](https://github.com/dodoggyy)
+
 #### 完成項目:
 
 * **下載每日盤後資料 :**

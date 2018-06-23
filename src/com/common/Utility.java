@@ -71,4 +71,16 @@ public class Utility {
             aStringBuilder.delete(0, aStringBuilder.length());
         }
     }
+    
+    public static int float2Int(String aFloatValue, int aDigit) {
+        int mReturnInt = 0;
+        mReturnInt = (int) Math.round(Float.parseFloat(aFloatValue)*Math.pow(10, aDigit));
+        return mReturnInt;
+    }
+    
+    public static int float2Int(float aFloatValue, int aDigit) {
+        int mReturnInt = 0;
+        mReturnInt = (int) Math.round(aFloatValue*Math.pow(10, aDigit));
+        return mReturnInt;
+    }
 }

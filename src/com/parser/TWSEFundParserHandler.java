@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -67,7 +68,7 @@ public class TWSEFundParserHandler extends BaseParserHandler {
     }
 
     @Override
-    boolean writeData2DB() {
+    boolean writeData2DB(String aDate, String[] aStrArr) throws SQLException {
         // TODO Auto-generated method stub
         return false;
     }

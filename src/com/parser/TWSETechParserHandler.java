@@ -7,21 +7,25 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Comparator;
 
 import com.common.Config;
 import com.common.Utility;
+import com.database.TechDatabaseHandler;
 
 public class TWSETechParserHandler extends BaseParserHandler {
 
+    private TechDatabaseHandler mStockDB;
     private BufferedReader mBufferReader;
     private int mfileType;
     private String mDownloadName;
 
-    public TWSETechParserHandler() {
+    public TWSETechParserHandler() throws SQLException {
         this.ImportDir = new File(Config.DataAnalyze.outputDataDir);
-        mDownloadName = Config.DataAnalyze.downloadName[Config.DataAnalyze.TWSE_TECH];
+        mDownloadName = Config.DataAnalyze.downloadName[Config.DataAnalyze.TWSE_TECH] + "_"; // fixed me
+        mStockDB = new TechDatabaseHandler();
 
         if (!this.ImportDir.exists()) {
             System.err.println("沒有這個目錄 " + ImportDir);
@@ -40,12 +44,12 @@ public class TWSETechParserHandler extends BaseParserHandler {
         });
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         TWSETechParserHandler techParser = new TWSETechParserHandler();
         techParser.parseAllFileData();
     }
 
-    public boolean parseAllFileData() {
+    public boolean parseAllFileData() throws SQLException {
         String mFileName = "", mFileExt = "";
         int mSeparateIndex = 0;
 
@@ -58,16 +62,19 @@ public class TWSETechParserHandler extends BaseParserHandler {
             }
             if (mFileName.substring(0, mDownloadName.length()).equals(mDownloadName)
                     && Config.DataAnalyze.csvFilter.contains(mFileExt)) {
-                parseFileData(aFiles[i], mFileName.substring(mDownloadName.length(), mDownloadName.length())
-                        + Config.DataAnalyze.DATE_LENGTH);
+                System.out.println(mFileName.substring(mDownloadName.length(), mDownloadName.length()+ Config.DataAnalyze.DATE_LENGTH));
+                parseFileData(aFiles[i], mFileName.substring(mDownloadName.length(), mDownloadName.length()
+                        + Config.DataAnalyze.DATE_LENGTH));
             }
         }
+        mStockDB.executeSqlPrepareCmd();
         return true;
     }
 
     @Override
     boolean parseFileData(File aFile, String aDate) {
         // TODO Auto-generated method stub
+        //System.out.println(aDate);
         String mTmpLine = "";
         String[] mStrArr;
         mfileType = Config.ErrorHandle.ERROR_MAX;
@@ -113,8 +120,15 @@ public class TWSETechParserHandler extends BaseParserHandler {
                             }
 
                             // 證券代號0,證券名稱1,成交股數2,成交筆數3,成交金額4,開盤價5,最高價6,最低價7,收盤價8
-                            System.out.printf("代號:%s, 收盤:%s, 成交股數:%s, 開盤:%s,最高:%s, 最低:%s\n", mStrArr[0], mStrArr[8],
-                                    mStrArr[2], mStrArr[5], mStrArr[6], mStrArr[7]);
+//                            System.out.printf("代號:%s, 收盤:%s, 成交股數:%s, 開盤:%s,最高:%s, 最低:%s\n", mStrArr[0], mStrArr[8],
+//                                    mStrArr[2], mStrArr[5], mStrArr[6], mStrArr[7]);
+
+                            try {
+                                writeData2DB(aDate, mStrArr);
+                            } catch (SQLException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }
@@ -134,10 +148,21 @@ public class TWSETechParserHandler extends BaseParserHandler {
     }
 
     @Override
-    boolean writeData2DB() {
+    boolean writeData2DB(String aDate, String[] aStrArr) throws SQLException {
         // TODO Auto-generated method stub
+        // listed_tech
+        System.out.printf("代號:%s, 收盤:%s, 成交股數:%s, 開盤:%s,最高:%s, 最低:%s\n", aStrArr[0], aStrArr[8],
+              aStrArr[2], aStrArr[5], aStrArr[6], aStrArr[7]);
+        mStockDB.generateSqlPrepareStrCmd(1, aStrArr[0]); // stock_id
+        mStockDB.generateSqlPrepareStrCmd(2, aDate); // stock_date
+        mStockDB.generateSqlPrepareIntCmd(3, Utility.float2Int(aStrArr[8], 2)); // stock_closing_price
+        mStockDB.generateSqlPrepareIntCmd(4, Utility.float2Int(aStrArr[5], 2)); // stock_opening_price
+        mStockDB.generateSqlPrepareIntCmd(5, Utility.float2Int(aStrArr[6], 2)); // stock_high_price
+        mStockDB.generateSqlPrepareIntCmd(6, Utility.float2Int(aStrArr[7], 2)); // stock_low_price
+        mStockDB.generateSqlPrepareIntCmd(7, Utility.float2Int(aStrArr[2], 0)); // stock_volume
 
-        return false;
+        mStockDB.addSqlPrepareCmd2Batch();
+        return true;
     }
 
 }

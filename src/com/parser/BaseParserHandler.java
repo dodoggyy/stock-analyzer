@@ -11,7 +11,7 @@ public abstract class BaseParserHandler {
     }
 
     // write data to DB
-    abstract boolean writeData2DB();
+    abstract boolean writeData2DB(String aDate, String[] aStrArr) throws SQLException;
 
     // parse specific data
     abstract boolean parseFileData(File aFile, String aDate);
