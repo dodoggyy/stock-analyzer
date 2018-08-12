@@ -5,12 +5,18 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import com.common.DatabaseConfig;
+import com.parser.TWSETechParserHandler;
 
 public class TechDatabaseHandler extends DatabaseHandler {
     private PreparedStatement mPreparedStatementTech = null;
     private String mUrl;
     private String mTableName = "listed_tech";
     private String mInsertTechSql = "";
+    
+    /**
+     * sync with TWSETechParserHandler, OTCTechParserHandler
+     * id, "證券代號", "日期", "收盤價", "開盤價", "最高價", "最低價", "成交量", "交易類別"
+     */
     private String createDbSQL = "CREATE TABLE " + mTableName + " (" + 
             "id     INT NOT NULL AUTO_INCREMENT," +
             "PRIMARY KEY (id)," +
@@ -20,7 +26,9 @@ public class TechDatabaseHandler extends DatabaseHandler {
             "stock_opening_price     INT, " +
             "stock_high_price     INT, " +
             "stock_low_price     INT, " +
-            "stock_volume     INT) ";
+            "stock_volume     INT, " +
+            "stock_type     INT, " +
+            "FOREIGN KEY(stock_type)REFERENCES listed_type(id)) ";
 
     private String mFieldDate = "";
     private String mFiledStockId = "";
@@ -39,8 +47,9 @@ public class TechDatabaseHandler extends DatabaseHandler {
     }
     
     void TestInsertTable() throws SQLException {
-        String mInsertTechSql =  "INSERT INTO " + mTableName + " (mDate, mStockId, mClose, mOpen, mHigh, mLow, mVolume)"
-              + "VALUES ('2017-06-03', '6116', 802, 802, 804, 796, 21080107);";
+        // need refine
+//        String mInsertTechSql =  "INSERT INTO " + mTableName + " (mDate, mStockId, mClose, mOpen, mHigh, mLow, mVolume)"
+//              + "VALUES ('2017-06-03', '6116', 802, 802, 804, 796, 21080107);";
     }
     
     public TechDatabaseHandler() throws SQLException {

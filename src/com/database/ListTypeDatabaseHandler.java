@@ -5,29 +5,19 @@ import java.sql.SQLException;
 
 import com.common.DatabaseConfig;
 
-public class FundDatabaseHandler extends DatabaseHandler{
-    private PreparedStatement mPreparedStatementFund = null;
+public class ListTypeDatabaseHandler extends DatabaseHandler{
+    private PreparedStatement mPreparedStatementList = null;
     private String mUrl;
-    private String mTableName = "listed_fund";
+    private String mTableName = "listed_type";
     private String mInsertTechSql = "";
-    
-    /**
-     * sync with TWSEFundParserHandler, OTCFundParserHandler
-     * id, "證券代號", "日期", "殖利率", "本益比", "淨值比", "交易類別"
-     */
     private String createDbSQL = "CREATE TABLE " + mTableName + " (" + 
             "id     INT NOT NULL AUTO_INCREMENT," +
             "PRIMARY KEY (id)," +
-            "stock_id     VARCHAR(30), " +
-            "stock_date     DATE, " +
-            "stock_yield_rate     INT, " +
-            "stock_pbr     INT, " +
-            "stock_per     INT, " +
-            "stock_type     INT) ";
-    public FundDatabaseHandler() throws SQLException {
+            "type_name     VARCHAR(30)) ";
+
+    public ListTypeDatabaseHandler() throws SQLException {
         super();
         // TODO Auto-generated constructor stub
-        readConfig();
     }
 
     public static void main(String[] args) {
@@ -73,6 +63,12 @@ public class FundDatabaseHandler extends DatabaseHandler{
     }
 
     @Override
+    void initPrepareSql() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
     void generateSqlCmd() {
         // TODO Auto-generated method stub
         
@@ -81,7 +77,7 @@ public class FundDatabaseHandler extends DatabaseHandler{
     @Override
     void generateSqlPrepareStrCmd(int aColumn, String aFieldValue) throws SQLException {
         // TODO Auto-generated method stub
-        
+        mPreparedStatementList.setString(aColumn, aFieldValue);
     }
 
     @Override
@@ -91,21 +87,17 @@ public class FundDatabaseHandler extends DatabaseHandler{
     }
 
     @Override
-    void executeSqlPrepareCmd() throws SQLException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    void initPrepareSql() {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
     void addSqlPrepareCmd2Batch() throws SQLException {
         // TODO Auto-generated method stub
         
+    }
+
+    @Override
+    void executeSqlPrepareCmd() throws SQLException {
+        // TODO Auto-generated method stub
+        mPreparedStatementList.executeBatch();
+        mConnection.commit(); 
+        mPreparedStatementList.clearBatch();
     }
 
 }
