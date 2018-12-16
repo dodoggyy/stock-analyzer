@@ -4,8 +4,15 @@
 3.周,月,年線計算
 4.整合技術線 & 圖像顯示
 5.UML架構圖
+6.porting to Linux
+7.add daily script
+8.刪除DB重複資料,DB自動更新補齊
 
 版本更新資訊:
+2018/12/16
+修正OTC tech open URL fail
+增加DB寫入實作
+
 2018/6/23
 增加parser寫入DB實作
 

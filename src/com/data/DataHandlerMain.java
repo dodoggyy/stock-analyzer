@@ -40,10 +40,10 @@ public class DataHandlerMain {
         } else if (mDowloadType == Config.DataAnalyze.DOWNLOAD_SPECIFIED_RANGE) {
             String mBeginDay = "", mEndDay = "";
 
-            System.out.println("Please input begin day: ex:2018/4/23");
+            System.out.printf("Please input begin day: ex:2018/4/23\n");
             mScanner = new Scanner(System.in);
             mBeginDay = mScanner.next();
-            System.out.println("Please input end day:");
+            System.out.printf("Please input end day:\n");
             mEndDay = mScanner.next();
             DataHandlerMain mDataHandler = new DataHandlerMain(mBeginDay, mEndDay);
             mDataHandler.downloadData(mDowloadType);
@@ -72,7 +72,7 @@ public class DataHandlerMain {
                 while (calendar.getTime().compareTo(mDateEnd) <= 0) {
                     mTotalDay++;
                     mDateArray.add(mFormatter.format(calendar.getTime()));
-                    System.out.println(mFormatter.format(calendar.getTime()) + " " + mTotalDay);
+                    //System.out.println(mFormatter.format(calendar.getTime()) + " " + mTotalDay);
                     calendar.add(Calendar.DAY_OF_MONTH, 1);
                 }
             } catch (Exception e) {

@@ -1,5 +1,6 @@
 package com.database;
 
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -9,7 +10,7 @@ public class FundDatabaseHandler extends DatabaseHandler{
     private PreparedStatement mPreparedStatementFund = null;
     private String mUrl;
     private String mTableName = "listed_fund";
-    private String mInsertTechSql = "";
+    private String mInsertFundSql = "";
     
     /**
      * sync with TWSEFundParserHandler, OTCFundParserHandler
@@ -23,18 +24,112 @@ public class FundDatabaseHandler extends DatabaseHandler{
             "stock_yield_rate     INT, " +
             "stock_pbr     INT, " +
             "stock_per     INT, " +
-            "stock_type     INT) ";
+            "stock_type     INT, " +
+            "FOREIGN KEY(stock_type)REFERENCES listed_type(id)) ";
+
+    private String mFieldDate = "";
+    private String mFiledStockId = "";
+    private String mFieldPBR = "";
+    private String mFieldPER = "";
+
     public FundDatabaseHandler() throws SQLException {
-        super();
         // TODO Auto-generated constructor stub
-        readConfig();
+        this.closeObject();
+        this.initPrepareSql();
+        this.readConfig();
+        this.setupDatabase();
+        this.connectDatabase();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         // TODO Auto-generated method stub
+        FundDatabaseHandler mStockDB = new FundDatabaseHandler();
+        
+        //Only need execute create table in first time
+        //mStockDB.createTable();
+        
+        mStockDB.TestInsertTable();
+    }
+    
+    void TestInsertTable() throws SQLException {
+        String mInsertFundSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_yield_rate, stock_pbr, stock_per)"
+              + "VALUES ('6116', '2017-06-03', 450, 0, 120);";
 
+        this.mPreparedStatementFund.addBatch(mInsertFundSql);
+        this.mPreparedStatementFund.executeBatch();
+        this.mConnection.commit();
+        mPreparedStatementFund.clearBatch();
     }
 
+    @Override
+    public void connectDatabase() {
+        // TODO Auto-generated method stub
+        try {
+            
+            mConnection = DriverManager.getConnection(mUrl, username, password);
+            mConnection.setAutoCommit(false);
+            this.mStatement = mConnection.createStatement();
+            this.mPreparedStatementFund = mConnection.prepareStatement(mInsertFundSql);
+            // System.out.println(mInsertTechSql);
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void setupDatabase() {
+        // TODO Auto-generated method stub
+        mFieldDate = "stock_date";
+        mFiledStockId = "stock_id";
+        mFieldPBR = "stock_pbr";
+        mFieldPER = "stock_per";
+    }
+
+    @Override
+    void createTable() {
+        // TODO Auto-generated method stub
+        try {
+            this.mConnection = DriverManager.getConnection(mUrl, username, password);
+            this.mStatement = mConnection.createStatement();
+            this.mStatement.executeUpdate(createDbSQL);
+            // System.out.println(createDbSQL);
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            System.out.println("DriverClassNotFound :"+e.toString());
+        } finally { 
+            this.closeObject(); 
+        }
+    }
+
+    @Override
+    public void closeObject() {
+        // TODO Auto-generated method stub
+        try {
+            if(mResultSet != null) { 
+                mResultSet.close(); 
+                mResultSet = null; 
+            } 
+            if(mStatement != null) { 
+                mStatement.close(); 
+                mStatement = null; 
+            }
+            if(mPreparedStatementFund != null) { 
+                mPreparedStatementFund.close(); 
+                mPreparedStatementFund = null;
+            }
+        } catch(SQLException e) { 
+            System.out.println("Close Exception :" + e.toString()); 
+        }
+    }
+
+    @Override
+    public void generateSqlCmd() {
+        // TODO Auto-generated method stub
+        
+    }
+    
     @Override
     void readConfig() {
         // TODO Auto-generated method stub
@@ -45,67 +140,39 @@ public class FundDatabaseHandler extends DatabaseHandler{
         password = DatabaseConfig.DB_KEY_PASSWORD;
         database = DatabaseConfig.DB_KEY_DATABASE;
         mUrl = "jdbc:" + DatabaseConfig.DB_SECTION_MYSQL + "://localhost:" + port + "/" + database +"?serverTimezone=UTC&characterEncoding=utf-8";
-        // System.out.println(mUrl);
+//        System.out.println(mUrl);
     }
 
     @Override
-    void connectDatabase() {
+    public void generateSqlPrepareStrCmd(int aColumn, String aFieldValue) throws SQLException {
         // TODO Auto-generated method stub
-        
+        mPreparedStatementFund.setString(aColumn, aFieldValue);
     }
 
     @Override
-    void setupDatabase() {
+    public void generateSqlPrepareIntCmd(int aColumn, int aFieldValue) throws SQLException {
         // TODO Auto-generated method stub
-        
+        mPreparedStatementFund.setInt(aColumn, aFieldValue);
     }
 
     @Override
-    void createTable() {
+    public void executeSqlPrepareCmd() throws SQLException {
         // TODO Auto-generated method stub
-        
+        mPreparedStatementFund.executeBatch();
+        mConnection.commit(); 
+        mPreparedStatementFund.clearBatch();
+    }
+    
+    @Override
+    public void addSqlPrepareCmd2Batch() throws SQLException {
+        // TODO Auto-generated method stub
+        mPreparedStatementFund.addBatch();
     }
 
     @Override
-    void closeObject() {
+    public void initPrepareSql() {
         // TODO Auto-generated method stub
-        
+        mInsertFundSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_yield_rate, stock_pbr, stock_per)"
+                + "VALUES (?, ?, ?, ?, ?);";
     }
-
-    @Override
-    void generateSqlCmd() {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    void generateSqlPrepareStrCmd(int aColumn, String aFieldValue) throws SQLException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    void generateSqlPrepareIntCmd(int aColumn, int aFieldValue) throws SQLException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    void executeSqlPrepareCmd() throws SQLException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    void initPrepareSql() {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    void addSqlPrepareCmd2Batch() throws SQLException {
-        // TODO Auto-generated method stub
-        
-    }
-
 }

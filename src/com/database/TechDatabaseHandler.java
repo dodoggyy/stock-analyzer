@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import com.common.DatabaseConfig;
-import com.parser.TWSETechParserHandler;
 
 public class TechDatabaseHandler extends DatabaseHandler {
     private PreparedStatement mPreparedStatementTech = null;
@@ -36,20 +35,27 @@ public class TechDatabaseHandler extends DatabaseHandler {
     private String mFieldOpen = "";
     private String mFieldHigh = "";
     private String mFieldLow = "";
+    private String mFieldVolume = "";
 
     public static void main(String[] args) throws SQLException {
         TechDatabaseHandler mStockDB = new TechDatabaseHandler();
         
         //Only need execute create table in first time
-//        mStockDB.createTable();
-
+        //mStockDB.createTable();
         
+        mStockDB.TestInsertTable();
+
+
     }
     
     void TestInsertTable() throws SQLException {
-        // need refine
-//        String mInsertTechSql =  "INSERT INTO " + mTableName + " (mDate, mStockId, mClose, mOpen, mHigh, mLow, mVolume)"
-//              + "VALUES ('2017-06-03', '6116', 802, 802, 804, 796, 21080107);";
+        String mInsertTechSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_closing_price, stock_opening_price, stock_high_price, stock_low_price, stock_volume, stock_type)"
+              + "VALUES ('6116', '2017-06-03', 802, 802, 804, 796, 21080000, 1);";
+
+        this.mPreparedStatementTech.addBatch(mInsertTechSql);
+        this.mPreparedStatementTech.executeBatch();
+        this.mConnection.commit();
+        mPreparedStatementTech.clearBatch();
     }
     
     public TechDatabaseHandler() throws SQLException {
@@ -59,7 +65,6 @@ public class TechDatabaseHandler extends DatabaseHandler {
         this.readConfig();
         this.setupDatabase();
         this.connectDatabase();
-
     }
 
     @Override
@@ -87,6 +92,7 @@ public class TechDatabaseHandler extends DatabaseHandler {
         mFieldLow = "stock_low_price";
         mFieldOpen = "stock_opening_price";
         mFieldClose = "stock_closing_price";
+        mFieldVolume = "stock_volume";
     }
 
     @Override
@@ -124,7 +130,7 @@ public class TechDatabaseHandler extends DatabaseHandler {
             }
         } catch(SQLException e) { 
             System.out.println("Close Exception :" + e.toString()); 
-        } 
+        }
     }
 
     @Override

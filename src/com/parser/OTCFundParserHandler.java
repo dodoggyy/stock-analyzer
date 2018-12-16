@@ -13,15 +13,19 @@ import java.util.Comparator;
 
 import com.common.Config;
 import com.common.Utility;
+import com.database.FundDatabaseHandler;
 
 public class OTCFundParserHandler extends BaseParserHandler {
+
+    private FundDatabaseHandler mStockDB;
     private BufferedReader mBufferReader;
     private int mfileType;
     private String mDownloadName;
 
-    public OTCFundParserHandler() {
+    public OTCFundParserHandler() throws SQLException {
         this.ImportDir = new File(Config.DataAnalyze.outputDataDir);
-        mDownloadName = Config.DataAnalyze.downloadName[Config.DataAnalyze.OTC_FUND];
+        mDownloadName = Config.DataAnalyze.downloadName[Config.DataAnalyze.OTC_FUND] + "_";
+        mStockDB = new FundDatabaseHandler();
 
         if (!this.ImportDir.exists()) {
             System.err.println("沒有這個目錄 " + ImportDir);
@@ -40,13 +44,13 @@ public class OTCFundParserHandler extends BaseParserHandler {
         });
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         // TODO Auto-generated method stub
         OTCFundParserHandler techParser = new OTCFundParserHandler();
         techParser.parseAllFileData();
     }
     
-    public boolean parseAllFileData() {
+    public boolean parseAllFileData() throws SQLException {
         String mFileName = "", mFileExt = "";
         int mSeparateIndex = 0;
 
@@ -57,12 +61,17 @@ public class OTCFundParserHandler extends BaseParserHandler {
                 mFileExt = mFileName.substring(mSeparateIndex);
                 System.out.println("Deal SQL data with " + mFileName);
             }
+//          System.out.println(" " + mFileName.substring(0, mDownloadName.length()));
+//          System.out.printf("mDownloadName.length():%d\n",mDownloadName.length());
+//          System.out.printf("%s\n",mFileName.substring(mDownloadName.length(), mDownloadName.length()
+//                + Config.DataAnalyze.DATE_LENGTH));
             if (mFileName.substring(0, mDownloadName.length()).equals(mDownloadName)
                     && Config.DataAnalyze.csvFilter.contains(mFileExt)) {
-                parseFileData(aFiles[i], mFileName.substring(mDownloadName.length(), mDownloadName.length())
-                        + Config.DataAnalyze.DATE_LENGTH);
+                parseFileData(aFiles[i], mFileName.substring(mDownloadName.length(), mDownloadName.length()
+                        + Config.DataAnalyze.DATE_LENGTH));
             }
         }
+        mStockDB.executeSqlPrepareCmd();
         return true;
     }
 
@@ -92,7 +101,13 @@ public class OTCFundParserHandler extends BaseParserHandler {
                          // filter 非股票部分(權證)
                         } else {
                          // 代號0,名稱1,本益比2 ,股利3,殖利率4 ,淨值比5
-                             System.out.printf("代號:%s, 本益比:%s, 殖利率:%s,淨值比:%s\n",mStrArr[0], mStrArr[2], mStrArr[4], mStrArr[5]);
+                             //System.out.printf("代號:%s, 本益比:%s, 殖利率:%s,淨值比:%s\n",mStrArr[0], mStrArr[2], mStrArr[4], mStrArr[5]);
+                             try {
+                                 writeData2DB(aDate, mStrArr);
+                             } catch (SQLException e) {
+                                 // TODO Auto-generated catch block
+                                 e.printStackTrace();
+                             }
                         }
                     }
                 }
@@ -114,7 +129,16 @@ public class OTCFundParserHandler extends BaseParserHandler {
     @Override
     boolean writeData2DB(String aDate, String[] aStrArr) throws SQLException {
         // TODO Auto-generated method stub
-        return false;
+        //mStockDB.generateSqlPrepareIntCmd(8, Config.DataAnalyze.TWSE); // stock_type
+        //System.out.printf("代號:%s, 本益比:%s, 殖利率:%s,淨值比:%s\n",aStrArr[0], aStrArr[2], aStrArr[4], aStrArr[5]);
+        mStockDB.generateSqlPrepareStrCmd(1, aStrArr[0]); // stock_id
+        mStockDB.generateSqlPrepareStrCmd(2, aDate); // stock_date
+        mStockDB.generateSqlPrepareIntCmd(3, Utility.float2Int(aStrArr[4], 2)); // stock_yield_rate
+        mStockDB.generateSqlPrepareIntCmd(4, Utility.float2Int(aStrArr[2], 2)); // stock_pbr
+        mStockDB.generateSqlPrepareIntCmd(5, Utility.float2Int(aStrArr[5], 2)); // stock_per
+
+        mStockDB.addSqlPrepareCmd2Batch();
+        return true;
     }
 
 }

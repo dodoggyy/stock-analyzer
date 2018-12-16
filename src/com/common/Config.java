@@ -6,7 +6,7 @@ public class Config {
     public static class DataAnalyze {
         public final static String outputDataDir = "F:\\Stock\\data\\";
         public final static int DOWNLOAD_FILE_SIZE = 10 * 1024; // 10Kb
-        public final static int DOWNLOAD_DELAY = 2000; // 2 sec
+        public final static int DOWNLOAD_DELAY = 3000; // 3 sec
         public final static int DATE_LENGTH = 10; // e.g.2018-06-11
         public final static int OLD_TWSE_FUND_LENGTH = 5;
         public final static String csvFilter = ".csv;.CSV";
@@ -27,7 +27,7 @@ public class Config {
                 DOWNLOAD_DB_UPDATE = 1; // 資料庫更新
 
         public static final String[] downloadUrl = {
-                "http://www.gretai.org.tw/ch/stock/aftertrading/DAILY_CLOSE_quotes/stk_quote_download.php?", // otc_tech
+                "http://www.tpex.org.tw/web/stock/aftertrading/otc_quotes_no1430/stk_wn1430_result.php?", // otc_tech
                 "http://www.tpex.org.tw/web/stock/aftertrading/peratio_analysis/pera_download.php?", // otc_fund
                 "http://www.twse.com.tw/exchangeReport/MI_INDEX", //twse_tech
                 "http://www.twse.com.tw/exchangeReport/BWIBBU_d" }; //twse_fund

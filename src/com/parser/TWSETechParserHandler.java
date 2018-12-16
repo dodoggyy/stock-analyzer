@@ -60,6 +60,10 @@ public class TWSETechParserHandler extends BaseParserHandler {
                 mFileExt = mFileName.substring(mSeparateIndex);
                 System.out.println("Deal SQL data with " + mFileName);
             }
+//            System.out.println(" " + mFileName.substring(0, mDownloadName.length()));
+//            System.out.printf("mDownloadName.length():%d\n",mDownloadName.length());
+//            System.out.printf("%s\n",mFileName.substring(mDownloadName.length(), mDownloadName.length()
+//                  + Config.DataAnalyze.DATE_LENGTH));
             if (mFileName.substring(0, mDownloadName.length()).equals(mDownloadName)
                     && Config.DataAnalyze.csvFilter.contains(mFileExt)) {
                 System.out.println(mFileName.substring(mDownloadName.length(), mDownloadName.length()+ Config.DataAnalyze.DATE_LENGTH));
@@ -151,8 +155,8 @@ public class TWSETechParserHandler extends BaseParserHandler {
     boolean writeData2DB(String aDate, String[] aStrArr) throws SQLException {
         // TODO Auto-generated method stub
         // listed_tech
-        System.out.printf("代號:%s, 收盤:%s, 成交股數:%s, 開盤:%s,最高:%s, 最低:%s\n", aStrArr[0], aStrArr[8],
-              aStrArr[2], aStrArr[5], aStrArr[6], aStrArr[7]);
+        //System.out.printf("代號:%s, 收盤:%s, 成交股數:%s, 開盤:%s,最高:%s, 最低:%s\n", aStrArr[0], aStrArr[8],
+              //aStrArr[2], aStrArr[5], aStrArr[6], aStrArr[7]);
         mStockDB.generateSqlPrepareStrCmd(1, aStrArr[0]); // stock_id
         mStockDB.generateSqlPrepareStrCmd(2, aDate); // stock_date
         mStockDB.generateSqlPrepareIntCmd(3, Utility.float2Int(aStrArr[8], 2)); // stock_closing_price
@@ -160,6 +164,7 @@ public class TWSETechParserHandler extends BaseParserHandler {
         mStockDB.generateSqlPrepareIntCmd(5, Utility.float2Int(aStrArr[6], 2)); // stock_high_price
         mStockDB.generateSqlPrepareIntCmd(6, Utility.float2Int(aStrArr[7], 2)); // stock_low_price
         mStockDB.generateSqlPrepareIntCmd(7, Utility.float2Int(aStrArr[2], 0)); // stock_volume
+        //mStockDB.generateSqlPrepareIntCmd(8, Config.DataAnalyze.TWSE); // stock_type
 
         mStockDB.addSqlPrepareCmd2Batch();
         return true;
