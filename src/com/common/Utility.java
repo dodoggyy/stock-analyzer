@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.TimeZone;
 
 public class Utility {
+    private static Long mBeginTime;
+    private static Long mEndTime;
 
     public static void scheduleDelay(int aDelayTime) {
 
@@ -82,5 +84,18 @@ public class Utility {
         int mReturnInt = 0;
         mReturnInt = (int) Math.round(aFloatValue*Math.pow(10, aDigit));
         return mReturnInt;
+    }
+    
+    public static void timerStart() {
+        mBeginTime = System.currentTimeMillis();
+    }
+    
+    public static void timerEnd() {
+        if(mBeginTime == null) {
+            System.out.println("Please set timerStart first");
+        } else {
+            mEndTime = System.currentTimeMillis();
+            System.out.println("Total time:：" + (mEndTime - mBeginTime) / 1000 + "sec");
+        }
     }
 }

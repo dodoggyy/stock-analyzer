@@ -4,9 +4,9 @@ public class Config {
 
     // 資料分析參數
     public static class DataAnalyze {
-        public final static String outputDataDir = "F:\\Stock\\data\\";
+        public final static String outputDataDir = "D:\\Stock\\data\\";
         public final static int DOWNLOAD_FILE_SIZE = 10 * 1024; // 10Kb
-        public final static int DOWNLOAD_DELAY = 3000; // 3 sec
+        public final static int DOWNLOAD_DELAY = 10000; // 10 sec
         public final static int DATE_LENGTH = 10; // e.g.2018-06-11
         public final static int OLD_TWSE_FUND_LENGTH = 5;
         public final static String csvFilter = ".csv;.CSV";
@@ -24,7 +24,12 @@ public class Config {
                 OTC = 1; // 上櫃
         
         public static final int DOWNLOAD_SPECIFIED_RANGE = 2, // 指定特定區間
-                DOWNLOAD_DB_UPDATE = 1; // 資料庫更新
+                DOWNLOAD_DB_UPDATE = 1, // 資料庫更新
+                DOWNLOAD_DB_NONE = 0; // skip DB update
+        
+        public static final int STORE_TO_DB = 1, // 指定特定區間
+                STORE_NONE = 2; // 資料庫更新
+        
 
         public static final String[] downloadUrl = {
                 "http://www.tpex.org.tw/web/stock/aftertrading/otc_quotes_no1430/stk_wn1430_result.php?", // otc_tech

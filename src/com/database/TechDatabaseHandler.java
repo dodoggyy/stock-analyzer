@@ -1,17 +1,11 @@
 package com.database;
 
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import com.common.DatabaseConfig;
 
 public class TechDatabaseHandler extends DatabaseHandler {
-    private PreparedStatement mPreparedStatementTech = null;
-    private String mUrl;
-    private String mTableName = "listed_tech";
-    private String mInsertTechSql = "";
-    
     /**
      * sync with TWSETechParserHandler, OTCTechParserHandler
      * id, "證券代號", "日期", "收盤價", "開盤價", "最高價", "最低價", "成交量", "交易類別"
@@ -49,22 +43,17 @@ public class TechDatabaseHandler extends DatabaseHandler {
     }
     
     void TestInsertTable() throws SQLException {
-        String mInsertTechSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_closing_price, stock_opening_price, stock_high_price, stock_low_price, stock_volume, stock_type)"
-              + "VALUES ('6116', '2017-06-03', 802, 802, 804, 796, 21080000, 1);";
+        String mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_closing_price, stock_opening_price, stock_high_price, stock_low_price, stock_volume)"
+              + "VALUES ('6116', '2017-06-03', 802, 802, 804, 796, 21080000);";
 
-        this.mPreparedStatementTech.addBatch(mInsertTechSql);
-        this.mPreparedStatementTech.executeBatch();
+        this.mPreparedStatement.addBatch(mInsertSql);
+        this.mPreparedStatement.executeBatch();
         this.mConnection.commit();
-        mPreparedStatementTech.clearBatch();
+        mPreparedStatement.clearBatch();
     }
     
     public TechDatabaseHandler() throws SQLException {
         // TODO Auto-generated constructor stub
-        this.closeObject();
-        this.initPrepareSql();
-        this.readConfig();
-        this.setupDatabase();
-        this.connectDatabase();
     }
 
     @Override
@@ -75,8 +64,8 @@ public class TechDatabaseHandler extends DatabaseHandler {
             mConnection = DriverManager.getConnection(mUrl, username, password);
             mConnection.setAutoCommit(false);
             this.mStatement = mConnection.createStatement();
-            this.mPreparedStatementTech = mConnection.prepareStatement(mInsertTechSql);
-            // System.out.println(mInsertTechSql);
+            this.mPreparedStatement = mConnection.prepareStatement(mInsertSql);
+            // System.out.println(mInsertSql);
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -86,6 +75,8 @@ public class TechDatabaseHandler extends DatabaseHandler {
     @Override
     void setupDatabase() {
         // TODO Auto-generated method stub
+        mTableName = "listed_tech";
+
         mFiledStockId = "stock_id";
         mFieldDate = "stock_date";
         mFieldHigh = "stock_high_price";
@@ -124,9 +115,9 @@ public class TechDatabaseHandler extends DatabaseHandler {
                 mStatement.close(); 
                 mStatement = null; 
             }
-            if(mPreparedStatementTech != null) { 
-                mPreparedStatementTech.close(); 
-                mPreparedStatementTech = null;
+            if(mPreparedStatement != null) { 
+                mPreparedStatement.close(); 
+                mPreparedStatement = null;
             }
         } catch(SQLException e) { 
             System.out.println("Close Exception :" + e.toString()); 
@@ -155,33 +146,33 @@ public class TechDatabaseHandler extends DatabaseHandler {
     @Override
     public void generateSqlPrepareStrCmd(int aColumn, String aFieldValue) throws SQLException {
         // TODO Auto-generated method stub
-        mPreparedStatementTech.setString(aColumn, aFieldValue);
+        mPreparedStatement.setString(aColumn, aFieldValue);
     }
 
     @Override
     public void generateSqlPrepareIntCmd(int aColumn, int aFieldValue) throws SQLException {
         // TODO Auto-generated method stub
-        mPreparedStatementTech.setInt(aColumn, aFieldValue);
+        mPreparedStatement.setInt(aColumn, aFieldValue);
     }
 
     @Override
     public void executeSqlPrepareCmd() throws SQLException {
         // TODO Auto-generated method stub
-        mPreparedStatementTech.executeBatch();
+        mPreparedStatement.executeBatch();
         mConnection.commit(); 
-        mPreparedStatementTech.clearBatch();
+        mPreparedStatement.clearBatch();
     }
 
     @Override
     public void addSqlPrepareCmd2Batch() throws SQLException {
         // TODO Auto-generated method stub
-        mPreparedStatementTech.addBatch();
+        mPreparedStatement.addBatch();
     }
 
     @Override
     void initPrepareSql() {
         // TODO Auto-generated method stub
-        mInsertTechSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_closing_price, stock_opening_price, stock_high_price, stock_low_price, stock_volume)"
+        mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_closing_price, stock_opening_price, stock_high_price, stock_low_price, stock_volume)"
                 + "VALUES (?, ?, ?, ?, ?, ?, ?);";
     }
 }

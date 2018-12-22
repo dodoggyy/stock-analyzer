@@ -1,5 +1,6 @@
 package com.data;
 
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -8,6 +9,10 @@ import java.util.Scanner;
 
 import com.common.Config;
 import com.common.Utility;
+import com.parser.OTCFundParserHandler;
+import com.parser.OTCTechParserHandler;
+import com.parser.TWSEFundParserHandler;
+import com.parser.TWSETechParserHandler;
 
 /**
  * Taiwan stock data handler<T>
@@ -17,7 +22,7 @@ import com.common.Utility;
  *
  * @param aBeginDay
  *            開始日期
- * @param aEndDay 
+ * @param aEndDay
  *            結束日期
  * 
  */
@@ -25,12 +30,15 @@ public class DataHandlerMain {
     private String mBeginDay;
     private String mEndDay;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         // TODO Auto-generated method stub
-        int mDowloadType;
+        int mDowloadType, mStoreType;
         Scanner mScanner = new Scanner(System.in);
-        System.out.println("(1)DB last date to Today (2)defined range by self");
+        System.out.println("(0)Skip (1)DB last date to Today (2)defined range by self");
         mDowloadType = mScanner.nextInt();
+
+        System.out.println("(1)Store to DB (2)exit");
+        mStoreType = mScanner.nextInt();
 
         if (mDowloadType == Config.DataAnalyze.DOWNLOAD_DB_UPDATE) {
             // not implement yet
@@ -47,7 +55,30 @@ public class DataHandlerMain {
             mEndDay = mScanner.next();
             DataHandlerMain mDataHandler = new DataHandlerMain(mBeginDay, mEndDay);
             mDataHandler.downloadData(mDowloadType);
+        } else if (mDowloadType == Config.DataAnalyze.DOWNLOAD_DB_NONE) {
+            ;
         }
+
+        Utility.timerStart();
+
+        if (mStoreType == Config.DataAnalyze.STORE_TO_DB) {
+            TWSETechParserHandler TWSETechParser = new TWSETechParserHandler();
+            TWSETechParser.parseAllFileData();
+
+            OTCTechParserHandler OTCTechParser = new OTCTechParserHandler();
+            OTCTechParser.parseAllFileData();
+
+            TWSEFundParserHandler TWSEFundParser = new TWSEFundParserHandler();
+            TWSEFundParser.parseAllFileData();
+
+            OTCFundParserHandler OTCFundParser = new OTCFundParserHandler();
+            OTCFundParser.parseAllFileData();
+        } else if (mStoreType == Config.DataAnalyze.STORE_NONE) {
+
+            ;
+        }
+
+        Utility.timerEnd();
     }
 
     public DataHandlerMain(String aBeginDay, String aEndDay) {
@@ -72,7 +103,8 @@ public class DataHandlerMain {
                 while (calendar.getTime().compareTo(mDateEnd) <= 0) {
                     mTotalDay++;
                     mDateArray.add(mFormatter.format(calendar.getTime()));
-                    //System.out.println(mFormatter.format(calendar.getTime()) + " " + mTotalDay);
+                    // System.out.println(mFormatter.format(calendar.getTime())
+                    // + " " + mTotalDay);
                     calendar.add(Calendar.DAY_OF_MONTH, 1);
                 }
             } catch (Exception e) {

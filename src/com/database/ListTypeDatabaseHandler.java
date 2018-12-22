@@ -1,17 +1,13 @@
 package com.database;
 
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import com.common.DatabaseConfig;
 
 public class ListTypeDatabaseHandler extends DatabaseHandler{
-    private PreparedStatement mPreparedStatementList = null;
-    private String mUrl;
-    private String mTableName = "listed_type";
     private String mInsertListSql = "";
-    
+
     /**
      * id, "交易類別"
      */
@@ -24,11 +20,6 @@ public class ListTypeDatabaseHandler extends DatabaseHandler{
     
     public ListTypeDatabaseHandler() throws SQLException {
         // TODO Auto-generated constructor stub
-        this.closeObject();
-        this.initPrepareSql();
-        this.readConfig();
-        this.setupDatabase();
-        this.connectDatabase();
     }
 
     public static void main(String[] args) throws SQLException {
@@ -60,8 +51,8 @@ public class ListTypeDatabaseHandler extends DatabaseHandler{
             mConnection = DriverManager.getConnection(mUrl, username, password);
             mConnection.setAutoCommit(false);
             this.mStatement = mConnection.createStatement();
-            this.mPreparedStatementList = mConnection.prepareStatement(mInsertListSql);
-            // System.out.println(mInsertTechSql);
+            this.mPreparedStatement = mConnection.prepareStatement(mInsertListSql);
+            // System.out.println(mInsertSql);
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -72,6 +63,7 @@ public class ListTypeDatabaseHandler extends DatabaseHandler{
     void setupDatabase() {
         // TODO Auto-generated method stub
         mFiledTypeName = "type_name";
+        mTableName = "listed_type";
     }
 
     @Override
@@ -103,9 +95,9 @@ public class ListTypeDatabaseHandler extends DatabaseHandler{
                 mStatement.close(); 
                 mStatement = null; 
             }
-            if(mPreparedStatementList != null) { 
-                mPreparedStatementList.close(); 
-                mPreparedStatementList = null;
+            if(mPreparedStatement != null) { 
+                mPreparedStatement.close(); 
+                mPreparedStatement = null;
             }
         } catch(SQLException e) { 
             System.out.println("Close Exception :" + e.toString()); 
@@ -128,7 +120,7 @@ public class ListTypeDatabaseHandler extends DatabaseHandler{
     @Override
     void generateSqlPrepareStrCmd(int aColumn, String aFieldValue) throws SQLException {
         // TODO Auto-generated method stub
-        mPreparedStatementList.setString(aColumn, aFieldValue);
+        mPreparedStatement.setString(aColumn, aFieldValue);
     }
 
     @Override
@@ -146,9 +138,9 @@ public class ListTypeDatabaseHandler extends DatabaseHandler{
     @Override
     void executeSqlPrepareCmd() throws SQLException {
         // TODO Auto-generated method stub
-        mPreparedStatementList.executeBatch();
+        mPreparedStatement.executeBatch();
         mConnection.commit(); 
-        mPreparedStatementList.clearBatch();
+        mPreparedStatement.clearBatch();
     }
 
 }

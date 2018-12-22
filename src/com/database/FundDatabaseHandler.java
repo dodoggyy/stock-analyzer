@@ -7,10 +7,6 @@ import java.sql.SQLException;
 import com.common.DatabaseConfig;
 
 public class FundDatabaseHandler extends DatabaseHandler{
-    private PreparedStatement mPreparedStatementFund = null;
-    private String mUrl;
-    private String mTableName = "listed_fund";
-    private String mInsertFundSql = "";
     
     /**
      * sync with TWSEFundParserHandler, OTCFundParserHandler
@@ -34,31 +30,26 @@ public class FundDatabaseHandler extends DatabaseHandler{
 
     public FundDatabaseHandler() throws SQLException {
         // TODO Auto-generated constructor stub
-        this.closeObject();
-        this.initPrepareSql();
-        this.readConfig();
-        this.setupDatabase();
-        this.connectDatabase();
     }
 
     public static void main(String[] args) throws SQLException {
         // TODO Auto-generated method stub
         FundDatabaseHandler mStockDB = new FundDatabaseHandler();
-        
+
         //Only need execute create table in first time
         //mStockDB.createTable();
-        
+
         mStockDB.TestInsertTable();
     }
     
     void TestInsertTable() throws SQLException {
-        String mInsertFundSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_yield_rate, stock_pbr, stock_per)"
+        String mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_yield_rate, stock_pbr, stock_per)"
               + "VALUES ('6116', '2017-06-03', 450, 0, 120);";
 
-        this.mPreparedStatementFund.addBatch(mInsertFundSql);
-        this.mPreparedStatementFund.executeBatch();
+        this.mPreparedStatement.addBatch(mInsertSql);
+        this.mPreparedStatement.executeBatch();
         this.mConnection.commit();
-        mPreparedStatementFund.clearBatch();
+        mPreparedStatement.clearBatch();
     }
 
     @Override
@@ -69,7 +60,7 @@ public class FundDatabaseHandler extends DatabaseHandler{
             mConnection = DriverManager.getConnection(mUrl, username, password);
             mConnection.setAutoCommit(false);
             this.mStatement = mConnection.createStatement();
-            this.mPreparedStatementFund = mConnection.prepareStatement(mInsertFundSql);
+            this.mPreparedStatement = mConnection.prepareStatement(mInsertSql);
             // System.out.println(mInsertTechSql);
         } catch (SQLException e) {
             // TODO Auto-generated catch block
@@ -80,6 +71,8 @@ public class FundDatabaseHandler extends DatabaseHandler{
     @Override
     public void setupDatabase() {
         // TODO Auto-generated method stub
+        mTableName = "listed_fund";
+        
         mFieldDate = "stock_date";
         mFiledStockId = "stock_id";
         mFieldPBR = "stock_pbr";
@@ -115,9 +108,9 @@ public class FundDatabaseHandler extends DatabaseHandler{
                 mStatement.close(); 
                 mStatement = null; 
             }
-            if(mPreparedStatementFund != null) { 
-                mPreparedStatementFund.close(); 
-                mPreparedStatementFund = null;
+            if(mPreparedStatement != null) { 
+                mPreparedStatement.close(); 
+                mPreparedStatement = null;
             }
         } catch(SQLException e) { 
             System.out.println("Close Exception :" + e.toString()); 
@@ -146,33 +139,33 @@ public class FundDatabaseHandler extends DatabaseHandler{
     @Override
     public void generateSqlPrepareStrCmd(int aColumn, String aFieldValue) throws SQLException {
         // TODO Auto-generated method stub
-        mPreparedStatementFund.setString(aColumn, aFieldValue);
+        mPreparedStatement.setString(aColumn, aFieldValue);
     }
 
     @Override
     public void generateSqlPrepareIntCmd(int aColumn, int aFieldValue) throws SQLException {
         // TODO Auto-generated method stub
-        mPreparedStatementFund.setInt(aColumn, aFieldValue);
+        mPreparedStatement.setInt(aColumn, aFieldValue);
     }
 
     @Override
     public void executeSqlPrepareCmd() throws SQLException {
         // TODO Auto-generated method stub
-        mPreparedStatementFund.executeBatch();
+        mPreparedStatement.executeBatch();
         mConnection.commit(); 
-        mPreparedStatementFund.clearBatch();
+        mPreparedStatement.clearBatch();
     }
     
     @Override
     public void addSqlPrepareCmd2Batch() throws SQLException {
         // TODO Auto-generated method stub
-        mPreparedStatementFund.addBatch();
+        mPreparedStatement.addBatch();
     }
 
     @Override
     public void initPrepareSql() {
         // TODO Auto-generated method stub
-        mInsertFundSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_yield_rate, stock_pbr, stock_per)"
+        mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_yield_rate, stock_pbr, stock_per)"
                 + "VALUES (?, ?, ?, ?, ?);";
     }
 }

@@ -1,12 +1,17 @@
 package com.database;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public abstract class DatabaseHandler {
-    private String createDbSQL;
+    protected String createDbSQL = null;
+    protected PreparedStatement mPreparedStatement = null;
+    protected String mUrl;
+    protected String mTableName;
+    protected String mInsertSql = "";
 
     protected    String host,
             port,
@@ -22,6 +27,11 @@ public abstract class DatabaseHandler {
     public Statement mStatement = null;
 
     public DatabaseHandler() throws SQLException {
+        this.closeObject();
+        this.setupDatabase();
+        this.initPrepareSql();
+        this.readConfig();
+        this.connectDatabase();
     }
 
     //read database config

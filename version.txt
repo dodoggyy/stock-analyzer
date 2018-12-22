@@ -9,6 +9,9 @@
 8.刪除DB重複資料,DB自動更新補齊
 
 版本更新資訊:
+2018/12/23
+refine DB handler code flow
+
 2018/12/16
 修正OTC tech open URL fail
 增加DB寫入實作
