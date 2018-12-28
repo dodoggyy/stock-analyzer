@@ -37,6 +37,9 @@ Implementation of stock analyzer
 * **下載每日盤後資料 :**
 
 
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
 
 
 [Data preprocessing]:https://bitbucket.org/dodoggyy/stock-analyzer-ex/src/master/src/com/data/

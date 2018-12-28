@@ -18,9 +18,7 @@ import com.database.FundDatabaseHandler;
 public class OTCFundParserHandler extends BaseParserHandler {
 
     private FundDatabaseHandler mStockDB;
-    private BufferedReader mBufferReader;
     private int mfileType;
-    private String mDownloadName;
 
     public OTCFundParserHandler() throws SQLException {
         this.ImportDir = new File(Config.DataAnalyze.outputDataDir);

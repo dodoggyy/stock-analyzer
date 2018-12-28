@@ -18,9 +18,7 @@ import com.database.TechDatabaseHandler;
 public class TWSETechParserHandler extends BaseParserHandler {
 
     private TechDatabaseHandler mStockDB;
-    private BufferedReader mBufferReader;
     private int mfileType;
-    private String mDownloadName;
 
     public TWSETechParserHandler() throws SQLException {
         this.ImportDir = new File(Config.DataAnalyze.outputDataDir);

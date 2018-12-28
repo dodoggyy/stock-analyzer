@@ -18,9 +18,7 @@ import com.database.TechDatabaseHandler;
 public class OTCTechParserHandler extends BaseParserHandler {
 
     private TechDatabaseHandler mStockDB;
-    private BufferedReader mBufferReader;
     private int mfileType;
-    private String mDownloadName;
 
     public OTCTechParserHandler() throws SQLException {
         this.ImportDir = new File(Config.DataAnalyze.outputDataDir);

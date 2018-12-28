@@ -18,9 +18,7 @@ import com.database.FundDatabaseHandler;
 public class TWSEFundParserHandler extends BaseParserHandler {
 
     private FundDatabaseHandler mStockDB;
-    private BufferedReader mBufferReader;
     private int mfileType;
-    private String mDownloadName;
 
     public TWSEFundParserHandler() throws SQLException {
         this.ImportDir = new File(Config.DataAnalyze.outputDataDir);
