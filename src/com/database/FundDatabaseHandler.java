@@ -37,9 +37,9 @@ public class FundDatabaseHandler extends DatabaseHandler{
         FundDatabaseHandler mStockDB = new FundDatabaseHandler();
 
         //Only need execute create table in first time
-        //mStockDB.createTable();
+        mStockDB.createTable();
 
-        mStockDB.TestInsertTable();
+        //mStockDB.TestInsertTable();
     }
     
     void TestInsertTable() throws SQLException {
@@ -122,19 +122,6 @@ public class FundDatabaseHandler extends DatabaseHandler{
         // TODO Auto-generated method stub
         
     }
-    
-    @Override
-    void readConfig() {
-        // TODO Auto-generated method stub
-        host = DatabaseConfig.DB_KEY_HOST;
-        port = DatabaseConfig.DB_KEY_PORT;
-        socket = DatabaseConfig.DB_KEY_UNIX_SOCKET;
-        username = DatabaseConfig.DB_KEY_USERNAME;
-        password = DatabaseConfig.DB_KEY_PASSWORD;
-        database = DatabaseConfig.DB_KEY_DATABASE;
-        mUrl = "jdbc:" + DatabaseConfig.DB_SECTION_MYSQL + "://localhost:" + port + "/" + database +"?serverTimezone=UTC&characterEncoding=utf-8";
-//        System.out.println(mUrl);
-    }
 
     @Override
     public void generateSqlPrepareStrCmd(int aColumn, String aFieldValue) throws SQLException {
@@ -167,5 +154,18 @@ public class FundDatabaseHandler extends DatabaseHandler{
         // TODO Auto-generated method stub
         mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_yield_rate, stock_pbr, stock_per)"
                 + "VALUES (?, ?, ?, ?, ?);";
+    }
+
+    @Override
+    public void deleteSqlDuplicateData() throws SQLException {
+        // TODO Auto-generated method stub
+        String mInsertSql = "DELETE FROM "+ mTableName + " WHERE `id` in (SELECT b.id FROM (SELECT * FROM "+ mTableName + " a WHERE id<>(select MAX(id) FROM "+ mTableName + 
+                " WHERE stock_id=a.stock_id and stock_date=a.stock_date)"
+                + ")b);";
+        //System.out.println(mInsertSql);
+        this.mPreparedStatement.addBatch(mInsertSql);
+        this.mPreparedStatement.executeBatch();
+        this.mConnection.commit();
+        mPreparedStatement.clearBatch();
     }
 }

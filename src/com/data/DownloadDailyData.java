@@ -11,6 +11,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 import com.common.Config;
+import com.common.KeyDefine;
 
 /**
  * Taiwan stock data downloader<T>
@@ -22,29 +23,32 @@ import com.common.Config;
  *            更改下載位置,預設讀config
  */
 public class DownloadDailyData {
-    private int mDataLength;
+    private static int mDataLength;
     private String mDownloadDir;
 
     final static String[] SEL_TYPE = { "ALLBUT0999", "ALL" };
 
     public static void main(String[] args) {
         // download data from TWSE and OTC
-        String mDate = "2018/4/26";
+        String mDate = "2018/12/27";
         DownloadDailyData mDonloader = new DownloadDailyData();
-        mDonloader.downloadData(mDate);
+        // mDonloader.downloadData(mDate, KeyDefine.OTC_FUND);
+        for (int i = 0; i < mDataLength; i++) {
+            mDonloader.downloadData(mDate, i);
+        }
     }
 
     public DownloadDailyData() {
-        mDataLength = Config.DataAnalyze.DATA_MAX;
+        mDataLength = KeyDefine.DATA_MAX;
         mDownloadDir = Config.DataAnalyze.outputDataDir;
     }
 
     public DownloadDailyData(String aDownloadDir) {
-        mDataLength = Config.DataAnalyze.DATA_MAX;
+        mDataLength = KeyDefine.DATA_MAX;
         mDownloadDir = aDownloadDir;
     }
 
-    public void downloadData(String aDownloadDate) {
+    public void downloadData(String aDownloadDate, int aDownloadType) {
         String mFilename[] = new String[mDataLength];
         String mUrl[] = new String[mDataLength];
         String mUrlParm[] = new String[mDataLength];
@@ -72,56 +76,57 @@ public class DownloadDailyData {
         mDay = String.valueOf(Integer.valueOf(mStr[2]) + 100).substring(1);
         mDate = mYr + "-" + mMth + "-" + mDay;
 
-        for (int i = 0; i < mDataLength; i++) {
-            mFilename[i] = Config.DataAnalyze.downloadName[i] + "_" + mDate + ".csv";
-            if (i == Config.DataAnalyze.OTC_TECH || i == Config.DataAnalyze.OTC_FUND) {
-                mUrl[i] = String.format(Config.DataAnalyze.downloadUrl[i] + "l=zh-tw&o=csv&d=%s/%s/%s&se=EW&s=0,asc,0", mYrOtc,
-                        mMth, mDay);
-            } else {
-                mUrl[i] = Config.DataAnalyze.downloadUrl[i];
-            }
+        mFilename[aDownloadType] = Config.DataAnalyze.downloadName[aDownloadType] + "_" + mDate + ".csv";
+        if ((aDownloadType == KeyDefine.OTC_TECH) || (aDownloadType == KeyDefine.OTC_FUND)) {
+            mUrl[aDownloadType] = String.format(
+                    KeyDefine.downloadUrl[aDownloadType] + "l=zh-tw&o=csv&d=%s/%s/%s&se=EW&s=0,asc,0", mYrOtc, mMth,
+                    mDay);
+        } else {
+            mUrl[aDownloadType] = KeyDefine.downloadUrl[aDownloadType];
+        }
 
-            try {
-                if (i == Config.DataAnalyze.TWSE_TECH || i == Config.DataAnalyze.TWSE_FUND) {
-                    mPostData[1] = mYr + mMth + mDay;
-                    if (i == Config.DataAnalyze.TWSE_FUND) {
-                        mPostData[2] = SEL_TYPE[1];
-                    } else {
-                        mPostData[2] = SEL_TYPE[0];
-                    }
-                    for (int j = 0; j < mPostParm.length; j++) {
-                        mUrlParm[i] += "&" + mPostParm[j] + "=" + URLEncoder.encode(mPostData[j], "UTF-8");
-                    }
-                    mUrlParm[i] = mUrlParm[i].substring(1);
-                    mConnection = excutePost(mUrl[i], mUrlParm[i], Config.DataAnalyze.TWSE);
-                    //System.out.println(mUrlParm[i]);
-                    //System.out.println(mDownloadDir + mFilename[i]);
-                    downloadFromUrl("", mDownloadDir + mFilename[i], mConnection);
-                } else if (i == Config.DataAnalyze.OTC_TECH || i == Config.DataAnalyze.OTC_FUND) {
-                    //System.out.println(mUrl[i] +" "+ mDownloadDir + mFilename[i]);
-                    mConnection = excutePost(mUrl[i], mUrlParm[i], Config.DataAnalyze.OTC);
-                    //downloadFromUrl(mUrl[i], mDownloadDir + mFilename[i], mConnection);
-                    downloadFromUrl("", mDownloadDir + mFilename[i], mConnection);
-                }
-
-                mFile = new File(mDownloadDir, mFilename[i]);
-
-                // if file size less than FILE_SIZE, then delete it
-                if (mFile.length() < Config.DataAnalyze.DOWNLOAD_FILE_SIZE) {
-                    System.err.printf("\n %s未開盤", aDownloadDate);
-                    try {
-                        mFile.delete();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+        try {
+            if ((aDownloadType == KeyDefine.TWSE_TECH) || (aDownloadType == KeyDefine.TWSE_FUND)) {
+                mPostData[1] = mYr + mMth + mDay;
+                if (aDownloadType == KeyDefine.TWSE_FUND) {
+                    mPostData[2] = SEL_TYPE[1];
                 } else {
-                    System.out.printf("\nOK! %s\n", mFilename[i]);
+                    mPostData[2] = SEL_TYPE[0];
                 }
-            } catch (Exception e) {
-                System.err.println(e.getMessage());
-                e.printStackTrace();
-                System.exit(Config.ErrorHandle.EXIT_ERROR);
+                for (int j = 0; j < mPostParm.length; j++) {
+                    mUrlParm[aDownloadType] += "&" + mPostParm[j] + "=" + URLEncoder.encode(mPostData[j], "UTF-8");
+                }
+                mUrlParm[aDownloadType] = mUrlParm[aDownloadType].substring(1);
+                mConnection = excutePost(mUrl[aDownloadType], mUrlParm[aDownloadType], KeyDefine.TWSE);
+                // System.out.println(mUrlParm[aDownloadType]);
+                // System.out.println(mDownloadDir + mFilename[aDownloadType]);
+                downloadFromUrl("", mDownloadDir + mFilename[aDownloadType], mConnection);
+            } else if ((aDownloadType == KeyDefine.OTC_TECH) || (aDownloadType == KeyDefine.OTC_FUND)) {
+                // System.out.println(mUrl[aDownloadType] +" "+ mDownloadDir +
+                // mFilename[aDownloadType]);
+                mConnection = excutePost(mUrl[aDownloadType], mUrlParm[aDownloadType], KeyDefine.OTC);
+                // downloadFromUrl(mUrl[aDownloadType], mDownloadDir +
+                // mFilename[aDownloadType], mConnection);
+                downloadFromUrl("", mDownloadDir + mFilename[aDownloadType], mConnection);
             }
+
+            mFile = new File(mDownloadDir, mFilename[aDownloadType]);
+
+            // if file size less than FILE_SIZE, then delete it
+            if (mFile.length() < Config.DataAnalyze.DOWNLOAD_FILE_SIZE) {
+                System.err.printf("\n %s未開盤", aDownloadDate);
+                try {
+                    mFile.delete();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.printf("\nOK! %s\n", mFilename[aDownloadType]);
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            System.exit(KeyDefine.ErrorHandle.EXIT_ERROR);
         }
 
     }
@@ -131,9 +136,9 @@ public class DownloadDailyData {
 
         InputStream mInputStream;
         HttpURLConnection mConnection = null;
-        
-//        System.out.printf("aSource:%s\n",aSource);
-//        System.out.printf("aDestination:%s\n",aDestination);
+
+        // System.out.printf("aSource:%s\n",aSource);
+        // System.out.printf("aDestination:%s\n",aDestination);
 
         if (aConnection != null) {
             mConnection = aConnection;
@@ -141,7 +146,8 @@ public class DownloadDailyData {
         mInputStream = mConnection.getInputStream();
         FileOutputStream mFileOutputStream = new FileOutputStream(aDestination);
         byte[] buffer = new byte[1024];
-        for (int length; (length = mInputStream.read(buffer)) > 0; mFileOutputStream.write(buffer, 0, length));
+        for (int length; (length = mInputStream.read(buffer)) > 0; mFileOutputStream.write(buffer, 0, length))
+            ;
         mFileOutputStream.close();
         mInputStream.close();
     }
@@ -153,9 +159,10 @@ public class DownloadDailyData {
         try {
             mUrl = new URL(aTargetURL);
             mConnection = (HttpURLConnection) mUrl.openConnection();
-            if(aType == Config.DataAnalyze.TWSE) {
+            if (aType == KeyDefine.TWSE) {
                 mConnection.setRequestMethod("POST");
-                mConnection.setRequestProperty("Content-Length", "" + Integer.toString(aUrlParameters.getBytes().length));
+                mConnection.setRequestProperty("Content-Length",
+                        "" + Integer.toString(aUrlParameters.getBytes().length));
             }
 
             mConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
@@ -166,14 +173,14 @@ public class DownloadDailyData {
 
             // Send request
             mWr = new DataOutputStream(mConnection.getOutputStream());
-            if(aType == Config.DataAnalyze.TWSE) {
+            if (aType == KeyDefine.TWSE) {
                 mWr.writeBytes(aUrlParameters);
             }
             mWr.flush();
             mWr.close();
         } catch (Exception e) {
             e.printStackTrace();
-            System.exit(Config.ErrorHandle.EXIT_ERROR);
+            System.exit(KeyDefine.ErrorHandle.EXIT_ERROR);
         } finally {
 
             if (mConnection != null) {

@@ -31,19 +31,6 @@ public class ListTypeDatabaseHandler extends DatabaseHandler{
     }
 
     @Override
-    void readConfig() {
-        // TODO Auto-generated method stub
-        host = DatabaseConfig.DB_KEY_HOST;
-        port = DatabaseConfig.DB_KEY_PORT;
-        socket = DatabaseConfig.DB_KEY_UNIX_SOCKET;
-        username = DatabaseConfig.DB_KEY_USERNAME;
-        password = DatabaseConfig.DB_KEY_PASSWORD;
-        database = DatabaseConfig.DB_KEY_DATABASE;
-        mUrl = "jdbc:" + DatabaseConfig.DB_SECTION_MYSQL + "://localhost:" + port + "/" + database +"?serverTimezone=UTC&characterEncoding=utf-8";
-        // System.out.println(mUrl);
-    }
-
-    @Override
     void connectDatabase() {
         // TODO Auto-generated method stub
         try {
@@ -141,6 +128,12 @@ public class ListTypeDatabaseHandler extends DatabaseHandler{
         mPreparedStatement.executeBatch();
         mConnection.commit(); 
         mPreparedStatement.clearBatch();
+    }
+
+    @Override
+    void deleteSqlDuplicateData() throws SQLException {
+        // TODO Auto-generated method stub
+        
     }
 
 }

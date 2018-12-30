@@ -4,6 +4,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import com.common.DatabaseConfig;
+import com.common.Utility;
 
 public class TechDatabaseHandler extends DatabaseHandler {
     /**
@@ -32,14 +33,18 @@ public class TechDatabaseHandler extends DatabaseHandler {
     private String mFieldVolume = "";
 
     public static void main(String[] args) throws SQLException {
+        Utility.timerStart();
         TechDatabaseHandler mStockDB = new TechDatabaseHandler();
         
         //Only need execute create table in first time
-        //mStockDB.createTable();
+        mStockDB.createTable();
         
-        mStockDB.TestInsertTable();
+        //for(int i = 0; i < 100;i++)
+        //mStockDB.TestInsertTable();
 
+        //mStockDB.deleteSqlDuplicateData();
 
+        Utility.timerEnd();
     }
     
     void TestInsertTable() throws SQLException {
@@ -125,22 +130,8 @@ public class TechDatabaseHandler extends DatabaseHandler {
     }
 
     @Override
-    void generateSqlCmd() {
+    void generateSqlCmd(){
         // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    void readConfig() {
-       // TODO Auto-generated method stub
-       host = DatabaseConfig.DB_KEY_HOST;
-       port = DatabaseConfig.DB_KEY_PORT;
-       socket = DatabaseConfig.DB_KEY_UNIX_SOCKET;
-       username = DatabaseConfig.DB_KEY_USERNAME;
-       password = DatabaseConfig.DB_KEY_PASSWORD;
-       database = DatabaseConfig.DB_KEY_DATABASE;
-       mUrl = "jdbc:" + DatabaseConfig.DB_SECTION_MYSQL + "://localhost:" + port + "/" + database +"?serverTimezone=UTC&characterEncoding=utf-8";
-       // System.out.println(mUrl);
     }
 
     @Override
@@ -174,5 +165,18 @@ public class TechDatabaseHandler extends DatabaseHandler {
         // TODO Auto-generated method stub
         mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_closing_price, stock_opening_price, stock_high_price, stock_low_price, stock_volume)"
                 + "VALUES (?, ?, ?, ?, ?, ?, ?);";
+    }
+
+    @Override
+    public void deleteSqlDuplicateData() throws SQLException {
+        // TODO Auto-generated method stub
+        String mInsertSql = "DELETE FROM "+ mTableName + " WHERE `id` in (SELECT b.id FROM (SELECT * FROM "+ mTableName + " a WHERE id<>(select MAX(id) FROM "+ mTableName + 
+                " WHERE stock_id=a.stock_id and stock_date=a.stock_date)"
+                + ")b);";
+        System.out.println(mInsertSql);
+        this.mPreparedStatement.addBatch(mInsertSql);
+        this.mPreparedStatement.executeBatch();
+        this.mConnection.commit();
+        mPreparedStatement.clearBatch();
     }
 }

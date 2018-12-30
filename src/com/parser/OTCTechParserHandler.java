@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import com.common.Config;
+import com.common.KeyDefine;
 import com.common.Utility;
 import com.database.TechDatabaseHandler;
 
@@ -22,17 +23,17 @@ public class OTCTechParserHandler extends BaseParserHandler {
 
     public OTCTechParserHandler() throws SQLException {
         this.ImportDir = new File(Config.DataAnalyze.outputDataDir);
-        mDownloadName = Config.DataAnalyze.downloadName[Config.DataAnalyze.OTC_TECH] + "_";
+        mDownloadName = Config.DataAnalyze.downloadName[KeyDefine.OTC_TECH] + "_";
         mStockDB = new TechDatabaseHandler();
 
         if (!this.ImportDir.exists()) {
             System.err.println("沒有這個目錄 " + ImportDir);
-            System.exit(Config.ErrorHandle.EXIT_ERROR);
+            System.exit(KeyDefine.ErrorHandle.EXIT_ERROR);
         }
         this.aFiles = ImportDir.listFiles();
         if (this.aFiles.length == 0) {
             System.err.println("No Files Match!");
-            System.exit(Config.ErrorHandle.EXIT_ERROR);
+            System.exit(KeyDefine.ErrorHandle.EXIT_ERROR);
         }
         Arrays.sort(aFiles, new Comparator<Object>() {
             @Override
@@ -64,11 +65,13 @@ public class OTCTechParserHandler extends BaseParserHandler {
 //            System.out.printf("%s\n",mFileName.substring(mDownloadName.length(), mDownloadName.length()
 //                    + Config.DataAnalyze.DATE_LENGTH));
             if (mFileName.substring(0, mDownloadName.length()).equals(mDownloadName)
-                    && Config.DataAnalyze.csvFilter.contains(mFileExt)) {
+                    && KeyDefine.csvFilter.contains(mFileExt)) {
                 parseFileData(aFiles[i], mFileName.substring(mDownloadName.length(), mDownloadName.length()
-                        + Config.DataAnalyze.DATE_LENGTH));
+                        + KeyDefine.DATE_LENGTH));
             }
         }
+
+        //mStockDB.deleteSqlDuplicateData();
         mStockDB.executeSqlPrepareCmd();
         return true;
     }
@@ -80,11 +83,11 @@ public class OTCTechParserHandler extends BaseParserHandler {
         int mLines = 0;
         String mTmpLine = "";
         String[] mStrArr;
-        mfileType = Config.ErrorHandle.ERROR_MAX;
+        mfileType = KeyDefine.ErrorHandle.ERROR_MAX;
         try {
             // csv file need to set decode as MS950 to prevent garbled
-            mfileType = (aFile.getName().contains("BUT")) ? Config.ErrorHandle.TRANSCATION_DATA_EXCEPTION
-                    : Config.ErrorHandle.TRANSCATION_DATA_NORMAL;
+            mfileType = (aFile.getName().contains("BUT")) ? KeyDefine.ErrorHandle.TRANSCATION_DATA_EXCEPTION
+                    : KeyDefine.ErrorHandle.TRANSCATION_DATA_NORMAL;
             InputStreamReader mStreamReader = new InputStreamReader(new FileInputStream(aFile), "MS950");
             mBufferReader = new BufferedReader(mStreamReader);
 
@@ -141,6 +144,7 @@ public class OTCTechParserHandler extends BaseParserHandler {
         mStockDB.generateSqlPrepareIntCmd(7, Utility.float2Int(aStrArr[8], 0)); // stock_volume
 
         mStockDB.addSqlPrepareCmd2Batch();
+
         return true;
     }
 

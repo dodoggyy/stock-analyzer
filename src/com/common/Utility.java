@@ -15,7 +15,7 @@ public class Utility {
         } catch (InterruptedException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
-            System.exit(Config.ErrorHandle.EXIT_TIMEOUT);
+            System.exit(KeyDefine.ErrorHandle.EXIT_TIMEOUT);
         }
     }
 
@@ -87,6 +87,7 @@ public class Utility {
     }
     
     public static void timerStart() {
+        System.out.println("timer start");
         mBeginTime = System.currentTimeMillis();
     }
     

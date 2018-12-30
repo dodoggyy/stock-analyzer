@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.common.DatabaseConfig;
+
 public abstract class DatabaseHandler {
     protected String createDbSQL = null;
     protected PreparedStatement mPreparedStatement = null;
@@ -35,7 +37,16 @@ public abstract class DatabaseHandler {
     }
 
     //read database config
-    abstract void readConfig();
+    void readConfig() {
+        host = DatabaseConfig.DB_KEY_HOST;
+        port = DatabaseConfig.DB_KEY_PORT;
+        socket = DatabaseConfig.DB_KEY_UNIX_SOCKET;
+        username = DatabaseConfig.DB_KEY_USERNAME;
+        password = DatabaseConfig.DB_KEY_PASSWORD;
+        database = DatabaseConfig.DB_KEY_DATABASE;
+        mUrl = "jdbc:" + DatabaseConfig.DB_SECTION_MYSQL + "://localhost:" + port + "/" + database +"?serverTimezone=UTC&characterEncoding=utf-8";
+//        System.out.println(mUrl);
+    }
     
     // connect Database
     abstract void connectDatabase();
@@ -53,7 +64,7 @@ public abstract class DatabaseHandler {
     abstract void initPrepareSql();
 
     // generate SQL command
-    abstract void generateSqlCmd();
+    abstract void generateSqlCmd() throws SQLException;
     
     // generate SQL prepare string command for batch
     abstract void generateSqlPrepareStrCmd(int aColumn, String aFieldValue)throws SQLException;
@@ -66,4 +77,7 @@ public abstract class DatabaseHandler {
 
     // execute SQL prepare command for batch
     abstract void executeSqlPrepareCmd() throws SQLException;
+    
+    // execute SQL command for delete dublicate data
+    abstract void deleteSqlDuplicateData() throws SQLException;
 }

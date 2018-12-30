@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.Scanner;
 
 import com.common.Config;
+import com.common.KeyDefine;
 import com.common.Utility;
 import com.parser.OTCFundParserHandler;
 import com.parser.OTCTechParserHandler;
@@ -40,12 +41,12 @@ public class DataHandlerMain {
         System.out.println("(1)Store to DB (2)exit");
         mStoreType = mScanner.nextInt();
 
-        if (mDowloadType == Config.DataAnalyze.DOWNLOAD_DB_UPDATE) {
+        if (mDowloadType == KeyDefine.DOWNLOAD_DB_UPDATE) {
             // not implement yet
             // System.out.println("Please select download type: (1)update to
             // newest date (2)insert old date data");
             System.out.println("not implement yet");
-        } else if (mDowloadType == Config.DataAnalyze.DOWNLOAD_SPECIFIED_RANGE) {
+        } else if (mDowloadType == KeyDefine.DOWNLOAD_SPECIFIED_RANGE) {
             String mBeginDay = "", mEndDay = "";
 
             System.out.printf("Please input begin day: ex:2018/4/23\n");
@@ -55,13 +56,13 @@ public class DataHandlerMain {
             mEndDay = mScanner.next();
             DataHandlerMain mDataHandler = new DataHandlerMain(mBeginDay, mEndDay);
             mDataHandler.downloadData(mDowloadType);
-        } else if (mDowloadType == Config.DataAnalyze.DOWNLOAD_DB_NONE) {
+        } else if (mDowloadType == KeyDefine.DOWNLOAD_DB_NONE) {
             ;
         }
 
         Utility.timerStart();
 
-        if (mStoreType == Config.DataAnalyze.STORE_TO_DB) {
+        if (mStoreType == KeyDefine.STORE_TO_DB) {
             TWSETechParserHandler TWSETechParser = new TWSETechParserHandler();
             TWSETechParser.parseAllFileData();
 
@@ -73,7 +74,7 @@ public class DataHandlerMain {
 
             OTCFundParserHandler OTCFundParser = new OTCFundParserHandler();
             OTCFundParser.parseAllFileData();
-        } else if (mStoreType == Config.DataAnalyze.STORE_NONE) {
+        } else if (mStoreType == KeyDefine.STORE_NONE) {
 
             ;
         }
@@ -92,9 +93,9 @@ public class DataHandlerMain {
         ArrayList<String> mDateArray = new ArrayList<String>();
         SimpleDateFormat mFormatter = new SimpleDateFormat("yyyy/M/d");
 
-        if (aDowloadType == Config.DataAnalyze.DOWNLOAD_DB_UPDATE) {
+        if (aDowloadType == KeyDefine.DOWNLOAD_DB_UPDATE) {
             System.out.println("not implement yet");
-        } else if (aDowloadType == Config.DataAnalyze.DOWNLOAD_SPECIFIED_RANGE) {
+        } else if (aDowloadType == KeyDefine.DOWNLOAD_SPECIFIED_RANGE) {
             try {
                 Date mDateBegin = mFormatter.parse(mBeginDay);
                 Calendar calendar = Calendar.getInstance();
@@ -114,7 +115,9 @@ public class DataHandlerMain {
             for (int i = 0; i < mTotalDay; i++) {
                 System.out.println(mDateArray.get(i).toString());
                 DownloadDailyData mDonloader = new DownloadDailyData();
-                mDonloader.downloadData(mDateArray.get(i).toString());
+                for (int j = 0; j < KeyDefine.DATA_MAX; i++) {
+                    mDonloader.downloadData(mDateArray.get(i).toString(), j);
+                }
                 Utility.scheduleDelay(Config.DataAnalyze.DOWNLOAD_DELAY);
             }
         } else {
