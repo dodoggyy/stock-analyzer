@@ -137,6 +137,7 @@ public class OTCFundParserHandler extends BaseParserHandler {
         mStockDB.generateSqlPrepareIntCmd(3, Utility.float2Int(aStrArr[4], 2)); // stock_yield_rate
         mStockDB.generateSqlPrepareIntCmd(4, Utility.float2Int(aStrArr[2], 2)); // stock_pbr
         mStockDB.generateSqlPrepareIntCmd(5, Utility.float2Int(aStrArr[5], 2)); // stock_per
+        mStockDB.generateSqlPrepareIntCmd(6, KeyDefine.OTC_FUND + 1); // stock_type
 
         mStockDB.addSqlPrepareCmd2Batch();
         return true;

@@ -4,6 +4,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import com.common.DatabaseConfig;
+import com.common.KeyDefine;
 
 public class ListTypeDatabaseHandler extends DatabaseHandler{
     private String mInsertListSql = "";
@@ -27,7 +28,24 @@ public class ListTypeDatabaseHandler extends DatabaseHandler{
         ListTypeDatabaseHandler mStockDB = new ListTypeDatabaseHandler();
         
         //Only need execute create table in first time
-        mStockDB.createTable();
+        //mStockDB.createTable();
+        
+        mStockDB.TestInsertTable();
+    }
+    
+    void TestInsertTable() throws SQLException {
+        
+        String mInsertSql="";
+        for(int i = 0; i < KeyDefine.DEFAULT_LIST.length;i++) {
+        mInsertSql =  "INSERT INTO " + mTableName + " (type_name)"
+              + "VALUES ( \""+ KeyDefine.DEFAULT_LIST[i] +"\");";
+        System.out.println(mInsertSql);
+
+        this.mPreparedStatement.addBatch(mInsertSql);
+        }
+        this.mPreparedStatement.executeBatch();
+        this.mConnection.commit();
+        mPreparedStatement.clearBatch();
     }
 
     @Override

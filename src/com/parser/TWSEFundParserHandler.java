@@ -165,6 +165,7 @@ public class TWSEFundParserHandler extends BaseParserHandler {
             mStockDB.generateSqlPrepareIntCmd(4, Utility.float2Int(aStrArr[4], 2)); // stock_pbr
             mStockDB.generateSqlPrepareIntCmd(5, Utility.float2Int(aStrArr[5], 2)); // stock_per
         }
+        mStockDB.generateSqlPrepareIntCmd(6, KeyDefine.TWSE_FUND + 1); // stock_type
 
         //mStockDB.generateSqlPrepareIntCmd(8, Config.DataAnalyze.TWSE); // stock_type
 

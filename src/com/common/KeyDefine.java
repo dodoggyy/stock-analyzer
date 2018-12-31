@@ -30,6 +30,18 @@ public class KeyDefine {
             "http://www.twse.com.tw/exchangeReport/MI_INDEX", // twse_tech
             "http://www.twse.com.tw/exchangeReport/BWIBBU_d" }; // twse_fund
 
+    public static final String DEFAULT_TWSE_LISTED_FUND = "TWSEListedFund",
+            DEFAULT_TWSE_LISTED_TECH = "TWSEListedTech",
+            DEFAULT_OTC_LISTED_FUND = "OTCListedFund",
+            DEFAULT_OTC_LISTED_TECH = "OTCListedTech";
+
+    public static final String DEFAULT_LIST[] = {
+        DEFAULT_OTC_LISTED_TECH,
+        DEFAULT_OTC_LISTED_FUND,
+        DEFAULT_TWSE_LISTED_TECH,
+        DEFAULT_TWSE_LISTED_FUND, 
+    };
+
     // 錯誤處理
     public class ErrorHandle {
         public static final int EXIT_ERROR = -1, // exit error

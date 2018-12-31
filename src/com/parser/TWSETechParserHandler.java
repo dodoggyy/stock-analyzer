@@ -165,7 +165,7 @@ public class TWSETechParserHandler extends BaseParserHandler {
         mStockDB.generateSqlPrepareIntCmd(5, Utility.float2Int(aStrArr[6], 2)); // stock_high_price
         mStockDB.generateSqlPrepareIntCmd(6, Utility.float2Int(aStrArr[7], 2)); // stock_low_price
         mStockDB.generateSqlPrepareIntCmd(7, Utility.float2Int(aStrArr[2], 0)); // stock_volume
-        //mStockDB.generateSqlPrepareIntCmd(8, Config.DataAnalyze.TWSE); // stock_type
+        mStockDB.generateSqlPrepareIntCmd(8, KeyDefine.TWSE_TECH + 1); // stock_type
 
         mStockDB.addSqlPrepareCmd2Batch();
         return true;

@@ -142,6 +142,7 @@ public class OTCTechParserHandler extends BaseParserHandler {
         mStockDB.generateSqlPrepareIntCmd(5, Utility.float2Int(aStrArr[5], 2)); // stock_high_price
         mStockDB.generateSqlPrepareIntCmd(6, Utility.float2Int(aStrArr[6], 2)); // stock_low_price
         mStockDB.generateSqlPrepareIntCmd(7, Utility.float2Int(aStrArr[8], 0)); // stock_volume
+        mStockDB.generateSqlPrepareIntCmd(8, KeyDefine.OTC_TECH + 1); // stock_type
 
         mStockDB.addSqlPrepareCmd2Batch();
 

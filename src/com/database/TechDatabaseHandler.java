@@ -48,8 +48,8 @@ public class TechDatabaseHandler extends DatabaseHandler {
     }
     
     void TestInsertTable() throws SQLException {
-        String mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_closing_price, stock_opening_price, stock_high_price, stock_low_price, stock_volume)"
-              + "VALUES ('6116', '2017-06-03', 802, 802, 804, 796, 21080000);";
+        String mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_closing_price, stock_opening_price, stock_high_price, stock_low_price, stock_volume, stock_type)"
+              + "VALUES ('6116', '2017-06-03', 802, 802, 804, 796, 21080000, 2);";
 
         this.mPreparedStatement.addBatch(mInsertSql);
         this.mPreparedStatement.executeBatch();
@@ -163,8 +163,8 @@ public class TechDatabaseHandler extends DatabaseHandler {
     @Override
     void initPrepareSql() {
         // TODO Auto-generated method stub
-        mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_closing_price, stock_opening_price, stock_high_price, stock_low_price, stock_volume)"
-                + "VALUES (?, ?, ?, ?, ?, ?, ?);";
+        mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_closing_price, stock_opening_price, stock_high_price, stock_low_price, stock_volume, stock_type)"
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
     }
 
     @Override

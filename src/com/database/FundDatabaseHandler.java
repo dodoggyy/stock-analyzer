@@ -43,8 +43,8 @@ public class FundDatabaseHandler extends DatabaseHandler{
     }
     
     void TestInsertTable() throws SQLException {
-        String mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_yield_rate, stock_pbr, stock_per)"
-              + "VALUES ('6116', '2017-06-03', 450, 0, 120);";
+        String mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_yield_rate, stock_pbr, stock_per, stock_type)"
+              + "VALUES ('6116', '2017-06-03', 450, 0, 120, 2);";
 
         this.mPreparedStatement.addBatch(mInsertSql);
         this.mPreparedStatement.executeBatch();
@@ -152,8 +152,8 @@ public class FundDatabaseHandler extends DatabaseHandler{
     @Override
     public void initPrepareSql() {
         // TODO Auto-generated method stub
-        mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_yield_rate, stock_pbr, stock_per)"
-                + "VALUES (?, ?, ?, ?, ?);";
+        mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_yield_rate, stock_pbr, stock_per, stock_type)"
+                + "VALUES (?, ?, ?, ?, ?, ?);";
     }
 
     @Override

@@ -115,7 +115,7 @@ public class DataHandlerMain {
             for (int i = 0; i < mTotalDay; i++) {
                 System.out.println(mDateArray.get(i).toString());
                 DownloadDailyData mDonloader = new DownloadDailyData();
-                for (int j = 0; j < KeyDefine.DATA_MAX; i++) {
+                for (int j = 0; j < KeyDefine.DATA_MAX; j++) {
                     mDonloader.downloadData(mDateArray.get(i).toString(), j);
                 }
                 Utility.scheduleDelay(Config.DataAnalyze.DOWNLOAD_DELAY);
