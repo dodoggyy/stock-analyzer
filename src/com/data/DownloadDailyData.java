@@ -39,12 +39,12 @@ public class DownloadDailyData {
     }
 
     public DownloadDailyData() {
-        mDataLength = KeyDefine.DATA_MAX;
+        mDataLength = KeyDefine.DOWNLOAD_DATA_MAX;
         mDownloadDir = Config.DataAnalyze.outputDataDir;
     }
 
     public DownloadDailyData(String aDownloadDir) {
-        mDataLength = KeyDefine.DATA_MAX;
+        mDataLength = KeyDefine.DOWNLOAD_DATA_MAX;
         mDownloadDir = aDownloadDir;
     }
 

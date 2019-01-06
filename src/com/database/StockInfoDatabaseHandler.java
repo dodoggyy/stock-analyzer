@@ -1,64 +1,66 @@
+/**
+ * 
+ */
 package com.database;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import com.common.DatabaseConfig;
-import com.common.Utility;
+/**
+ * @author Chris Lin
+ *
+ */
+public class StockInfoDatabaseHandler extends DatabaseHandler{
 
-public class TechDatabaseHandler extends DatabaseHandler {
     /**
-     * sync with TWSETechParserHandler, OTCTechParserHandler
-     * id, "證券代號", "日期", "收盤價", "開盤價", "最高價", "最低價", "成交量", "交易類別"
+     * sync with TWSEFundParserHandler, OTCFundParserHandler
+     * id, "證券代號", "國際證券辨識號碼(ISIN Code)", "上市日", "市場別", "產業別", "CFICode"
      */
     private String createDbSQL = "CREATE TABLE " + mTableName + " (" + 
             "id     INT NOT NULL AUTO_INCREMENT," +
             "PRIMARY KEY (id)," +
             "stock_id     VARCHAR(4), " +
-            "stock_date     DATE, " +
-            "stock_closing_price     INT, " +
-            "stock_opening_price     INT, " +
-            "stock_high_price     INT, " +
-            "stock_low_price     INT, " +
-            "stock_volume     INT, " +
+            "stock_name   VARCHAR(20), " +
+            "stock_isin_code  VARCHAR(12), " +
+            "stock_listing_date  DATE, " +
+            "stock_industry    VARCHAR(20), " +
+            "stock_cfi_code    VARCHAR(6), " +
             "stock_type     INT, " +
             "FOREIGN KEY(stock_type)REFERENCES listed_type(id)) ";
 
-    private String mFieldDate = "";
     private String mFiledStockId = "";
-    private String mFieldClose = "";
-    private String mFieldOpen = "";
-    private String mFieldHigh = "";
-    private String mFieldLow = "";
-    private String mFieldVolume = "";
+    private String mFieldStockName = "";
+    private String mFieldISIN = "";
+    private String mFieldListingDate = "";
+    private String mFieldIndustry = "";
+    private String mFieldCFI = "";
+    
+    public StockInfoDatabaseHandler() throws SQLException {
+        // TODO Auto-generated constructor stub
+    }
 
+    /**
+     * @param args
+     * @throws SQLException 
+     */
     public static void main(String[] args) throws SQLException {
-        Utility.timerStart();
-        TechDatabaseHandler mStockDB = new TechDatabaseHandler();
-        
+     // TODO Auto-generated method stub
+        StockInfoDatabaseHandler mStockDB = new StockInfoDatabaseHandler();
+
         //Only need execute create table in first time
         mStockDB.createTable();
-        
-        //for(int i = 0; i < 100;i++)
+
         //mStockDB.TestInsertTable();
-
-        //mStockDB.deleteSqlDuplicateData();
-
-        Utility.timerEnd();
     }
     
     void TestInsertTable() throws SQLException {
-        String mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_closing_price, stock_opening_price, stock_high_price, stock_low_price, stock_volume, stock_type)"
-              + "VALUES ('6116', '2017-06-03', 802, 802, 804, 796, 21080000, 2);";
+        String mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_name, stock_isin_code, stock_listing_date, stock_industry, stock_cfi_code, stock_type)"
+              + "VALUES ('6116', '彩晶', 'TW0006116007', '2004-09-06', '光電業', 'ESVUFR', 3);";
 
         this.mPreparedStatement.addBatch(mInsertSql);
         this.mPreparedStatement.executeBatch();
         this.mConnection.commit();
         mPreparedStatement.clearBatch();
-    }
-    
-    public TechDatabaseHandler() throws SQLException {
-        // TODO Auto-generated constructor stub
     }
 
     @Override
@@ -70,7 +72,7 @@ public class TechDatabaseHandler extends DatabaseHandler {
             mConnection.setAutoCommit(false);
             this.mStatement = mConnection.createStatement();
             this.mPreparedStatement = mConnection.prepareStatement(mInsertSql);
-            // System.out.println(mInsertSql);
+            // System.out.println(mInsertTechSql);
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -78,17 +80,16 @@ public class TechDatabaseHandler extends DatabaseHandler {
     }
 
     @Override
-    void setupDatabase() {
+    public void setupDatabase() {
         // TODO Auto-generated method stub
-        mTableName = "listed_tech";
-
+        mTableName = "stock_info";
+        
         mFiledStockId = "stock_id";
-        mFieldDate = "stock_date";
-        mFieldHigh = "stock_high_price";
-        mFieldLow = "stock_low_price";
-        mFieldOpen = "stock_opening_price";
-        mFieldClose = "stock_closing_price";
-        mFieldVolume = "stock_volume";
+        mFieldStockName = "stock_name";
+        mFieldISIN = "stock_isin_code";
+        mFieldListingDate = "stock_listing_date";
+        mFieldIndustry = "stock_industry";
+        mFieldCFI = "stock_cfi_code";
     }
 
     @Override
@@ -109,7 +110,7 @@ public class TechDatabaseHandler extends DatabaseHandler {
     }
 
     @Override
-    void closeObject() {
+    public void closeObject() {
         // TODO Auto-generated method stub
         try {
             if(mResultSet != null) { 
@@ -130,27 +131,22 @@ public class TechDatabaseHandler extends DatabaseHandler {
     }
 
     @Override
-    void generateSqlCmd(){
+    void initPrepareSql() {
         // TODO Auto-generated method stub
+        mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_name, stock_isin_code, stock_listing_date, stock_industry, stock_cfi_code, stock_type)"
+                + "VALUES (?, ?, ?, ?, ?, ?, ?);";
     }
 
     @Override
-    void initPrepareSql() {
+    void generateSqlCmd() throws SQLException {
         // TODO Auto-generated method stub
-        mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_closing_price, stock_opening_price, stock_high_price, stock_low_price, stock_volume, stock_type)"
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+        
     }
 
     @Override
     public void deleteSqlDuplicateData() throws SQLException {
         // TODO Auto-generated method stub
-        String mInsertSql = "DELETE FROM "+ mTableName + " WHERE `id` in (SELECT b.id FROM (SELECT * FROM "+ mTableName + " a WHERE id<>(select MAX(id) FROM "+ mTableName + 
-                " WHERE stock_id=a.stock_id and stock_date=a.stock_date)"
-                + ")b);";
-        System.out.println(mInsertSql);
-        this.mPreparedStatement.addBatch(mInsertSql);
-        this.mPreparedStatement.executeBatch();
-        this.mConnection.commit();
-        mPreparedStatement.clearBatch();
+        
     }
+
 }

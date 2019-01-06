@@ -1,7 +1,9 @@
 package com.common;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 public class Utility {
@@ -86,6 +88,18 @@ public class Utility {
         return mReturnInt;
     }
     
+    public static float int2Float(String aIntValue, int aDigit) {
+        float mReturnFloat = 0;
+        mReturnFloat = (float) (Float.parseFloat(aIntValue)/Math.pow(10, aDigit));
+        return mReturnFloat;
+    }
+    
+    public static float int2Float(float aIntValue, int aDigit) {
+        float mReturnFloat = 0;
+        mReturnFloat = (float) Math.round(aIntValue/Math.pow(10, aDigit));
+        return mReturnFloat;
+    }
+    
     public static void timerStart() {
         System.out.println("timer start");
         mBeginTime = System.currentTimeMillis();
@@ -98,5 +112,32 @@ public class Utility {
             mEndTime = System.currentTimeMillis();
             System.out.println("Total time:：" + (mEndTime - mBeginTime) / 1000 + "sec");
         }
+    }
+    
+    /**
+     * 轉換日期時間格式
+     * 
+     * @param dateTime
+     *            要進行轉換的日期時間
+     * @param oldFmt
+     *            舊的日期時間格式
+     * @param newFmt
+     *            新的日期時間格式
+     * @param area
+     *            日期時間地區(例如裡面有要串am/pm，就需要指定為java.util.Locale.US)
+     * @return
+     */
+    public static String getDateTimeFormat(String dateTime, String oldFmt, String newFmt, Locale area) {
+        java.text.SimpleDateFormat fmt = new java.text.SimpleDateFormat(oldFmt, area);
+        java.util.Date date;
+        try {
+            date = fmt.parse(dateTime);
+            fmt.applyPattern(newFmt);
+
+            return fmt.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return dateTime;// 轉換產生錯誤時，回傳原始的日期時間
     }
 }

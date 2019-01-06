@@ -115,10 +115,10 @@ public class DataHandlerMain {
             for (int i = 0; i < mTotalDay; i++) {
                 System.out.println(mDateArray.get(i).toString());
                 DownloadDailyData mDonloader = new DownloadDailyData();
-                for (int j = 0; j < KeyDefine.DATA_MAX; j++) {
+                for (int j = 0; j < KeyDefine.DOWNLOAD_DATA_MAX; j++) {
                     mDonloader.downloadData(mDateArray.get(i).toString(), j);
                 }
-                Utility.scheduleDelay(Config.DataAnalyze.DOWNLOAD_DELAY);
+                Utility.scheduleDelay(Config.DataAnalyze.DOWNLOAD_DELAY_TIME);
             }
         } else {
             System.out.println("Unknown type");

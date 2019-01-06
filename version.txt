@@ -9,6 +9,11 @@
 8.刪除DB重複資料,DB自動更新補齊
 
 版本更新資訊:
+2019/1/7
+增加stock info parser
+增加stock info DB
+refine DatabaseHandler code flow
+
 2018/12/31
 refine code flow
 

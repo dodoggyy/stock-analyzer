@@ -15,7 +15,7 @@ public class ListTypeDatabaseHandler extends DatabaseHandler{
     private String createDbSQL = "CREATE TABLE " + mTableName + " (" + 
             "id     INT NOT NULL AUTO_INCREMENT," +
             "PRIMARY KEY (id)," +
-            "type_name     VARCHAR(30)) ";
+            "type_name     VARCHAR(20)) ";
 
     private String mFiledTypeName = "";
     
@@ -34,7 +34,6 @@ public class ListTypeDatabaseHandler extends DatabaseHandler{
     }
     
     void TestInsertTable() throws SQLException {
-        
         String mInsertSql="";
         for(int i = 0; i < KeyDefine.DEFAULT_LIST.length;i++) {
         mInsertSql =  "INSERT INTO " + mTableName + " (type_name)"
@@ -120,32 +119,6 @@ public class ListTypeDatabaseHandler extends DatabaseHandler{
     void generateSqlCmd() {
         // TODO Auto-generated method stub
         
-    }
-
-    @Override
-    void generateSqlPrepareStrCmd(int aColumn, String aFieldValue) throws SQLException {
-        // TODO Auto-generated method stub
-        mPreparedStatement.setString(aColumn, aFieldValue);
-    }
-
-    @Override
-    void generateSqlPrepareIntCmd(int aColumn, int aFieldValue) throws SQLException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    void addSqlPrepareCmd2Batch() throws SQLException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    void executeSqlPrepareCmd() throws SQLException {
-        // TODO Auto-generated method stub
-        mPreparedStatement.executeBatch();
-        mConnection.commit(); 
-        mPreparedStatement.clearBatch();
     }
 
     @Override

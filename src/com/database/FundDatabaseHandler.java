@@ -15,7 +15,7 @@ public class FundDatabaseHandler extends DatabaseHandler{
     private String createDbSQL = "CREATE TABLE " + mTableName + " (" + 
             "id     INT NOT NULL AUTO_INCREMENT," +
             "PRIMARY KEY (id)," +
-            "stock_id     VARCHAR(30), " +
+            "stock_id     VARCHAR(4), " +
             "stock_date     DATE, " +
             "stock_yield_rate     INT, " +
             "stock_pbr     INT, " +
@@ -121,32 +121,6 @@ public class FundDatabaseHandler extends DatabaseHandler{
     public void generateSqlCmd() {
         // TODO Auto-generated method stub
         
-    }
-
-    @Override
-    public void generateSqlPrepareStrCmd(int aColumn, String aFieldValue) throws SQLException {
-        // TODO Auto-generated method stub
-        mPreparedStatement.setString(aColumn, aFieldValue);
-    }
-
-    @Override
-    public void generateSqlPrepareIntCmd(int aColumn, int aFieldValue) throws SQLException {
-        // TODO Auto-generated method stub
-        mPreparedStatement.setInt(aColumn, aFieldValue);
-    }
-
-    @Override
-    public void executeSqlPrepareCmd() throws SQLException {
-        // TODO Auto-generated method stub
-        mPreparedStatement.executeBatch();
-        mConnection.commit(); 
-        mPreparedStatement.clearBatch();
-    }
-    
-    @Override
-    public void addSqlPrepareCmd2Batch() throws SQLException {
-        // TODO Auto-generated method stub
-        mPreparedStatement.addBatch();
     }
 
     @Override

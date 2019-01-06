@@ -3,13 +3,21 @@ package com.common;
 public class KeyDefine {
     public final static int DATE_LENGTH = 10; // e.g.2018-06-11
     public final static int OLD_TWSE_FUND_LENGTH = 5;
+    public final static int STOCK_INFO_LENGTH = 8;
     public final static String csvFilter = ".csv;.CSV";
+    public final static int MAX_STOCK_ID = 9999;
 
     public static final int OTC_TECH = 0, // 上櫃盤後
             TWSE_TECH = 2, // 上市盤後
             TWSE_FUND = 3, // 上市基本面
             OTC_FUND = 1, // 上櫃基本面
-            DATA_MAX = 4;
+            DOWNLOAD_DATA_MAX = 4,
+    
+            ES_FUND = 4, // 興櫃基本面
+            PO_FUND = 5; // 公開發行基本面
+    
+    public static final int STOCK_INFO = 0, // 股票基本資訊
+            PARSER_HTML_MAX = 1;
 
     public static final int TECH_ANAL = 0, // 技術面分析
             FUND_ANAL = 1; // 基本面分析
@@ -30,16 +38,24 @@ public class KeyDefine {
             "http://www.twse.com.tw/exchangeReport/MI_INDEX", // twse_tech
             "http://www.twse.com.tw/exchangeReport/BWIBBU_d" }; // twse_fund
 
+    public static final String[] htmlUrl = {
+            "http://isin.twse.com.tw/isin/single_main.jsp?"  // stock_info
+    };
+    
     public static final String DEFAULT_TWSE_LISTED_FUND = "TWSEListedFund",
             DEFAULT_TWSE_LISTED_TECH = "TWSEListedTech",
             DEFAULT_OTC_LISTED_FUND = "OTCListedFund",
-            DEFAULT_OTC_LISTED_TECH = "OTCListedTech";
+            DEFAULT_OTC_LISTED_TECH = "OTCListedTech",
+            DEFAULT_ES_LISTED_TECH = "ESListedTech",
+            DEFAULT_PO_LISTED_TECH = "POListedTech";
 
     public static final String DEFAULT_LIST[] = {
         DEFAULT_OTC_LISTED_TECH,
         DEFAULT_OTC_LISTED_FUND,
         DEFAULT_TWSE_LISTED_TECH,
-        DEFAULT_TWSE_LISTED_FUND, 
+        DEFAULT_TWSE_LISTED_FUND,
+        DEFAULT_ES_LISTED_TECH,
+        DEFAULT_PO_LISTED_TECH,
     };
 
     // 錯誤處理

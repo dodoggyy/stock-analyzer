@@ -67,16 +67,30 @@ public abstract class DatabaseHandler {
     abstract void generateSqlCmd() throws SQLException;
     
     // generate SQL prepare string command for batch
-    abstract void generateSqlPrepareStrCmd(int aColumn, String aFieldValue)throws SQLException;
+    public void generateSqlPrepareStrCmd(int aColumn, String aFieldValue) throws SQLException {
+        // TODO Auto-generated method stub
+        mPreparedStatement.setString(aColumn, aFieldValue);
+    }
     
     // generate SQL prepare integer command for batch
-    abstract void generateSqlPrepareIntCmd(int aColumn, int aFieldValue)throws SQLException;
+    public void generateSqlPrepareIntCmd(int aColumn, int aFieldValue) throws SQLException {
+        // TODO Auto-generated method stub
+        mPreparedStatement.setInt(aColumn, aFieldValue);
+    }
     
     // add SQL command for batch
-    abstract void addSqlPrepareCmd2Batch() throws SQLException;
+    public void addSqlPrepareCmd2Batch() throws SQLException {
+        // TODO Auto-generated method stub
+        mPreparedStatement.addBatch();
+    }
 
     // execute SQL prepare command for batch
-    abstract void executeSqlPrepareCmd() throws SQLException;
+    public void executeSqlPrepareCmd() throws SQLException {
+        // TODO Auto-generated method stub
+        mPreparedStatement.executeBatch();
+        mConnection.commit(); 
+        mPreparedStatement.clearBatch();
+    }
     
     // execute SQL command for delete dublicate data
     abstract void deleteSqlDuplicateData() throws SQLException;
