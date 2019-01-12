@@ -5,7 +5,9 @@ public class KeyDefine {
     public final static int OLD_TWSE_FUND_LENGTH = 5;
     public final static int STOCK_INFO_LENGTH = 8;
     public final static String csvFilter = ".csv;.CSV";
+    public final static int START_STOCK_ID = 1100;
     public final static int MAX_STOCK_ID = 9999;
+    public final static int  THOUSAND_OF_SHARES = 1000;
 
     public static final int OTC_TECH = 0, // 上櫃盤後
             TWSE_TECH = 2, // 上市盤後
@@ -65,4 +67,11 @@ public class KeyDefine {
                 TRANSCATION_DATA_EXCEPTION = 1, // special case for parser data
                 EXIT_TIMEOUT = 2, ERROR_MAX = 3;
     }
+    
+    public enum DBOperationType {  
+        DB_OPERATION_TYPE_CREATE_TABLE,
+        DB_OPERATION_TYPE_TEST_INSERT_TABLE,
+        DB_OPERATION_TYPE_DROP_TABLE,
+        DB_OPERATION_TYPE_MAX,
+      }
 }

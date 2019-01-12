@@ -36,13 +36,10 @@ public class FundDatabaseHandler extends DatabaseHandler{
         // TODO Auto-generated method stub
         FundDatabaseHandler mStockDB = new FundDatabaseHandler();
 
-        //Only need execute create table in first time
-        mStockDB.createTable();
-
-        //mStockDB.TestInsertTable();
+        DBOperation(mStockDB);
     }
     
-    void TestInsertTable() throws SQLException {
+    protected void TestInsertTable() throws SQLException {
         String mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_yield_rate, stock_pbr, stock_per, stock_type)"
               + "VALUES ('6116', '2017-06-03', 450, 0, 120, 2);";
 

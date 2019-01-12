@@ -2,6 +2,7 @@ package com.database;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Scanner;
 
 import com.common.DatabaseConfig;
 import com.common.Utility;
@@ -33,21 +34,16 @@ public class TechDatabaseHandler extends DatabaseHandler {
     private String mFieldVolume = "";
 
     public static void main(String[] args) throws SQLException {
-        Utility.timerStart();
         TechDatabaseHandler mStockDB = new TechDatabaseHandler();
         
-        //Only need execute create table in first time
-        mStockDB.createTable();
-        
-        //for(int i = 0; i < 100;i++)
-        //mStockDB.TestInsertTable();
+        DBOperation(mStockDB);
 
         //mStockDB.deleteSqlDuplicateData();
 
-        Utility.timerEnd();
+
     }
     
-    void TestInsertTable() throws SQLException {
+    protected void TestInsertTable() throws SQLException {
         String mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_closing_price, stock_opening_price, stock_high_price, stock_low_price, stock_volume, stock_type)"
               + "VALUES ('6116', '2017-06-03', 802, 802, 804, 796, 21080000, 2);";
 

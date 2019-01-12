@@ -9,6 +9,10 @@
 8.刪除DB重複資料,DB自動更新補齊
 
 版本更新資訊:
+2019/1/13
+refine code flow
+修正OTC技術線成交量欄位錯誤
+
 2019/1/7
 增加stock info parser
 增加stock info DB

@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.Scanner;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -37,10 +38,17 @@ public class StockInfoParserHandler extends BaseParserHandler {
     
     public static void main(String[] args) throws IOException, SQLException {
         // TODO Auto-generated method stub
+        int mStartStockID, mEndStockID;
+        Scanner mScanner = new Scanner(System.in);
+        System.out.println("Start stock id:" );
+        mStartStockID = mScanner.nextInt();
+        System.out.println("End stock id:" );
+        mEndStockID = mScanner.nextInt();
+        
         Utility.timerStart();
         
         StockInfoParserHandler mParser = new StockInfoParserHandler();
-        mParser.parseAllHTMLData();
+        mParser.parseAllHTMLData(mStartStockID, mEndStockID);
 
         Utility.timerEnd();
     }
@@ -69,10 +77,19 @@ public class StockInfoParserHandler extends BaseParserHandler {
         return false;
     }
     //Config.DataAnalyze.HTML_INITIAL_STOCK_ID
-    public boolean parseAllHTMLData() throws IOException, SQLException {
+    public boolean parseAllHTMLData(int aStartStockID, int aEndStockID) throws IOException, SQLException {
         String mStockID ="";
-        for(int i = 0; i <= KeyDefine.MAX_STOCK_ID; i++) {
+
+        if(aStartStockID < KeyDefine.START_STOCK_ID) {
+            aStartStockID = KeyDefine.START_STOCK_ID;
+        }
+        if(aEndStockID > KeyDefine.MAX_STOCK_ID) {
+            aEndStockID = KeyDefine.MAX_STOCK_ID;
+        }
+        
+        for(int i = aStartStockID; i <= aEndStockID; i++) {
             if((i%Config.DataAnalyze.HTML_PARSER_DELAY_CYCLE) == 0) {
+                mStockDB.executeSqlPrepareCmd();
                 Utility.scheduleDelay(Config.DataAnalyze.HTML_PARSER_DELAY_CYCLE_TIME);
             }
             if(i == Config.DataAnalyze.HTML_MAX_ETF_ID) {
@@ -86,7 +103,7 @@ public class StockInfoParserHandler extends BaseParserHandler {
 
         //parseHTMLData("0050");
 
-        mStockDB.executeSqlPrepareCmd();
+        //mStockDB.executeSqlPrepareCmd();
 
         return true;
     }

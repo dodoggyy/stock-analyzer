@@ -27,13 +27,10 @@ public class ListTypeDatabaseHandler extends DatabaseHandler{
         // TODO Auto-generated method stub
         ListTypeDatabaseHandler mStockDB = new ListTypeDatabaseHandler();
         
-        //Only need execute create table in first time
-        //mStockDB.createTable();
-        
-        mStockDB.TestInsertTable();
+        DBOperation(mStockDB);
     }
     
-    void TestInsertTable() throws SQLException {
+    protected void TestInsertTable() throws SQLException {
         String mInsertSql="";
         for(int i = 0; i < KeyDefine.DEFAULT_LIST.length;i++) {
         mInsertSql =  "INSERT INTO " + mTableName + " (type_name)"

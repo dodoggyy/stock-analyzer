@@ -47,13 +47,10 @@ public class StockInfoDatabaseHandler extends DatabaseHandler{
      // TODO Auto-generated method stub
         StockInfoDatabaseHandler mStockDB = new StockInfoDatabaseHandler();
 
-        //Only need execute create table in first time
-        mStockDB.createTable();
-
-        //mStockDB.TestInsertTable();
+        DBOperation(mStockDB);
     }
     
-    void TestInsertTable() throws SQLException {
+    protected void TestInsertTable() throws SQLException {
         String mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_name, stock_isin_code, stock_listing_date, stock_industry, stock_cfi_code, stock_type)"
               + "VALUES ('6116', '彩晶', 'TW0006116007', '2004-09-06', '光電業', 'ESVUFR', 3);";
 

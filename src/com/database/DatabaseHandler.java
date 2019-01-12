@@ -5,8 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Scanner;
 
 import com.common.DatabaseConfig;
+import com.common.Utility;
 
 public abstract class DatabaseHandler {
     protected String createDbSQL = null;
@@ -94,4 +96,36 @@ public abstract class DatabaseHandler {
     
     // execute SQL command for delete dublicate data
     abstract void deleteSqlDuplicateData() throws SQLException;
+
+    abstract void TestInsertTable() throws SQLException;
+    
+    protected static void DBOperation(DatabaseHandler mStockDB) throws SQLException {
+        int mOperationType = 0;
+        Scanner mScanner = new Scanner(System.in);
+        System.out.println("(0)Create Table (1)Test insert (2)Drop Table" );
+        mOperationType = mScanner.nextInt();
+        
+        Utility.timerStart();
+        
+        switch(mOperationType)
+        {
+        case 0:
+            //Only need execute create table in first time
+            System.out.println("create table");
+            mStockDB.createTable();
+            break;
+        case 1:
+            //for(int i = 0; i < 100;i++)
+            System.out.println("test insert table");
+            mStockDB.TestInsertTable();
+            break;
+        case 2:
+            System.out.println("drop table");
+            break;
+        default:
+            break;    
+        }
+        
+        Utility.timerEnd();
+    }
 }
