@@ -80,6 +80,8 @@ public class DataHandlerMain {
         }
 
         Utility.timerEnd();
+        
+        mScanner.close();
     }
 
     public DataHandlerMain(String aBeginDay, String aEndDay) {

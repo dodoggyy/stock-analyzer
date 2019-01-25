@@ -6,7 +6,6 @@ package com.parser;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.Scanner;
 
 import org.jsoup.Jsoup;
@@ -17,7 +16,6 @@ import org.jsoup.select.Elements;
 import com.common.Config;
 import com.common.KeyDefine;
 import com.common.Utility;
-import com.database.FundDatabaseHandler;
 import com.database.StockInfoDatabaseHandler;
 
 /**
@@ -152,8 +150,11 @@ public class StockInfoParserHandler extends BaseParserHandler {
         } else if(aStockType.equals("公開發行")) {
             System.out.println("公開發行");
             mStockType = KeyDefine.PO_FUND;
-        } else {
-            mStockType = KeyDefine.OTC_FUND;
+        }else if(aStockType.equals("創櫃版")) {
+            System.out.println("創櫃版");
+            mStockType = KeyDefine.CE_FUND;
+        }else {
+            mStockType = KeyDefine.UKNOWN_FUND;
             System.out.println("Unknown sotck type");
         }
         

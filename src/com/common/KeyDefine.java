@@ -16,7 +16,9 @@ public class KeyDefine {
             DOWNLOAD_DATA_MAX = 4,
     
             ES_FUND = 4, // 興櫃基本面
-            PO_FUND = 5; // 公開發行基本面
+            PO_FUND = 5, // 公開發行基本面
+            CE_FUND = 6, // 創櫃基本面
+            UKNOWN_FUND = 7; 
     
     public static final int STOCK_INFO = 0, // 股票基本資訊
             PARSER_HTML_MAX = 1;
@@ -49,7 +51,9 @@ public class KeyDefine {
             DEFAULT_OTC_LISTED_FUND = "OTCListedFund",
             DEFAULT_OTC_LISTED_TECH = "OTCListedTech",
             DEFAULT_ES_LISTED_TECH = "ESListedTech",
-            DEFAULT_PO_LISTED_TECH = "POListedTech";
+            DEFAULT_PO_LISTED_TECH = "POListedTech",
+            DEFAULT_CE_LISTED_TECH = "CEListedTech",
+            DEFAULT_UNKNOWN_LISTED_TECH = "UNKNOWNListedTech";    
 
     public static final String DEFAULT_LIST[] = {
         DEFAULT_OTC_LISTED_TECH,
@@ -58,8 +62,24 @@ public class KeyDefine {
         DEFAULT_TWSE_LISTED_FUND,
         DEFAULT_ES_LISTED_TECH,
         DEFAULT_PO_LISTED_TECH,
+        DEFAULT_CE_LISTED_TECH,
+        DEFAULT_UNKNOWN_LISTED_TECH,
     };
 
+    // K線週期
+    public static final String DEFAULT_AVERAGE_TECH = "listed_tech_",
+            DEFAULT_LISTED_TECH_WEEK = DEFAULT_AVERAGE_TECH + "week",
+            DEFAULT_LISTED_TECH_MONTH = DEFAULT_AVERAGE_TECH + "month",
+            DEFAULT_LISTED_TECH_SEASON = DEFAULT_AVERAGE_TECH + "season",
+            DEFAULT_LISTED_TECH_YEAR = DEFAULT_AVERAGE_TECH + "year";
+    
+    public static final String DEFAULT_LISTED_TECH_LIST[] = {
+            DEFAULT_LISTED_TECH_WEEK,
+            DEFAULT_LISTED_TECH_MONTH,
+            DEFAULT_LISTED_TECH_SEASON,
+            DEFAULT_LISTED_TECH_YEAR,
+        };
+    
     // 錯誤處理
     public class ErrorHandle {
         public static final int EXIT_ERROR = -1, // exit error

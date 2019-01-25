@@ -2,7 +2,9 @@ package com.common;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -75,45 +77,45 @@ public class Utility {
             aStringBuilder.delete(0, aStringBuilder.length());
         }
     }
-    
+
     public static int float2Int(String aFloatValue, int aDigit) {
         int mReturnInt = 0;
-        mReturnInt = (int) Math.round(Float.parseFloat(aFloatValue)*Math.pow(10, aDigit));
+        mReturnInt = (int) Math.round(Float.parseFloat(aFloatValue) * Math.pow(10, aDigit));
         return mReturnInt;
     }
-    
+
     public static int float2Int(float aFloatValue, int aDigit) {
         int mReturnInt = 0;
-        mReturnInt = (int) Math.round(aFloatValue*Math.pow(10, aDigit));
+        mReturnInt = (int) Math.round(aFloatValue * Math.pow(10, aDigit));
         return mReturnInt;
     }
-    
+
     public static float int2Float(String aIntValue, int aDigit) {
         float mReturnFloat = 0;
-        mReturnFloat = (float) (Float.parseFloat(aIntValue)/Math.pow(10, aDigit));
+        mReturnFloat = (float) (Float.parseFloat(aIntValue) / Math.pow(10, aDigit));
         return mReturnFloat;
     }
-    
+
     public static float int2Float(float aIntValue, int aDigit) {
         float mReturnFloat = 0;
-        mReturnFloat = (float) Math.round(aIntValue/Math.pow(10, aDigit));
+        mReturnFloat = (float) Math.round(aIntValue / Math.pow(10, aDigit));
         return mReturnFloat;
     }
-    
+
     public static void timerStart() {
         System.out.println("timer start");
         mBeginTime = System.currentTimeMillis();
     }
-    
+
     public static void timerEnd() {
-        if(mBeginTime == null) {
+        if (mBeginTime == null) {
             System.out.println("Please set timerStart first");
         } else {
             mEndTime = System.currentTimeMillis();
             System.out.println("Total time:：" + (mEndTime - mBeginTime) / 1000 + "sec");
         }
     }
-    
+
     /**
      * 轉換日期時間格式
      * 
@@ -139,5 +141,39 @@ public class Utility {
             e.printStackTrace();
         }
         return dateTime;// 轉換產生錯誤時，回傳原始的日期時間
+    }
+
+    public static int getDateOfYear(Date aDate) {
+        Calendar mCalendar = Calendar.getInstance();
+
+        mCalendar.setTime(aDate);
+
+        return mCalendar.get(Calendar.DAY_OF_YEAR);
+    }
+
+    public static int getDateOfWeek(Date aDate) {
+        Calendar mCalendar = Calendar.getInstance();
+
+        mCalendar.setTime(aDate);
+
+        return mCalendar.get(Calendar.DAY_OF_WEEK);
+    }
+
+    public static int getDateOfCurrentYear(Date aDate) {
+        Calendar mCalendar = Calendar.getInstance();
+
+        mCalendar.setTime(aDate);
+
+        return mCalendar.get(Calendar.YEAR);
+    }
+
+    public static Date string2Date(String aDate) throws ParseException {
+        SimpleDateFormat mSimpleDate = new SimpleDateFormat("yyyy-MM-dd");
+        return mSimpleDate.parse(aDate);
+    }
+    
+    public static Date string2Date(String aDate, String aDateFormat) throws ParseException {
+        SimpleDateFormat mSimpleDate = new SimpleDateFormat(aDateFormat);
+        return mSimpleDate.parse(aDate);
     }
 }

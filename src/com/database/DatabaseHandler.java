@@ -104,6 +104,7 @@ public abstract class DatabaseHandler {
         Scanner mScanner = new Scanner(System.in);
         System.out.println("(0)Create Table (1)Test insert (2)Drop Table" );
         mOperationType = mScanner.nextInt();
+        mScanner.close();
         
         Utility.timerStart();
         
