@@ -97,6 +97,9 @@ public class Utility {
     }
 
     public static int float2Int(String aFloatValue, int aDigit) {
+        if(aFloatValue.isEmpty()) {
+            return 0;
+        }
         int mReturnInt = 0;
         mReturnInt = (int) Math.round(Float.parseFloat(aFloatValue) * Math.pow(10, aDigit));
         return mReturnInt;
@@ -109,6 +112,9 @@ public class Utility {
     }
 
     public static float int2Float(String aIntValue, int aDigit) {
+        if(aIntValue.isEmpty()) {
+            return 0;
+        }
         float mReturnFloat = 0;
         mReturnFloat = (float) (Float.parseFloat(aIntValue) / Math.pow(10, aDigit));
         return mReturnFloat;

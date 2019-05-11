@@ -19,7 +19,7 @@ import com.parser.TWSETechParserHandler;
  * Taiwan stock data handler<T>
  * 
  * @author Chris Lin
- * @version 1.0 1 May 2018
+ * @version 1.1 1 May 2019
  *
  * @param aBeginDay
  *            開始日期
@@ -114,20 +114,65 @@ public class DataHandlerMain {
                 e.printStackTrace();
             }
             // download data from TWSE and OTC
-            for (int i = 0; i < mTotalDay; i++) {
-                //System.out.println(mDateArray.get(i).toString());
-                DownloadDailyData mDonloader = DownloadDailyData.getInstance();
-                for (int j = 0; j < KeyDefine.DOWNLOAD_DATA_MAX; j++) {
-                    mDonloader.downloadData(mDateArray.get(i).toString(), j);
-                    Utility.scheduleDelay(Utility.getScheduleDelayTimeMs(i));
-                }
-//                mDonloader.downloadData(mDateArray.get(i).toString(), KeyDefine.TWSE_TECH);
-//                Utility.scheduleDelay(Utility.getScheduleDelayTimeMs(KeyDefine.TWSE_TECH));
+//            for (int i = 0; i < mTotalDay; i++) {
+//                //System.out.println(mDateArray.get(i).toString());
+//                DownloadDailyData mDonloader = DownloadDailyData.getInstance();
+//                for (int j = 0; j < KeyDefine.DOWNLOAD_DATA_MAX; j++) {
+//                    mDonloader.downloadData(mDateArray.get(i).toString(), j);
+//                    Utility.scheduleDelay(Utility.getScheduleDelayTimeMs(aDowloadType));
+//                }
+////                mDonloader.downloadData(mDateArray.get(i).toString(), KeyDefine.TWSE_TECH);
+////                Utility.scheduleDelay(Utility.getScheduleDelayTimeMs(KeyDefine.TWSE_TECH));
+//            }
+            
+            MuiltiDownloader mDownloadTwseFund = new MuiltiDownloader(mDateArray, mTotalDay, KeyDefine.TWSE_FUND);
+            MuiltiDownloader mDownloadOtcFund = new MuiltiDownloader(mDateArray, mTotalDay, KeyDefine.OTC_FUND);
+            MuiltiDownloader mDownloadTwseTech = new MuiltiDownloader(mDateArray, mTotalDay, KeyDefine.TWSE_TECH);
+            MuiltiDownloader mDownloadOtcTech = new MuiltiDownloader(mDateArray, mTotalDay, KeyDefine.OTC_TECH);
+
+            Thread mThreadTwseFund = new Thread(mDownloadTwseFund);
+            Thread mThreadOtcFund = new Thread(mDownloadOtcFund);
+            Thread mThreadTwseTech = new Thread(mDownloadTwseTech);
+            Thread mThreadOtcTech = new Thread(mDownloadOtcTech);
+
+            mThreadTwseFund.start();
+            mThreadOtcFund.start();
+            try {
+                mThreadTwseFund.join();
+                mThreadOtcFund.join();
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
+            mThreadTwseTech.start();
+            mThreadOtcTech.start();
         } else {
             System.out.println("Unknown type");
         }
 
         return bRet;
+    }
+    
+    public class MuiltiDownloader implements Runnable {
+        private int mDowloadType;
+        private ArrayList<String> mDateArray;
+        private int mTotalDay;
+        
+        public MuiltiDownloader(ArrayList<String> aDateArray, int aTotalDay, int aDowloadType) {
+            this.mDowloadType = aDowloadType;
+            this.mDateArray = aDateArray;
+            this.mTotalDay = aTotalDay;
+        }
+        @Override
+        public void run() {
+            // TODO Auto-generated method stub
+            for (int i = 0; i < mTotalDay; i++) {
+                DownloadDailyData mDonloader = DownloadDailyData.getInstance();
+                mDonloader.downloadData(mDateArray.get(i).toString(), mDowloadType);
+                Utility.scheduleDelay(Utility.getScheduleDelayTimeMs(mDowloadType));
+                //System.out.println("DowloadType:" + mDowloadType + " Date:" + mDateArray.get(i).toString());
+            }
+        }
+       
     }
 }
