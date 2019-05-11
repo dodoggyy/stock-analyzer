@@ -115,12 +115,14 @@ public class DataHandlerMain {
             }
             // download data from TWSE and OTC
             for (int i = 0; i < mTotalDay; i++) {
-                System.out.println(mDateArray.get(i).toString());
-                DownloadDailyData mDonloader = new DownloadDailyData();
+                //System.out.println(mDateArray.get(i).toString());
+                DownloadDailyData mDonloader = DownloadDailyData.getInstance();
                 for (int j = 0; j < KeyDefine.DOWNLOAD_DATA_MAX; j++) {
                     mDonloader.downloadData(mDateArray.get(i).toString(), j);
+                    Utility.scheduleDelay(Utility.getScheduleDelayTimeMs(i));
                 }
-                Utility.scheduleDelay(Config.DataAnalyze.DOWNLOAD_DELAY_TIME);
+//                mDonloader.downloadData(mDateArray.get(i).toString(), KeyDefine.TWSE_TECH);
+//                Utility.scheduleDelay(Utility.getScheduleDelayTimeMs(KeyDefine.TWSE_TECH));
             }
         } else {
             System.out.println("Unknown type");

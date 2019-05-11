@@ -4,14 +4,17 @@ public class Config {
 
     // 資料分析參數
     public static class DataAnalyze {
-        public final static String outputDataDir = "D:\\Stock\\data\\";
+        public final static String outputDataDir = "F:\\Stock\\data\\";
         public final static int DOWNLOAD_FILE_SIZE = 10 * 1024; // 10Kb
-        public final static int DOWNLOAD_DELAY_TIME = 10000; // 10 sec
+        public final static int DOWNLOAD_DELAY_TIME = 5000;//10000; // 5 sec
         public final static int HTML_PARSER_DELAY_EACH_TIME = 100; // 0.1 sec
         public final static int HTML_PARSER_DELAY_CYCLE_TIME = 20000; // 20 sec
         public final static int HTML_PARSER_DELAY_CYCLE = 100; // 100 stocks
         public final static int HTML_INITIAL_STOCK_ID = 1100;
         public final static int HTML_MAX_ETF_ID = 100;
+        
+        public final static int DOWNLOAD_DELAY_TIME_TWSE = 5000; // 5 sec
+        public final static int DOWNLOAD_DELAY_TIME_OTC = 5000; // 5 sec
 
         // TWSE:上市, OTC:上櫃, TECH:技術面, FUND:基本面
         public static final String[] downloadName = { "otc_tech", "otc_fund", "twse_tech", "twse_fund" };

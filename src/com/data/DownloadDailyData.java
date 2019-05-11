@@ -9,6 +9,19 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 
 import com.common.Config;
 import com.common.KeyDefine;
@@ -17,12 +30,15 @@ import com.common.KeyDefine;
  * Taiwan stock data downloader<T>
  * 
  * @author Chris Lin
- * @version 1.0 1 May 2018
+ * @version 1.1 1 May 2019
  *
  * @param aDownloadDir
- *            更改下載位置,預設讀config
+ *            change to HTTPS for OTC
  */
 public class DownloadDailyData {
+    
+    private static DownloadDailyData mDownloadDailyDataInstance = null;
+    
     private static int mDataLength;
     private String mDownloadDir;
 
@@ -30,22 +46,30 @@ public class DownloadDailyData {
 
     public static void main(String[] args) {
         // download data from TWSE and OTC
-        String mDate = "2018/12/27";
-        DownloadDailyData mDonloader = new DownloadDailyData();
+        String mDate = "2019/04/30";
+        DownloadDailyData mDonloader = DownloadDailyData.getInstance();
+//        DownloadDailyData mDonloader = new DownloadDailyData();
+        //DownloadDailyData mDonloader2 = DownloadDailyData.getInstance();
         // mDonloader.downloadData(mDate, KeyDefine.OTC_FUND);
-        for (int i = 0; i < mDataLength; i++) {
-            mDonloader.downloadData(mDate, i);
-        }
+//        for (int i = 0; i < mDataLength; i++) {
+//            mDonloader.downloadData(mDate, i);
+//        }
+        
+        mDonloader.downloadData(mDate, KeyDefine.OTC_FUND);
     }
-
-    public DownloadDailyData() {
+    
+    public static DownloadDailyData getInstance() {
+        if(null == mDownloadDailyDataInstance) {
+            mDownloadDailyDataInstance = new DownloadDailyData();
+        } else {
+            //System.out.println("instance has initial!");
+        }
+        return mDownloadDailyDataInstance;
+    }
+    
+    private DownloadDailyData() {
         mDataLength = KeyDefine.DOWNLOAD_DATA_MAX;
         mDownloadDir = Config.DataAnalyze.outputDataDir;
-    }
-
-    public DownloadDailyData(String aDownloadDir) {
-        mDataLength = KeyDefine.DOWNLOAD_DATA_MAX;
-        mDownloadDir = aDownloadDir;
     }
 
     public void downloadData(String aDownloadDate, int aDownloadType) {
@@ -81,6 +105,8 @@ public class DownloadDailyData {
             mUrl[aDownloadType] = String.format(
                     KeyDefine.downloadUrl[aDownloadType] + "l=zh-tw&o=csv&d=%s/%s/%s&se=EW&s=0,asc,0", mYrOtc, mMth,
                     mDay);
+            
+            
         } else {
             mUrl[aDownloadType] = KeyDefine.downloadUrl[aDownloadType];
         }
@@ -102,12 +128,18 @@ public class DownloadDailyData {
                 // System.out.println(mDownloadDir + mFilename[aDownloadType]);
                 downloadFromUrl("", mDownloadDir + mFilename[aDownloadType], mConnection);
             } else if ((aDownloadType == KeyDefine.OTC_TECH) || (aDownloadType == KeyDefine.OTC_FUND)) {
-                // System.out.println(mUrl[aDownloadType] +" "+ mDownloadDir +
-                // mFilename[aDownloadType]);
-                mConnection = excutePost(mUrl[aDownloadType], mUrlParm[aDownloadType], KeyDefine.OTC);
+                //System.out.println(mUrl[aDownloadType] +" "+ mDownloadDir + mFilename[aDownloadType]);
                 // downloadFromUrl(mUrl[aDownloadType], mDownloadDir +
                 // mFilename[aDownloadType], mConnection);
+                
+                //System.out.println("Target url: " + mUrl[aDownloadType]);
+                //System.out.println("Target path: " + mDownloadDir + mFilename[aDownloadType]);
+                // change from http to https
+                downloadFromUrlHTTPS("", mUrl[aDownloadType], mDownloadDir + mFilename[aDownloadType]);
+                /*
+                mConnection = excutePost(mUrl[aDownloadType], mUrlParm[aDownloadType], KeyDefine.OTC);
                 downloadFromUrl("", mDownloadDir + mFilename[aDownloadType], mConnection);
+                */
             }
 
             mFile = new File(mDownloadDir, mFilename[aDownloadType]);
@@ -188,5 +220,46 @@ public class DownloadDailyData {
             }
         }
         return mConnection;
+    }
+    
+    // htttps handle
+    public static void downloadFromUrlHTTPS(String aSource, String aTargetURL, String aDestination) throws Exception {
+        // Create a trust manager that does not validate certificate chains
+        TrustManager[] mTrustAllCerts = new TrustManager[] { new X509TrustManager() {
+            public X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+
+            public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                // don't check
+            }
+
+            public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                // don't check
+            }
+        } };
+
+        SSLContext mSSLContext = SSLContext.getInstance("TLS");
+        mSSLContext.init(null, mTrustAllCerts, null);
+
+        LayeredConnectionSocketFactory mSslSocketFactory = new SSLConnectionSocketFactory(mSSLContext);
+
+        CloseableHttpClient mHttpclient = HttpClients.custom().setSSLSocketFactory(mSslSocketFactory).build();
+
+        HttpGet mHttpRequest = new HttpGet(aTargetURL);
+        mHttpRequest.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) ...");
+
+        CloseableHttpResponse mHttpResponse = mHttpclient.execute(mHttpRequest);
+        HttpEntity mHTTPEntity = mHttpResponse.getEntity();
+        System.out.println(mHttpResponse.getStatusLine());
+
+        InputStream mInputStream = mHTTPEntity.getContent();
+
+        FileOutputStream mFileOutputStream = new FileOutputStream(new File(aDestination));
+        int mInputStreamData;
+        while ((mInputStreamData = mInputStream.read()) != -1)
+            mFileOutputStream.write(mInputStreamData);
+        mInputStream.close();
+        mFileOutputStream.close();
     }
 }

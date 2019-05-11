@@ -23,6 +23,24 @@ public class Utility {
         }
     }
 
+    public static int getScheduleDelayTimeMs(int aDowloadType) {
+        int mResult = 0;
+        switch (aDowloadType) {
+        case KeyDefine.TWSE_TECH:
+        case KeyDefine.TWSE_FUND:
+            mResult = Config.DataAnalyze.DOWNLOAD_DELAY_TIME_TWSE;
+            break;
+        case KeyDefine.OTC_TECH:
+        case KeyDefine.OTC_FUND:
+            mResult = Config.DataAnalyze.DOWNLOAD_DELAY_TIME_OTC;
+            break;
+        default:
+            System.out.println("Not recognized download type");
+        }
+
+        return mResult;
+    }
+
     public static String getTodayDate() {
         Date mDate = new Date();
         SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy/M/dd");
@@ -171,7 +189,7 @@ public class Utility {
         SimpleDateFormat mSimpleDate = new SimpleDateFormat("yyyy-MM-dd");
         return mSimpleDate.parse(aDate);
     }
-    
+
     public static Date string2Date(String aDate, String aDateFormat) throws ParseException {
         SimpleDateFormat mSimpleDate = new SimpleDateFormat(aDateFormat);
         return mSimpleDate.parse(aDate);

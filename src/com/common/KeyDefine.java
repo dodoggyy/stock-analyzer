@@ -37,8 +37,8 @@ public class KeyDefine {
             STORE_NONE = 2; // 資料庫更新
 
     public static final String[] downloadUrl = {
-            "http://www.tpex.org.tw/web/stock/aftertrading/otc_quotes_no1430/stk_wn1430_result.php?", // otc_tech
-            "http://www.tpex.org.tw/web/stock/aftertrading/peratio_analysis/pera_download.php?", // otc_fund
+            "https://www.tpex.org.tw/web/stock/aftertrading/otc_quotes_no1430/stk_wn1430_result.php?", // otc_tech
+            "https://www.tpex.org.tw/web/stock/aftertrading/peratio_analysis/pera_download.php?", // otc_fund
             "http://www.twse.com.tw/exchangeReport/MI_INDEX", // twse_tech
             "http://www.twse.com.tw/exchangeReport/BWIBBU_d" }; // twse_fund
 
