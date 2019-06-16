@@ -8,6 +8,7 @@ public class KeyDefine {
     public final static int START_STOCK_ID = 1100;
     public final static int MAX_STOCK_ID = 9999;
     public final static int  THOUSAND_OF_SHARES = 1000;
+    public final static int  TRADE_FEE_RATE = 50;
 
     public static final int OTC_TECH = 0, // 上櫃盤後
             TWSE_TECH = 2, // 上市盤後
@@ -19,6 +20,29 @@ public class KeyDefine {
             PO_FUND = 5, // 公開發行基本面
             CE_FUND = 6, // 創櫃基本面
             UKNOWN_FUND = 7; 
+    
+    public enum EnMarketStrategyType {
+        EN_MARKET_STRATEGY_OTC_TECH,  // 上櫃盤後
+        EN_MARKET_STRATEGY_TWSE_TECH, // 上市盤後
+        EN_MARKET_STRATEGY_TWSE_FUND, // 上市基本面
+        EN_MARKET_STRATEGY_OTC_FUND,  // 上櫃基本面
+        EN_MARKET_STRATEGY_ES_FUND,   // 興櫃基本面
+        EN_MARKET_STRATEGY_PO_FUND,   // 公開發行基本面
+        EN_MARKET_STRATEGY_CE_FUND,   // 創櫃基本面
+        EN_MARKET_STRATEGY_UNKNOWN,
+        EN_MARKET_STRATEGY_MAX,
+    }
+    
+    public enum EnAnalyzeStrategyType {
+        EN_ANALYZE_STRATEGY_TECH,
+        EN_ANALYZE_STRATEGY_TECH_CCI,
+        EN_ANALYZE_STRATEGY_TECH_KDJ,
+        EN_ANALYZE_STRATEGY_TECH_BIAS,
+        EN_ANALYZE_STRATEGY_FUND,
+        EN_ANALYZE_STRATEGY_FUND_PROFIT,
+        EN_ANALYZE_STRATEGY_UNKNOWN,
+        EN_ANALYZE_STRATEGY_MAX,
+    }
     
     public static final int STOCK_INFO = 0, // 股票基本資訊
             PARSER_HTML_MAX = 1;

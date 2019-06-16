@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import com.common.DatabaseConfig;
+import com.common.StockFundInfo;
 
 public class FundDatabaseHandler extends DatabaseHandler{
     
@@ -23,10 +24,7 @@ public class FundDatabaseHandler extends DatabaseHandler{
             "stock_type     INT, " +
             "FOREIGN KEY(stock_type)REFERENCES listed_type(id)) ";
 
-    private String mFieldDate = "";
-    private String mFiledStockId = "";
-    private String mFieldPBR = "";
-    private String mFieldPER = "";
+    private StockFundInfo fundInfo;
 
     public FundDatabaseHandler() throws SQLException {
         // TODO Auto-generated constructor stub
@@ -69,11 +67,6 @@ public class FundDatabaseHandler extends DatabaseHandler{
     public void setupDatabase() {
         // TODO Auto-generated method stub
         mTableName = "listed_fund";
-        
-        mFieldDate = "stock_date";
-        mFiledStockId = "stock_id";
-        mFieldPBR = "stock_pbr";
-        mFieldPER = "stock_per";
     }
 
     @Override

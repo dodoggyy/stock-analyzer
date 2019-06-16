@@ -7,9 +7,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Scanner;
 
-import com.common.Config;
 import com.common.KeyDefine;
 import com.common.Utility;
+import com.parser.BaseParserHandler;
 import com.parser.OTCFundParserHandler;
 import com.parser.OTCTechParserHandler;
 import com.parser.TWSEFundParserHandler;
@@ -31,6 +31,7 @@ public class DataHandlerMain {
     private String mBeginDay;
     private String mEndDay;
 
+    @SuppressWarnings("resource")
     public static void main(String[] args) throws SQLException {
         // TODO Auto-generated method stub
         int mDowloadType, mStoreType;
@@ -74,6 +75,9 @@ public class DataHandlerMain {
 
             OTCFundParserHandler OTCFundParser = new OTCFundParserHandler();
             OTCFundParser.parseAllFileData();
+            
+//            OTCTechParserHandler test = (OTCTechParserHandler) BaseParserHandler.parserGenerator(KeyDefine.OTC_TECH);
+//            test.parseAllFileData();
         } else if (mStoreType == KeyDefine.STORE_NONE) {
 
             ;
@@ -91,7 +95,7 @@ public class DataHandlerMain {
 
     public boolean downloadData(int aDowloadType) {
         int mTotalDay = 0;
-        boolean bRet = false;
+        boolean bRet = true;
         ArrayList<String> mDateArray = new ArrayList<String>();
         SimpleDateFormat mFormatter = new SimpleDateFormat("yyyy/M/d");
 

@@ -2,10 +2,8 @@ package com.database;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Scanner;
 
-import com.common.DatabaseConfig;
-import com.common.Utility;
+import com.common.StockTechInfo;
 
 public class TechDatabaseHandler extends DatabaseHandler {
     /**
@@ -25,13 +23,7 @@ public class TechDatabaseHandler extends DatabaseHandler {
             "stock_type     INT, " +
             "FOREIGN KEY(stock_type)REFERENCES listed_type(id)) ";
 
-    private String mFieldDate = "";
-    private String mFiledStockId = "";
-    private String mFieldClose = "";
-    private String mFieldOpen = "";
-    private String mFieldHigh = "";
-    private String mFieldLow = "";
-    private String mFieldVolume = "";
+//    private StockTechInfo mTechInfo;
 
     public static void main(String[] args) throws SQLException {
         TechDatabaseHandler mStockDB = new TechDatabaseHandler();
@@ -77,14 +69,6 @@ public class TechDatabaseHandler extends DatabaseHandler {
     void setupDatabase() {
         // TODO Auto-generated method stub
         mTableName = "listed_tech";
-
-        mFiledStockId = "stock_id";
-        mFieldDate = "stock_date";
-        mFieldHigh = "stock_high_price";
-        mFieldLow = "stock_low_price";
-        mFieldOpen = "stock_opening_price";
-        mFieldClose = "stock_closing_price";
-        mFieldVolume = "stock_volume";
     }
 
     @Override
