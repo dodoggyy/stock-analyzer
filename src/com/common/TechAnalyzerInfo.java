@@ -70,6 +70,12 @@ public class TechAnalyzerInfo {
      * @param mProfitPercentage the mProfitPercentage to set
      */
     public void setProfitPercentage(float mProfitPercentage) {
+        if(mProfitPercentage > KeyDefine.PERCENT_UPPER_BOUND) {
+            mProfitPercentage = KeyDefine.PERCENT_UPPER_BOUND;
+        }
+        if(mProfitPercentage < KeyDefine.PERCENT_LOWER_BOUND) {
+            mProfitPercentage = KeyDefine.PERCENT_LOWER_BOUND;
+        }
         this.mProfitPercentage = mProfitPercentage;
     }
     

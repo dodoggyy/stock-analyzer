@@ -102,6 +102,9 @@ public class TradeStrategyHandler {
         mTrade.add(EnAnalyzeStrategyType.EN_ANALYZE_STRATEGY_TECH_BIAS, enInfo);
         mTrade.add(EnAnalyzeStrategyType.EN_ANALYZE_STRATEGY_FUND_PROFIT, enInfo);
         mTrade.add(EnAnalyzeStrategyType.EN_ANALYZE_STRATEGY_TECH_KDJ, enInfo);
+        
+        enInfo.setProfitPercentage(80);
+        mTrade.add(EnAnalyzeStrategyType.EN_ANALYZE_STRATEGY_FUND_PROFIT, enInfo);
 
         for (EnAnalyzeStrategyType enType : mTrade.getStrategy().keySet()) {
             System.out.println("Strategy: " + enType);

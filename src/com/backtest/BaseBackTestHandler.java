@@ -3,10 +3,12 @@
  */
 package com.backtest;
 
-import java.util.ArrayList;
+
+import java.sql.SQLException;
+import java.text.ParseException;
 
 import com.common.BackTestInfo;
-import com.common.KeyDefine.EnAnalyzeStrategyType;
+import com.common.KeyDefine;
 import com.common.StockInformation;
 
 /**
@@ -15,42 +17,88 @@ import com.common.StockInformation;
  */
 public abstract class BaseBackTestHandler {
     protected StockInformation mStockInfo;
-    protected AppearanceCondition mAppearance;
-    protected ArrivalCondition mArrival;
+    protected TradeStrategyHandler mAppearance;
+    protected TradeStrategyHandler mArrival;
     protected BackTestInfo mBackTestInfo;
+    protected String mStockID;
 
-    public BaseBackTestHandler(StockInformation mStockInfo) {
-        this.mStockInfo = mStockInfo;
+    public BaseBackTestHandler(String aStockID) throws SQLException, ParseException {
+        this.mStockInfo = new StockInformation(aStockID);
+        this.mStockInfo.getDbData("6116", "2019-05-01", KeyDefine.EnQueryType.EN_QUERY_TECH);
         this.mBackTestInfo = new BackTestInfo();
+        this.mAppearance = new TradeStrategyHandler();
+        this.mArrival = new TradeStrategyHandler();
+        this.mStockID = aStockID;
     }
 
-    public class AppearanceCondition {
-        private ArrayList<EnAnalyzeStrategyType> enType;
-
-        public AppearanceCondition() {
-        }
-
-        public void addStrategy(EnAnalyzeStrategyType enType) {
-            this.enType.add(enType);
-        }
-
-        public void removeStrategy(EnAnalyzeStrategyType enType) {
-            this.enType.remove(enType);
-        }
+    /**
+     * @return the mStockInfo
+     */
+    public StockInformation getStockInfo() {
+        return mStockInfo;
     }
 
-    public class ArrivalCondition {
-        private ArrayList<EnAnalyzeStrategyType> enType;
-
-        public ArrivalCondition(EnAnalyzeStrategyType enType) {
-        }
-
-        public void addStrategy(EnAnalyzeStrategyType enType) {
-            this.enType.add(enType);
-        }
-
-        public void removeStrategy(EnAnalyzeStrategyType enType) {
-            this.enType.remove(enType);
-        }
+    /**
+     * @param mStockInfo the mStockInfo to set
+     */
+    public void setStockInfo(StockInformation mStockInfo) {
+        this.mStockInfo = mStockInfo;
     }
+
+    /**
+     * @return the mAppearance
+     */
+    public TradeStrategyHandler getAppearance() {
+        return mAppearance;
+    }
+
+    /**
+     * @param mAppearance the mAppearance to set
+     */
+    public void setAppearance(TradeStrategyHandler mAppearance) {
+        this.mAppearance = mAppearance;
+    }
+
+    /**
+     * @return the mArrival
+     */
+    public TradeStrategyHandler getArrival() {
+        return mArrival;
+    }
+
+    /**
+     * @param mArrival the mArrival to set
+     */
+    public void setArrival(TradeStrategyHandler mArrival) {
+        this.mArrival = mArrival;
+    }
+
+    /**
+     * @return the mBackTestInfo
+     */
+    public BackTestInfo getBackTestInfo() {
+        return mBackTestInfo;
+    }
+
+    /**
+     * @param mBackTestInfo the mBackTestInfo to set
+     */
+    public void setBackTestInfo(BackTestInfo mBackTestInfo) {
+        this.mBackTestInfo = mBackTestInfo;
+    }
+
+    /**
+     * @return the mStockID
+     */
+    public String getStockID() {
+        return mStockID;
+    }
+
+    /**
+     * @param mStockID the mStockID to set
+     */
+    public void setStockID(String mStockID) {
+        this.mStockID = mStockID;
+    }
+
 }

@@ -3,170 +3,357 @@
  */
 package com.common;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * @author Chris Lin
- *
+ * @version 1.0
  */
 public class BackTestInfo {
-    private int mInitialCurrency; // 初始資金
-    private int mBackTestTime; // 回測時間
+    private float mInitialCurrency; // 初始資金
+    private int mBackTestTime; // 回測時間(天)
 
-    private int mInStock ;// 庫存
-    private ArrayList<Integer> mBuyVolume; // 買進張數
-    private ArrayList<Integer> mSellVolume; // 賣出張數
+    private HashMap<String, Integer> mInStock;// 庫存, K:stock id, V:quantity
+    private HashMap<String, Float> mInStockCost;// 庫存成本, K:stock id, V:quantity
+    private LinkedHashMap<String, Float> mBuyLog; // 買進數量紀錄 K:date, V:quantity
+    private LinkedHashMap<String, Float> mSellLog; // 賣出數量紀錄 K:date, V:quantity
     private int mBuyTimes; // 買進次數
     private int mSellTimes; // 賣出次數
-    private float mTransactionWin; // 交易勝率
+    private int mWinTimes; // 獲利次數
 
-    private int mProfitAmount; // 獲利金額
-    private int mTradeFee; // 累積交易手續費
+    private HashMap<String, Integer> mProfitAmount; // 已實現損益, K:stock id,
+                                                    // V:profit
+    private HashMap<String, Integer> mUnrealizedGains; // 未實現損益, K:stock id,
+                                                       // V:profit
+    private float mTradeFee; // 總交易手續費
     private float mTotalROI; // 累積投資報酬率
     private float mIRR; // 年化報酬率
+
+    public BackTestInfo() {
+        this.mInStock = new HashMap<>();
+        this.mInStockCost = new HashMap<>();
+        this.mBuyLog = new LinkedHashMap<>();
+        this.mSellLog = new LinkedHashMap<>();
+        this.mProfitAmount = new HashMap<>();
+        this.mUnrealizedGains = new HashMap<>();
+        this.mBuyTimes = 0;
+        this.mSellTimes = 0;
+        this.mWinTimes = 0;
+    }
+
     /**
      * @return the mInitialCurrency
      */
-    public int getmInitialCurrency() {
+    public float getInitialCurrency() {
         return mInitialCurrency;
     }
+
     /**
-     * @param mInitialCurrency the mInitialCurrency to set
+     * @param mInitialCurrency
+     *            the mInitialCurrency to set
      */
-    public void setmInitialCurrency(int mInitialCurrency) {
+    public void setInitialCurrency(int mInitialCurrency) {
         this.mInitialCurrency = mInitialCurrency;
     }
+    
+    /**
+     * @param mInitialCurrency
+     *            the mInitialCurrency to update
+     */
+    public void updateInitialCurrency(int mUpdateCurrency, boolean bIsSell) {
+        if(!bIsSell) {
+            mUpdateCurrency = -mUpdateCurrency;
+        }
+        this.mInitialCurrency += mUpdateCurrency;
+    }
+
     /**
      * @return the mBackTestTime
      */
-    public int getmBackTestTime() {
+    public int getBackTestTime() {
         return mBackTestTime;
     }
+
     /**
-     * @param mBackTestTime the mBackTestTime to set
+     * @param mBackTestTime
+     *            the mBackTestTime to set
      */
-    public void setmBackTestTime(int mBackTestTime) {
+    public void setBackTestTime(int mBackTestTime) {
         this.mBackTestTime = mBackTestTime;
     }
+
     /**
      * @return the mBuyTimes
      */
-    public int getmBuyTimes() {
+    public int getBuyTimes() {
         return mBuyTimes;
     }
+
     /**
-     * @param mBuyTimes the mBuyTimes to set
+     * @param mBuyTimes
+     *            the mBuyTimes to set
      */
-    public void setmBuyTimes(int mBuyTimes) {
-        this.mBuyTimes = mBuyTimes;
+    public void addBuyTimes() {
+        this.mBuyTimes = this.getBuyTimes() + 1;
     }
+
     /**
      * @return the mSellTimes
      */
-    public int getmSellTimes() {
+    public int getSellTimes() {
         return mSellTimes;
     }
+
     /**
-     * @param mSellTimes the mSellTimes to set
+     * @param mSellTimes
+     *            the mSellTimes to set
      */
-    public void setmSellTimes(int mSellTimes) {
-        this.mSellTimes = mSellTimes;
+    public void addSellTimes() {
+        this.mSellTimes = this.getSellTimes() + 1;
     }
+
     /**
      * @return the mTransactionWin
      */
-    public float getmTransactionWin() {
-        return mTransactionWin;
+    public float getTransactionWinPercentage() {
+        return (getSellTimes()==0)?0:(getWinTimes() / getSellTimes());
     }
-    /**
-     * @param mTransactionWin the mTransactionWin to set
-     */
-    public void setmTransactionWin(float mTransactionWin) {
-        this.mTransactionWin = mTransactionWin;
-    }
-    /**
-     * @return the mProfitAmount
-     */
-    public int getmProfitAmount() {
-        return mProfitAmount;
-    }
-    /**
-     * @param mProfitAmount the mProfitAmount to set
-     */
-    public void setmProfitAmount(int mProfitAmount) {
-        this.mProfitAmount = mProfitAmount;
-    }
+
     /**
      * @return the mTotalROI
      */
-    public float getmTotalROI() {
+    public float getTotalROI(String aStockID) {
         return mTotalROI;
     }
+
     /**
-     * @param mTotalROI the mTotalROI to set
+     * @param mTotalROI
+     *            the mTotalROI to set
      */
-    public void setmTotalROI(float mTotalROI) {
+    public void setTotalROI(float mTotalROI) {
         this.mTotalROI = mTotalROI;
     }
+
     /**
      * @return the mIRR
      */
-    public float getmIRR() {
+    public float getIRR() {
         return mIRR;
     }
+
     /**
-     * @param mIRR the mIRR to set
+     * @param mIRR
+     *            the mIRR to set
      */
-    public void setmIRR(float mIRR) {
+    public void setIRR(float mIRR) {
         this.mIRR = mIRR;
     }
-    /**
-     * @return the mInStock
-     */
-    public int getmInStock() {
-        return mInStock;
-    }
-    /**
-     * @param mInStock the mInStock to set
-     */
-    public void setmInStock(int mInStock) {
-        this.mInStock = mInStock;
-    }
-    /**
-     * @return the mBuyVolume
-     */
-    public ArrayList<Integer> getmBuyVolume() {
-        return mBuyVolume;
-    }
-    /**
-     * @param mBuyVolume the mBuyVolume to set
-     */
-    public void setmBuyVolume(ArrayList<Integer> mBuyVolume) {
-        this.mBuyVolume = mBuyVolume;
-    }
-    /**
-     * @return the mSellVolume
-     */
-    public ArrayList<Integer> getmSellVolume() {
-        return mSellVolume;
-    }
-    /**
-     * @param mSellVolume the mSellVolume to set
-     */
-    public void setmSellVolume(ArrayList<Integer> mSellVolume) {
-        this.mSellVolume = mSellVolume;
-    }
+
     /**
      * @return the mTradeFee
      */
-    public int getmTradeFee() {
+    public float getTradeFee() {
         return mTradeFee;
     }
+
     /**
-     * @param mTradeFee the mTradeFee to set
+     * @param mTradeFee
+     *            the mTradeFee to set
      */
-    public void setmTradeFee(int mTradeFee) {
-        this.mTradeFee = mTradeFee;
+    public void addTradeFee(float mTradeFee) {
+        if(mTradeFee < 1) {
+            mTradeFee = 1;
+        }
+        this.mTradeFee = this.getTradeFee() + mTradeFee;
     }
 
+    /**
+     * @return the mInStock
+     */
+    public HashMap<String, Integer> getInStock() {
+        return mInStock;
+    }
+
+    /**
+     * @return the mInStock
+     */
+    public int getInStock(String aStockID) {
+        return (mInStock.containsKey(aStockID))?mInStock.get(aStockID): 0;
+    }
+
+    /**
+     * @param mInStock
+     *            the mInStock to set
+     */
+    public void setInStock(HashMap<String, Integer> mInStock) {
+        this.mInStock = mInStock;
+    }
+
+    /**
+     * @param mInStock
+     *            the mInStock to set
+     */
+    public void setInStock(String aStockID, int mNumsOfShare, boolean bIsSell) {
+        if (bIsSell) {
+            mNumsOfShare = -mNumsOfShare;
+        }
+        mInStock.put(aStockID, mInStock.getOrDefault(aStockID, 0) + mNumsOfShare);
+    }
+
+    /**
+     * @return the mBuyLog
+     */
+    public LinkedHashMap<String, Float> getBuyLog() {
+        return mBuyLog;
+    }
+
+    /**
+     * @param mBuyLog
+     *            the mBuyLog to set
+     */
+    public void setBuyLog(LinkedHashMap<String, Float> mBuyLog) {
+        this.mBuyLog = mBuyLog;
+    }
+
+    /**
+     * @param mBuyLog
+     *            the mBuyLog to set
+     */
+    public void setBuyLog(String aDate, float aBuyVolume) {
+        this.mBuyLog.put(aDate, mBuyLog.getOrDefault(aDate, 0f)+ aBuyVolume);
+        // 累加買進次數
+        this.addBuyTimes();
+    }
+
+    /**
+     * @return the mSellLog
+     */
+    public LinkedHashMap<String, Float> getSellLog() {
+        return mSellLog;
+    }
+
+    /**
+     * @param mSellLog
+     *            the mSellLog to set
+     */
+    public void setSellLog(LinkedHashMap<String, Float> mSellLog) {
+        this.mSellLog = mSellLog;
+    }
+
+    /**
+     * @param mSellLog
+     *            the mSellLog to set
+     */
+    public void setSellLog(String aDate, float aSellVolume) {
+        this.mSellLog.put(aDate, mSellLog.getOrDefault(aDate, 0f)+ aSellVolume);
+        // 累加賣出次數
+        this.addSellTimes();
+    }
+
+    /**
+     * @return the mInStockCost
+     */
+    public HashMap<String, Float> getInStockCost() {
+        return mInStockCost;
+    }
+
+    /**
+     * @return the mInStockCost
+     */
+    public float getInStockCost(String aStockID) {
+        return (mInStockCost.containsKey(aStockID))?mInStockCost.get(aStockID): 0;
+    }
+
+    /**
+     * @param mInStockCost
+     *            the mInStockCost to set
+     */
+    public void setInStockCost(HashMap<String, Float> mInStockCost) {
+        this.mInStockCost = mInStockCost;
+    }
+
+    /**
+     * @param mInStockCost
+     *            the mInStockCost to set
+     */
+    public void setInStockCost(String aStockID, float aCost) {
+        this.mInStockCost.put(aStockID, aCost);
+    }
+
+    /**
+     * @return the mProfitAmount
+     */
+    public HashMap<String, Integer> getProfitAmount() {
+        return mProfitAmount;
+    }
+
+    /**
+     * @return the mProfitAmount
+     */
+    public int getProfitAmount(String aStockID) {
+        return (mProfitAmount.containsKey(aStockID))?mProfitAmount.get(aStockID): 0;
+    }
+
+    /**
+     * @param mProfitAmount
+     *            the mProfitAmount to set
+     */
+    public void setProfitAmount(HashMap<String, Integer> mProfitAmount) {
+        this.mProfitAmount = mProfitAmount;
+    }
+
+    /**
+     * @param mProfitAmount
+     *            the mProfitAmount to set
+     */
+    public void setProfitAmount(String aStockID, int mProfitAmount) {
+        this.mProfitAmount.put(aStockID, this.mProfitAmount.getOrDefault(aStockID, 0) + mProfitAmount);
+        if (mProfitAmount > 0)
+            this.mWinTimes++;
+    }
+
+    /**
+     * @return the mUnrealizedGains
+     */
+    public HashMap<String, Integer> getUnrealizedGains() {
+        return mUnrealizedGains;
+    }
+
+    /**
+     * @return the mUnrealizedGains
+     */
+    public int getUnrealizedGains(String aStockID) {
+        return (mUnrealizedGains.containsKey(aStockID))?mUnrealizedGains.get(aStockID): 0;
+    }
+
+    /**
+     * @param mUnrealizedGains
+     *            the mUnrealizedGains to set
+     */
+    public void setUnrealizedGains(HashMap<String, Integer> mUnrealizedGains) {
+        this.mUnrealizedGains = mUnrealizedGains;
+    }
+
+    /**
+     * @param mUnrealizedGains
+     *            the mUnrealizedGains to set
+     */
+    public void setUnrealizedGains(String aStockID, int aGain) {
+        this.mUnrealizedGains.put(aStockID, aGain);
+    }
+
+    /**
+     * @return the mWinTimes
+     */
+    public int getWinTimes() {
+        return mWinTimes;
+    }
+
+    /**
+     * @param mWinTimes the mWinTimes to set
+     */
+    public void setWinTimes(int mWinTimes) {
+        this.mWinTimes = mWinTimes;
+    }
 }

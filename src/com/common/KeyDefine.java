@@ -8,7 +8,13 @@ public class KeyDefine {
     public final static int START_STOCK_ID = 1100;
     public final static int MAX_STOCK_ID = 9999;
     public final static int  THOUSAND_OF_SHARES = 1000;
-    public final static int  TRADE_FEE_RATE = 50;
+    public final static int  DB_PRICE_SHIFT = 2; // 資料庫欄位數值轉換
+    public final static float  PERCENT_UPPER_BOUND = 100f;
+    public final static float  PERCENT_LOWER_BOUND = 0f;
+    
+    public final static float  SECURITIES_FEE_PERCETAGE = 1.425f/1000; // 券商手續費 0.1425%
+    public final static float  SECURITIES_FEE_DISCOUNT = 0.5f; // 券商手續費折扣, 50%
+    public final static float  TRADE_TAX = 3/1000; // 證交稅,賣出 0.30%
 
     public static final int OTC_TECH = 0, // 上櫃盤後
             TWSE_TECH = 2, // 上市盤後
@@ -44,6 +50,12 @@ public class KeyDefine {
         EN_ANALYZE_STRATEGY_MAX,
     }
     
+    public enum EnQueryType {
+        EN_QUERY_TECH,
+        EN_QUERY_FUND,
+        EN_QUERY_MAX,
+    }
+        
     public static final int STOCK_INFO = 0, // 股票基本資訊
             PARSER_HTML_MAX = 1;
 

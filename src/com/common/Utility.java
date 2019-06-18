@@ -155,13 +155,13 @@ public class Utility {
             return 0;
         }
         float mReturnFloat = 0;
-        mReturnFloat = (float) (Float.parseFloat(aIntValue) / Math.pow(10, aDigit));
+        mReturnFloat = (float)(Float.parseFloat(aIntValue) / Math.pow(10, aDigit));
         return mReturnFloat;
     }
 
     public static float int2Float(float aIntValue, int aDigit) {
         float mReturnFloat = 0;
-        mReturnFloat = (float) Math.round(aIntValue / Math.pow(10, aDigit));
+        mReturnFloat =  (float) (aIntValue / Math.pow(10, aDigit));
         return mReturnFloat;
     }
 
@@ -238,5 +238,10 @@ public class Utility {
     public static Date string2Date(String aDate, String aDateFormat) throws ParseException {
         SimpleDateFormat mSimpleDate = new SimpleDateFormat(aDateFormat);
         return mSimpleDate.parse(aDate);
+    }
+    
+    public static String date2String(Date aDate) throws ParseException {
+        SimpleDateFormat mSimpleDate = new SimpleDateFormat("yyyy-MM-dd");
+        return mSimpleDate.format(aDate);
     }
 }

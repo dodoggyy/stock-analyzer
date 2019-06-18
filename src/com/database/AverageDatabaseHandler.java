@@ -143,4 +143,10 @@ public class AverageDatabaseHandler extends DatabaseHandler{
         
         return mDbStockId;
     }
+
+    @Override
+    void initQuerySql(String aStockID, String aDate) {
+        // TODO Auto-generated method stub
+        
+    }
 }

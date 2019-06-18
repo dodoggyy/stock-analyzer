@@ -101,7 +101,7 @@ public class TechAnalyzerHandler extends BaseAnalyzerHandler {
         return true; // fixme
     }
 
-    public boolean parseAllFileData() {
+    public boolean parseCalculatorData() {
         String mFileName = "", mFileExt = "";
         int mSeparateIndex = 0;
 
@@ -141,7 +141,7 @@ public class TechAnalyzerHandler extends BaseAnalyzerHandler {
     public static void main(String[] args) {
         // TODO Auto-generated method stub
         TechAnalyzerHandler mAnalyzer = new TechAnalyzerHandler();
-        mAnalyzer.parseAllFileData();
+        mAnalyzer.parseCalculatorData();
 
         ArrayList<TechCsvStruct> mTmp = mAnalyzer.getAnalyzerData();
         System.out.println(mTmp.size());

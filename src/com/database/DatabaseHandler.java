@@ -16,15 +16,9 @@ public abstract class DatabaseHandler {
     protected String mUrl;
     protected String mTableName;
     protected String mInsertSql = "";
+    protected String mQuerySql = "";
 
-    protected    String host,
-            port,
-            socket,
-            username,
-            password,
-            database,
-            chartset;
-
+    protected String host, port, socket, username, password, database, chartset;
 
     public Connection mConnection = null;
     public ResultSet mResultSet = null;
@@ -38,7 +32,7 @@ public abstract class DatabaseHandler {
         this.connectDatabase();
     }
 
-    //read database config
+    // read database config
     void readConfig() {
         host = DatabaseConfig.DB_KEY_HOST;
         port = DatabaseConfig.DB_KEY_PORT;
@@ -46,10 +40,11 @@ public abstract class DatabaseHandler {
         username = DatabaseConfig.DB_KEY_USERNAME;
         password = DatabaseConfig.DB_KEY_PASSWORD;
         database = DatabaseConfig.DB_KEY_DATABASE;
-        mUrl = "jdbc:" + DatabaseConfig.DB_SECTION_MYSQL + "://localhost:" + port + "/" + database +"?serverTimezone=UTC&characterEncoding=utf-8";
-//        System.out.println(mUrl);
+        mUrl = "jdbc:" + DatabaseConfig.DB_SECTION_MYSQL + "://localhost:" + port + "/" + database
+                + "?serverTimezone=UTC&characterEncoding=utf-8";
+        // System.out.println(mUrl);
     }
-    
+
     // connect Database
     abstract void connectDatabase();
 
@@ -61,25 +56,33 @@ public abstract class DatabaseHandler {
 
     // close SQL related object
     abstract void closeObject();
-    
+
     // init prepare SQL cmd
     abstract void initPrepareSql();
 
     // generate SQL command
     abstract void generateSqlCmd() throws SQLException;
-    
+
+    // init query SQL cmd
+    abstract void initQuerySql(String aStockID, String aDate);
+
+    // execute query SQL cmd
+    public ResultSet executeQuerySql() throws SQLException {
+        return mStatement.executeQuery(mQuerySql);
+    }
+
     // generate SQL prepare string command for batch
     public void generateSqlPrepareStrCmd(int aColumn, String aFieldValue) throws SQLException {
         // TODO Auto-generated method stub
         mPreparedStatement.setString(aColumn, aFieldValue);
     }
-    
+
     // generate SQL prepare integer command for batch
     public void generateSqlPrepareIntCmd(int aColumn, int aFieldValue) throws SQLException {
         // TODO Auto-generated method stub
         mPreparedStatement.setInt(aColumn, aFieldValue);
     }
-    
+
     // add SQL command for batch
     public void addSqlPrepareCmd2Batch() throws SQLException {
         // TODO Auto-generated method stub
@@ -90,33 +93,32 @@ public abstract class DatabaseHandler {
     public void executeSqlPrepareCmd() throws SQLException {
         // TODO Auto-generated method stub
         mPreparedStatement.executeBatch();
-        mConnection.commit(); 
+        mConnection.commit();
         mPreparedStatement.clearBatch();
     }
-    
+
     // execute SQL command for delete dublicate data
     abstract void deleteSqlDuplicateData() throws SQLException;
 
     abstract void TestInsertTable() throws SQLException;
-    
+
     protected static void DBOperation(DatabaseHandler mStockDB) throws SQLException {
         int mOperationType = 0;
         Scanner mScanner = new Scanner(System.in);
-        System.out.println("(0)Create Table (1)Test insert (2)Drop Table" );
+        System.out.println("(0)Create Table (1)Test insert (2)Drop Table");
         mOperationType = mScanner.nextInt();
         mScanner.close();
-        
+
         Utility.timerStart();
-        
-        switch(mOperationType)
-        {
+
+        switch (mOperationType) {
         case 0:
-            //Only need execute create table in first time
+            // Only need execute create table in first time
             System.out.println("create table");
             mStockDB.createTable();
             break;
         case 1:
-            //for(int i = 0; i < 100;i++)
+            // for(int i = 0; i < 100;i++)
             System.out.println("test insert table");
             mStockDB.TestInsertTable();
             break;
@@ -124,9 +126,9 @@ public abstract class DatabaseHandler {
             System.out.println("drop table");
             break;
         default:
-            break;    
+            break;
         }
-        
+
         Utility.timerEnd();
     }
 }

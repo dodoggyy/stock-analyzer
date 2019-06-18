@@ -132,4 +132,10 @@ public class FundDatabaseHandler extends DatabaseHandler{
         this.mConnection.commit();
         mPreparedStatement.clearBatch();
     }
+
+    @Override
+    void initQuerySql(String aStockID, String aDate) {
+        // TODO Auto-generated method stub
+        
+    }
 }

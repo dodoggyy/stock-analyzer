@@ -133,4 +133,11 @@ public class TechDatabaseHandler extends DatabaseHandler {
         this.mConnection.commit();
         mPreparedStatement.clearBatch();
     }
+
+    @Override
+    public void initQuerySql(String aStockID, String aDate) {
+        // TODO Auto-generated method stub
+        mQuerySql = "SELECT stock_date,stock_high_price,stock_low_price,stock_opening_price,stock_closing_price,stock_volume FROM " + mTableName  + " WHERE stock_id=" + "'" + aStockID +  "' AND stock_date >" + "'" + aDate + "'" + " ORDER BY stock_date ASC";
+        System.out.println(mQuerySql);
+    }
 }

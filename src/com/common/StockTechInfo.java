@@ -9,14 +9,18 @@ package com.common;
  */
 public class StockTechInfo extends StockBaseInfo{
     private String stockID;
-    private String stockDate;  
+    private String stockDate; 
     private float stockClose;
     private float stockOpen;
     private float stockHigh;
     private float stockLow;
-    private float stockVolume;
+    private int stockVolume;
 
 
+    public StockTechInfo() {
+        
+    }
+    
     /**
      * @return the stockID
      */
@@ -104,14 +108,14 @@ public class StockTechInfo extends StockBaseInfo{
     /**
      * @return the stockVolume
      */
-    public float getStockVolume() {
+    public int getStockVolume() {
         return stockVolume;
     }
 
     /**
      * @param stockVolume the stockVolume to set
      */
-    public void setStockVolume(float stockVolume) {
+    public void setStockVolume(int stockVolume) {
         this.stockVolume = stockVolume;
     }
 

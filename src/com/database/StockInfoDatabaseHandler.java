@@ -146,4 +146,10 @@ public class StockInfoDatabaseHandler extends DatabaseHandler{
         
     }
 
+    @Override
+    void initQuerySql(String aStockID, String aDate) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }
