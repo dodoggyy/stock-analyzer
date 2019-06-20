@@ -10,6 +10,7 @@ import java.text.ParseException;
 import com.common.BackTestInfo;
 import com.common.KeyDefine;
 import com.common.StockInformation;
+import com.common.Utility;
 
 /**
  * @author Chris Lin
@@ -22,9 +23,10 @@ public abstract class BaseBackTestHandler {
     protected BackTestInfo mBackTestInfo;
     protected String mStockID;
 
-    public BaseBackTestHandler(String aStockID) throws SQLException, ParseException {
+    public BaseBackTestHandler(String aStockID, String aDate) throws SQLException, ParseException {
         this.mStockInfo = new StockInformation(aStockID);
-        this.mStockInfo.getDbData("6116", "2019-05-01", KeyDefine.EnQueryType.EN_QUERY_TECH);
+        this.mStockInfo.getDbData(aStockID, aDate, KeyDefine.EnQueryType.EN_QUERY_TECH);
+        //this.mStockInfo.getDbData(aStockID, aDate, KeyDefine.EnQueryType.EN_QUERY_FUND);
         this.mBackTestInfo = new BackTestInfo();
         this.mAppearance = new TradeStrategyHandler();
         this.mArrival = new TradeStrategyHandler();
@@ -100,5 +102,5 @@ public abstract class BaseBackTestHandler {
     public void setStockID(String mStockID) {
         this.mStockID = mStockID;
     }
-
+    
 }

@@ -5,7 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 
 public class Utility {
@@ -243,5 +246,22 @@ public class Utility {
     public static String date2String(Date aDate) throws ParseException {
         SimpleDateFormat mSimpleDate = new SimpleDateFormat("yyyy-MM-dd");
         return mSimpleDate.format(aDate);
+    }
+    
+    /**
+     * Get LinkedHashMap last key
+     * Time complexity:O(n)
+     * @param aMap
+     * @return
+     */
+    public static <K, V> Entry<K,V> getMapLastKey(LinkedHashMap<K, V> aMap) {
+//         return aMap.entrySet().toArray()[aMap.size() - 1];
+        Iterator<Entry<K, V>> iterator = aMap.entrySet().iterator();
+        Entry<K, V> mTail = null;
+        while (iterator.hasNext()) {
+            mTail = iterator.next();
+        }
+         return mTail;
+        
     }
 }

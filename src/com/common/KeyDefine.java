@@ -11,6 +11,7 @@ public class KeyDefine {
     public final static int  DB_PRICE_SHIFT = 2; // 資料庫欄位數值轉換
     public final static float  PERCENT_UPPER_BOUND = 100f;
     public final static float  PERCENT_LOWER_BOUND = 0f;
+    public final static int DAY_PER_YEAR = 365; // 1年 = 365天
     
     public final static float  SECURITIES_FEE_PERCETAGE = 1.425f/1000; // 券商手續費 0.1425%
     public final static float  SECURITIES_FEE_DISCOUNT = 0.5f; // 券商手續費折扣, 50%

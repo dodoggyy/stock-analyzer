@@ -24,11 +24,9 @@ public class BackTestInfo {
 
     private HashMap<String, Integer> mProfitAmount; // 已實現損益, K:stock id,
                                                     // V:profit
-    private HashMap<String, Integer> mUnrealizedGains; // 未實現損益, K:stock id,
-                                                       // V:profit
     private float mTradeFee; // 總交易手續費
-    private float mTotalROI; // 累積投資報酬率
-    private float mIRR; // 年化報酬率
+    private float mTotalEntryAmount; // 總進場金額
+    private float mTotalExitAmount; // 總出場金額
 
     public BackTestInfo() {
         this.mInStock = new HashMap<>();
@@ -36,7 +34,6 @@ public class BackTestInfo {
         this.mBuyLog = new LinkedHashMap<>();
         this.mSellLog = new LinkedHashMap<>();
         this.mProfitAmount = new HashMap<>();
-        this.mUnrealizedGains = new HashMap<>();
         this.mBuyTimes = 0;
         this.mSellTimes = 0;
         this.mWinTimes = 0;
@@ -56,13 +53,13 @@ public class BackTestInfo {
     public void setInitialCurrency(int mInitialCurrency) {
         this.mInitialCurrency = mInitialCurrency;
     }
-    
+
     /**
      * @param mInitialCurrency
      *            the mInitialCurrency to update
      */
     public void updateInitialCurrency(int mUpdateCurrency, boolean bIsSell) {
-        if(!bIsSell) {
+        if (!bIsSell) {
             mUpdateCurrency = -mUpdateCurrency;
         }
         this.mInitialCurrency += mUpdateCurrency;
@@ -117,37 +114,7 @@ public class BackTestInfo {
      * @return the mTransactionWin
      */
     public float getTransactionWinPercentage() {
-        return (getSellTimes()==0)?0:(getWinTimes() / getSellTimes());
-    }
-
-    /**
-     * @return the mTotalROI
-     */
-    public float getTotalROI(String aStockID) {
-        return mTotalROI;
-    }
-
-    /**
-     * @param mTotalROI
-     *            the mTotalROI to set
-     */
-    public void setTotalROI(float mTotalROI) {
-        this.mTotalROI = mTotalROI;
-    }
-
-    /**
-     * @return the mIRR
-     */
-    public float getIRR() {
-        return mIRR;
-    }
-
-    /**
-     * @param mIRR
-     *            the mIRR to set
-     */
-    public void setIRR(float mIRR) {
-        this.mIRR = mIRR;
+        return (getSellTimes() == 0) ? 0 : (getWinTimes() / getSellTimes());
     }
 
     /**
@@ -162,7 +129,7 @@ public class BackTestInfo {
      *            the mTradeFee to set
      */
     public void addTradeFee(float mTradeFee) {
-        if(mTradeFee < 1) {
+        if (mTradeFee < 1) {
             mTradeFee = 1;
         }
         this.mTradeFee = this.getTradeFee() + mTradeFee;
@@ -179,7 +146,7 @@ public class BackTestInfo {
      * @return the mInStock
      */
     public int getInStock(String aStockID) {
-        return (mInStock.containsKey(aStockID))?mInStock.get(aStockID): 0;
+        return (mInStock.containsKey(aStockID)) ? mInStock.get(aStockID) : 0;
     }
 
     /**
@@ -221,7 +188,7 @@ public class BackTestInfo {
      *            the mBuyLog to set
      */
     public void setBuyLog(String aDate, float aBuyVolume) {
-        this.mBuyLog.put(aDate, mBuyLog.getOrDefault(aDate, 0f)+ aBuyVolume);
+        this.mBuyLog.put(aDate, mBuyLog.getOrDefault(aDate, 0f) + aBuyVolume);
         // 累加買進次數
         this.addBuyTimes();
     }
@@ -246,7 +213,7 @@ public class BackTestInfo {
      *            the mSellLog to set
      */
     public void setSellLog(String aDate, float aSellVolume) {
-        this.mSellLog.put(aDate, mSellLog.getOrDefault(aDate, 0f)+ aSellVolume);
+        this.mSellLog.put(aDate, mSellLog.getOrDefault(aDate, 0f) + aSellVolume);
         // 累加賣出次數
         this.addSellTimes();
     }
@@ -262,7 +229,7 @@ public class BackTestInfo {
      * @return the mInStockCost
      */
     public float getInStockCost(String aStockID) {
-        return (mInStockCost.containsKey(aStockID))?mInStockCost.get(aStockID): 0;
+        return (mInStockCost.containsKey(aStockID)) ? mInStockCost.get(aStockID) : 0;
     }
 
     /**
@@ -292,7 +259,7 @@ public class BackTestInfo {
      * @return the mProfitAmount
      */
     public int getProfitAmount(String aStockID) {
-        return (mProfitAmount.containsKey(aStockID))?mProfitAmount.get(aStockID): 0;
+        return (mProfitAmount.containsKey(aStockID)) ? mProfitAmount.get(aStockID) : 0;
     }
 
     /**
@@ -314,36 +281,6 @@ public class BackTestInfo {
     }
 
     /**
-     * @return the mUnrealizedGains
-     */
-    public HashMap<String, Integer> getUnrealizedGains() {
-        return mUnrealizedGains;
-    }
-
-    /**
-     * @return the mUnrealizedGains
-     */
-    public int getUnrealizedGains(String aStockID) {
-        return (mUnrealizedGains.containsKey(aStockID))?mUnrealizedGains.get(aStockID): 0;
-    }
-
-    /**
-     * @param mUnrealizedGains
-     *            the mUnrealizedGains to set
-     */
-    public void setUnrealizedGains(HashMap<String, Integer> mUnrealizedGains) {
-        this.mUnrealizedGains = mUnrealizedGains;
-    }
-
-    /**
-     * @param mUnrealizedGains
-     *            the mUnrealizedGains to set
-     */
-    public void setUnrealizedGains(String aStockID, int aGain) {
-        this.mUnrealizedGains.put(aStockID, aGain);
-    }
-
-    /**
      * @return the mWinTimes
      */
     public int getWinTimes() {
@@ -351,9 +288,26 @@ public class BackTestInfo {
     }
 
     /**
-     * @param mWinTimes the mWinTimes to set
+     * @param mWinTimes
+     *            the mWinTimes to set
      */
     public void setWinTimes(int mWinTimes) {
         this.mWinTimes = mWinTimes;
+    }
+
+    public float getTotalEntryAmount() {
+        return mTotalEntryAmount;
+    }
+
+    public void addTotalEntryAmount(float mTotalEntryAmount) {
+        this.mTotalEntryAmount = this.getTotalEntryAmount() + mTotalEntryAmount;
+    }
+
+    public float getTotalExitAmount() {
+        return mTotalExitAmount;
+    }
+
+    public void addTotalExitAmount(float mTotalExitAmount) {
+        this.mTotalExitAmount = this.getTotalExitAmount() + mTotalExitAmount;
     }
 }
