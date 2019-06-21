@@ -18,8 +18,8 @@ import com.common.Utility;
  */
 public abstract class BaseBackTestHandler {
     protected StockInformation mStockInfo;
-    protected TradeStrategyHandler mAppearance;
-    protected TradeStrategyHandler mArrival;
+    protected TradeStrategyHandler mEntryStrategy;
+    protected TradeStrategyHandler mExitStrategy;
     protected BackTestInfo mBackTestInfo;
     protected String mStockID;
 
@@ -28,8 +28,8 @@ public abstract class BaseBackTestHandler {
         this.mStockInfo.getDbData(aStockID, aDate, KeyDefine.EnQueryType.EN_QUERY_TECH);
         //this.mStockInfo.getDbData(aStockID, aDate, KeyDefine.EnQueryType.EN_QUERY_FUND);
         this.mBackTestInfo = new BackTestInfo();
-        this.mAppearance = new TradeStrategyHandler();
-        this.mArrival = new TradeStrategyHandler();
+        this.mEntryStrategy = new TradeStrategyHandler();
+        this.mExitStrategy = new TradeStrategyHandler();
         this.mStockID = aStockID;
     }
 
@@ -50,29 +50,29 @@ public abstract class BaseBackTestHandler {
     /**
      * @return the mAppearance
      */
-    public TradeStrategyHandler getAppearance() {
-        return mAppearance;
+    public TradeStrategyHandler getEntryStrategy() {
+        return mEntryStrategy;
     }
 
     /**
      * @param mAppearance the mAppearance to set
      */
-    public void setAppearance(TradeStrategyHandler mAppearance) {
-        this.mAppearance = mAppearance;
+    public void setEntryStrategy(TradeStrategyHandler mEntryStrategy) {
+        this.mEntryStrategy = mEntryStrategy;
     }
 
     /**
      * @return the mArrival
      */
-    public TradeStrategyHandler getArrival() {
-        return mArrival;
+    public TradeStrategyHandler getExitStrategy() {
+        return mExitStrategy;
     }
 
     /**
      * @param mArrival the mArrival to set
      */
-    public void setArrival(TradeStrategyHandler mArrival) {
-        this.mArrival = mArrival;
+    public void setExitStrategy(TradeStrategyHandler mExitStrategy) {
+        this.mExitStrategy = mExitStrategy;
     }
 
     /**

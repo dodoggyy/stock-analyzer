@@ -27,7 +27,7 @@ public class TechAnalyzerHandler extends BaseAnalyzerHandler {
 //    private TechAnalyzerHandler mAnalyzer;
     private ArrayList<TechCsvStruct> mAnalyzerData;
 
-    class TechCsvStruct implements Comparable<TechCsvStruct> {
+    public class TechCsvStruct implements Comparable<TechCsvStruct> {
         String mStockID;
         Date mStockDate;
         Boolean bIsBIAS;
@@ -137,8 +137,9 @@ public class TechAnalyzerHandler extends BaseAnalyzerHandler {
 
     /**
      * @param args
+     * @throws ParseException 
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
         // TODO Auto-generated method stub
         TechAnalyzerHandler mAnalyzer = new TechAnalyzerHandler();
         mAnalyzer.parseCalculatorData();
@@ -149,7 +150,7 @@ public class TechAnalyzerHandler extends BaseAnalyzerHandler {
         while (mIter.hasNext()) {
             TechCsvStruct mTechData = (TechCsvStruct) mIter.next();
             System.out.println(
-                    mTechData.mStockID + " " + mTechData.mStockDate + " " + mTechData.bIsBIAS + " " + mTechData.bIsJDK);
+                    mTechData.mStockID + " " + Utility.date2String(mTechData.mStockDate, "yyyy/MM/dd") + " " + mTechData.bIsBIAS + " " + mTechData.bIsJDK);
         }
 
     }

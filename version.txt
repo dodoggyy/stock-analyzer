@@ -7,8 +7,12 @@
 6.porting to Linux
 7.add daily script
 8.刪除DB重複資料,DB自動更新補齊
+9.log4j
 
 版本更新資訊:
+2019/6/20
+Bug fix for 技術分析回測結果
+
 2019/6/20
 補完資料技術分析回測結果
 ex:損益試算、交易紀錄

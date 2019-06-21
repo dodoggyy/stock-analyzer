@@ -92,7 +92,7 @@ public class Utility {
 
         return mStrReturn;
     }
-    
+
     /**
      * 移除csv雜亂的字元，如""等並取代
      *
@@ -122,12 +122,12 @@ public class Utility {
             }
         }
         mStrReturn = mTmpStr.toString().replace("\"", "");
-//        // mStrReturn = mTmpStr.toString().replace("--", "00");
-//        mStrReturn = mStrReturn.replace("--", "00");
-//        mStrReturn = mStrReturn.replace("0-", "00");
-//        mStrReturn = mStrReturn.replace("=", "");
-//        mStrReturn = mStrReturn.replace("-", "0");
-//        mStrReturn = mStrReturn.replace("N/A", "0.00");
+        // // mStrReturn = mTmpStr.toString().replace("--", "00");
+        // mStrReturn = mStrReturn.replace("--", "00");
+        // mStrReturn = mStrReturn.replace("0-", "00");
+        // mStrReturn = mStrReturn.replace("=", "");
+        // mStrReturn = mStrReturn.replace("-", "0");
+        // mStrReturn = mStrReturn.replace("N/A", "0.00");
 
         return mStrReturn;
     }
@@ -139,7 +139,7 @@ public class Utility {
     }
 
     public static int float2Int(String aFloatValue, int aDigit) {
-        if(aFloatValue.isEmpty()) {
+        if (aFloatValue.isEmpty()) {
             return 0;
         }
         int mReturnInt = 0;
@@ -154,17 +154,17 @@ public class Utility {
     }
 
     public static float int2Float(String aIntValue, int aDigit) {
-        if(aIntValue.isEmpty()) {
+        if (aIntValue.isEmpty()) {
             return 0;
         }
         float mReturnFloat = 0;
-        mReturnFloat = (float)(Float.parseFloat(aIntValue) / Math.pow(10, aDigit));
+        mReturnFloat = (float) (Float.parseFloat(aIntValue) / Math.pow(10, aDigit));
         return mReturnFloat;
     }
 
     public static float int2Float(float aIntValue, int aDigit) {
         float mReturnFloat = 0;
-        mReturnFloat =  (float) (aIntValue / Math.pow(10, aDigit));
+        mReturnFloat = (float) (aIntValue / Math.pow(10, aDigit));
         return mReturnFloat;
     }
 
@@ -242,26 +242,50 @@ public class Utility {
         SimpleDateFormat mSimpleDate = new SimpleDateFormat(aDateFormat);
         return mSimpleDate.parse(aDate);
     }
-    
+
     public static String date2String(Date aDate) throws ParseException {
         SimpleDateFormat mSimpleDate = new SimpleDateFormat("yyyy-MM-dd");
         return mSimpleDate.format(aDate);
     }
-    
+
+    public static String date2String(Date aDate, String aDateFormat) throws ParseException {
+        SimpleDateFormat mSimpleDate = new SimpleDateFormat(aDateFormat);
+        return mSimpleDate.format(aDate);
+    }
+
+    public static String getDateAfterDay(Date aDate, int aAfterDay) {
+        SimpleDateFormat mSimpleDate = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar mCalendar = Calendar.getInstance();
+        mCalendar.setTime(aDate);
+        mCalendar.add(Calendar.DAY_OF_MONTH, aAfterDay);
+
+        return mSimpleDate.format(mCalendar.getTime());
+    }
+
+    public static String getDateAfterDay(String aDate, int aAfterDay) throws ParseException {
+        SimpleDateFormat mSimpleDate = new SimpleDateFormat("yyyy-MM-dd");
+        Date mDate = Utility.string2Date(aDate);
+        Calendar mCalendar = Calendar.getInstance();
+        mCalendar.setTime(mDate);
+        mCalendar.add(Calendar.DAY_OF_MONTH, aAfterDay);
+
+        return mSimpleDate.format(mCalendar.getTime());
+    }
+
     /**
-     * Get LinkedHashMap last key
-     * Time complexity:O(n)
+     * Get LinkedHashMap last key Time complexity:O(n)
+     * 
      * @param aMap
      * @return
      */
-    public static <K, V> Entry<K,V> getMapLastKey(LinkedHashMap<K, V> aMap) {
-//         return aMap.entrySet().toArray()[aMap.size() - 1];
+    public static <K, V> Entry<K, V> getMapLastElement(LinkedHashMap<K, V> aMap) {
+        // return aMap.entrySet().toArray()[aMap.size() - 1];
         Iterator<Entry<K, V>> iterator = aMap.entrySet().iterator();
         Entry<K, V> mTail = null;
         while (iterator.hasNext()) {
             mTail = iterator.next();
         }
-         return mTail;
-        
+        return mTail;
+
     }
 }

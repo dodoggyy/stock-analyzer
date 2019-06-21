@@ -274,7 +274,7 @@ public class BackTestInfo {
      * @param mProfitAmount
      *            the mProfitAmount to set
      */
-    public void setProfitAmount(String aStockID, int mProfitAmount) {
+    public void addProfitAmount(String aStockID, int mProfitAmount) {
         this.mProfitAmount.put(aStockID, this.mProfitAmount.getOrDefault(aStockID, 0) + mProfitAmount);
         if (mProfitAmount > 0)
             this.mWinTimes++;

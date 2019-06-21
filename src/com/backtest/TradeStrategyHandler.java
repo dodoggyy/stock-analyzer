@@ -79,6 +79,37 @@ public class TradeStrategyHandler {
     public LinkedHashMap<EnAnalyzeStrategyType, TechAnalyzerInfo> getStrategy() {
         return mStrategy;
     }
+    
+    public String getStrategyName(EnAnalyzeStrategyType enType) {
+        String mMessage = "";
+        switch(enType) {
+        case EN_ANALYZE_STRATEGY_FUND:
+            mMessage = "Fund";
+            break;
+        case EN_ANALYZE_STRATEGY_FUND_PROFIT:
+            mMessage = "Profit";
+            break;
+        case EN_ANALYZE_STRATEGY_TECH:
+            mMessage = "Tech";
+            break;
+        case EN_ANALYZE_STRATEGY_TECH_BIAS:
+            mMessage = "BIAS";
+            break;
+        case EN_ANALYZE_STRATEGY_TECH_CCI:
+            mMessage = "CCI";
+            break;
+        case EN_ANALYZE_STRATEGY_TECH_KDJ:
+            mMessage = "KDJ";
+            break;
+        default:
+            mMessage = "Unknown type";
+        }
+        return mMessage;
+    }
+    
+    public String getStrategyValue(EnAnalyzeStrategyType enType) {
+        return null;
+    }
 
     /**
      * @param mStrategy
