@@ -28,16 +28,16 @@ public class TechAnalyzerHandler extends BaseAnalyzerHandler {
     private ArrayList<TechCsvStruct> mAnalyzerData;
 
     public class TechCsvStruct implements Comparable<TechCsvStruct> {
-        String mStockID;
-        Date mStockDate;
-        Boolean bIsBIAS;
-        Boolean bIsJDK;
+        private String mStockID;
+        private Date mStockDate;
+        private boolean bIsBIAS;
+        private boolean bIsKDJ;
 
         public TechCsvStruct(String mStockID, String mStockDate, Boolean bIsBIAS, Boolean bIsJDK) {
             // TODO Auto-generated constructor stub
             this.mStockID = mStockID;
             this.bIsBIAS = bIsBIAS;
-            this.bIsJDK = bIsJDK;
+            this.bIsKDJ = bIsKDJ;
             SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             try {
                 this.mStockDate = mDateFormat.parse(mStockDate);
@@ -45,6 +45,38 @@ public class TechAnalyzerHandler extends BaseAnalyzerHandler {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+        }
+        
+        public void setStockID(String aStockID) {
+            this.mStockID = aStockID;
+        }
+        
+        public String getStockID() {
+            return this.mStockID;
+        }
+        
+        public void setbIsBIAS(boolean bIsBIAS) {
+            this.bIsBIAS = bIsBIAS;
+        }
+        
+        public boolean getbIsBIAS() {
+            return this.bIsBIAS;
+        }
+        
+        public void setbIsKDJ(boolean bIsKDJ) {
+            this.bIsKDJ = bIsKDJ;
+        }
+        
+        public boolean getbIsKDJ() {
+            return this.bIsKDJ;
+        }
+        
+        public void setDate(Date aDate) {
+            this.mStockDate = aDate;
+        }
+        
+        public Date getDate() {
+            return this.mStockDate;
         }
 
         @Override
@@ -150,7 +182,7 @@ public class TechAnalyzerHandler extends BaseAnalyzerHandler {
         while (mIter.hasNext()) {
             TechCsvStruct mTechData = (TechCsvStruct) mIter.next();
             System.out.println(
-                    mTechData.mStockID + " " + Utility.date2String(mTechData.mStockDate, "yyyy/MM/dd") + " " + mTechData.bIsBIAS + " " + mTechData.bIsJDK);
+                    mTechData.mStockID + " " + Utility.date2String(mTechData.getDate()) + " " + mTechData.getbIsBIAS() + " " + mTechData.getbIsKDJ());
         }
 
     }

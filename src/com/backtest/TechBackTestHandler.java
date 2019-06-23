@@ -5,10 +5,15 @@ package com.backtest;
 
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.analyzer.TechAnalyzerHandler;
+import com.analyzer.TechAnalyzerHandler.TechCsvStruct;
 import com.common.KeyDefine;
+import com.common.StockInformation;
 import com.common.StockTechInfo;
 import com.common.TechAnalyzerInfo;
 import com.common.Utility;
@@ -114,6 +119,7 @@ public class TechBackTestHandler extends BaseBackTestHandler implements BaseBack
         double mYears = ((double) mBackTestInfo.getBackTestTime() / (double) KeyDefine.DAY_PER_YEAR);
         // System.out.println(mYears);
         System.out.println("年化報酬率: " + (Math.pow((double) mTotalROI + 1, (double) 1 / mYears) - 1) + "%");
+        System.out.println();
     }
 
     public float getUnrealizedGains(String aStockID) {
@@ -133,8 +139,103 @@ public class TechBackTestHandler extends BaseBackTestHandler implements BaseBack
         return (mExpectedIncome - mTotalInStock);
     }
 
-    public void execute() {
+    public boolean execute(Date aDate) {
+        boolean bRet = false;
+        
+        String mStockID = this.getStockID();
+        
+        
+        /*
+        TradeStrategyHandler mEntryTrade = getEntryStrategy();
 
+        for (EnAnalyzeStrategyType enType : mEntryTrade.getStrategy().keySet()) {
+            mEntryTrade.getStrategyName(enType);
+
+            switch (enType) {
+            case EN_ANALYZE_STRATEGY_TECH_BIAS:
+                mEntryTrade.getStrategy().get(enType).getIsBIAS();
+                break;
+            case EN_ANALYZE_STRATEGY_TECH_CCI:
+                mEntryTrade.getStrategy().get(enType).getIsCCI();
+                break;
+            case EN_ANALYZE_STRATEGY_TECH_KDJ:
+                mEntryTrade.getStrategy().get(enType).getIsKDJ();
+                break;
+            default:
+                break;
+            }
+        }
+        */
+
+        // mBackTest.mStockInfo.setStockID("6116");
+        // mBackTest.buy("6116", "2019-05-20", 5000);
+        // mBackTest.sell("6116", "2019-06-03", 2000);
+        
+        /*
+        TradeStrategyHandler mExitTrade = getExitStrategy();
+
+        for (EnAnalyzeStrategyType enType : mEntryTrade.getStrategy().keySet()) {
+            mEntryTrade.getStrategyName(enType);
+
+            switch (enType) {
+            case EN_ANALYZE_STRATEGY_FUND_PROFIT:
+                mEntryTrade.getStrategy().get(enType).getProfitPercentage();
+                break;
+            default:
+                break;
+            }
+        }
+        */
+        StockInformation mInfo = this.getStockInfo();
+        
+//        mInfo.getDbData(this.getStockID(), "2019-05-01", KeyDefine.EnQueryType.EN_QUERY_TECH);
+        
+        
+        boolean bBuyFirstTime = true; // buy next day if correspond to strategy
+        
+        for (Map.Entry<String, StockTechInfo> mEntry : mInfo.getStockTechInfo().entrySet()) {
+            if(bBuyFirstTime) {
+                // buy
+                this.buy(mStockID, mEntry.getValue().getStockDate(), (int)(this.getBackTestInfo().getInitialCurrency()/ mEntry.getValue().getStockClose()));
+                bBuyFirstTime = false;
+            } else {
+                float mProfitPecentage = getProfitPercentage(this.mBackTestInfo.getInStockCost(mStockID),mEntry.getValue().getStockClose());
+                if(mProfitPecentage < -0.15 || mProfitPecentage > 0.15) {
+                  this.sell(this.getStockID(), mEntry.getValue().getStockDate(), this.mBackTestInfo.getInStock(mStockID));
+                  return true;
+              }
+            }
+            
+//            System.out.print("Key:" + mEntry.getKey());
+//            System.out.print(" Stock:" + mEntry.getValue().getStockID());
+//            System.out.print(" Date:" + mEntry.getValue().getStockDate());
+//            System.out.print(" High:" + mEntry.getValue().getStockHigh());
+//            System.out.print(" Low:" + mEntry.getValue().getStockLow());
+//            System.out.print(" Open:" + mEntry.getValue().getStockOpen());
+//            System.out.print(" Close:" + mEntry.getValue().getStockClose());
+//            System.out.print(" Vol:" + mEntry.getValue().getStockVolume());
+//            System.out.println();
+        }
+        
+//        for(int i = 1; i < Config.DataAnalyze.BACK_TEST_TRACKING_DAY; i++) {
+//            String mTrackDate = Utility.getDateAfterDay(aDate, i);
+//            if(getProfitPercentage(this.mBackTestInfo.getInStockCost(this.getStockID()),mInfo.getStockTechInfo(aKey)) > 15) { // fixme
+//                this.sell(this.getStockID(), Utility.date2String(aDate), this.mBackTestInfo.getInStock(this.getStockID()));
+//                return true;
+//            }
+//        }
+        
+        return bRet;
+    }
+    
+    /**
+     * calculate profit percentage
+     * @param mOrigin
+     * @param mAfter
+     * @return
+     */
+    public float getProfitPercentage(float mOrigin, float mAfter) {
+        return (mAfter - mOrigin)/mOrigin;
     }
 
     /**
@@ -196,8 +297,6 @@ public class TechBackTestHandler extends BaseBackTestHandler implements BaseBack
         } else {
             // 當次交易手續費
             float mTotalFee = calculateFee(mNumShare, bIsSell);
-            // 該股總庫存
-            int mTotalInStock = mBackTestInfo.getInStock(aStockID) - aSellVolume;
             // 出場金額 = 交易日收盤價 * 賣出數量 - 手續費
             int mExitAmount = (int) (mInfo.getStockClose() * aSellVolume - mTotalFee);
             // 損益 = 出場金額 - 持有成本 * 賣出數量
@@ -237,6 +336,31 @@ public class TechBackTestHandler extends BaseBackTestHandler implements BaseBack
      */
     public static void main(String[] args) throws SQLException, ParseException {
         // TODO Auto-generated method stub
+        boolean bIsSatisfiedSell = false;
+        TechAnalyzerHandler mAnalyzer = new TechAnalyzerHandler();
+        mAnalyzer.parseCalculatorData();
+        ArrayList<TechCsvStruct> mTmp = mAnalyzer.getAnalyzerData();
+        Iterator<TechCsvStruct> mIter = mTmp.iterator();
+        while (mIter.hasNext()) {
+            TechCsvStruct mTechData = mIter.next();
+            System.out.println(mTechData.getStockID() + " " + Utility.date2String(mTechData.getDate()) + " "
+                    + "BIAS: " + mTechData.getbIsBIAS() + " KDJ: " + mTechData.getbIsKDJ());
+            TechBackTestHandler mBackTest = new TechBackTestHandler(mTechData.getStockID(), Utility.date2String(mTechData.getDate()));
+            mBackTest.mBackTestInfo.setInitialCurrency(100000);
+            mBackTest.mStockInfo.setStockID(mTechData.getStockID());
+            
+            
+            bIsSatisfiedSell = mBackTest.execute(mTechData.getDate());
+            
+//            if(bIsSatisfiedSell) {
+//                mBackTest.getResult();
+//                break;
+//            }
+            
+            mBackTest.getResult();
+        }
+
+        /*
         TechBackTestHandler mBackTest = new TechBackTestHandler("6116", "2019-05-01");
         mBackTest.mBackTestInfo.setInitialCurrency(100000);
         mBackTest.mBackTestInfo.setBackTestTime(240);
@@ -244,8 +368,10 @@ public class TechBackTestHandler extends BaseBackTestHandler implements BaseBack
         mBackTest.buy("6116", "2019-05-20", 5000);
         mBackTest.sell("6116", "2019-06-03", 2000);
         mBackTest.sell("6116", "2019-06-04", 0);
+        
 
         mBackTest.getResult();
+        */
 
     }
 }

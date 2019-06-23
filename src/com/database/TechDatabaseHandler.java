@@ -2,8 +2,11 @@ package com.database;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.ParseException;
 
+import com.common.Config;
 import com.common.StockTechInfo;
+import com.common.Utility;
 
 public class TechDatabaseHandler extends DatabaseHandler {
     /**
@@ -137,7 +140,16 @@ public class TechDatabaseHandler extends DatabaseHandler {
     @Override
     public void initQuerySql(String aStockID, String aDate) {
         // TODO Auto-generated method stub
-        mQuerySql = "SELECT stock_date,stock_high_price,stock_low_price,stock_opening_price,stock_closing_price,stock_volume FROM " + mTableName  + " WHERE stock_id=" + "'" + aStockID +  "' AND stock_date >" + "'" + aDate + "'" + " ORDER BY stock_date ASC";
+        try {
+            mQuerySql = "SELECT stock_date,stock_high_price,stock_low_price,stock_opening_price,stock_closing_price,stock_volume FROM " + mTableName
+                    + " WHERE stock_id=" + "'" + aStockID 
+                    +  "' AND stock_date >" + "'" + aDate 
+                    + "'  AND stock_date < '" + Utility.getDateAfterDay(aDate, Config.DataAnalyze.BACK_TEST_TRACKING_DAY)
+                    +  "'" + " ORDER BY stock_date ASC";
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         System.out.println(mQuerySql);
     }
 }
