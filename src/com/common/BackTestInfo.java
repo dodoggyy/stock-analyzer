@@ -114,7 +114,7 @@ public class BackTestInfo {
      * @return the mTransactionWin
      */
     public float getTransactionWinPercentage() {
-        return (getSellTimes() == 0) ? 0 : (getWinTimes() / getSellTimes());
+        return (getSellTimes() == 0) ? 0 : (getWinTimes() / getSellTimes())*100;
     }
 
     /**

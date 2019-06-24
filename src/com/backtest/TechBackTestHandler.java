@@ -3,6 +3,11 @@
  */
 package com.backtest;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -12,6 +17,7 @@ import java.util.Map;
 
 import com.analyzer.TechAnalyzerHandler;
 import com.analyzer.TechAnalyzerHandler.TechCsvStruct;
+import com.common.Config;
 import com.common.KeyDefine;
 import com.common.StockInformation;
 import com.common.StockTechInfo;
@@ -81,45 +87,78 @@ public class TechBackTestHandler extends BaseBackTestHandler implements BaseBack
     }
 
     @Override
-    public void getResult() {
+    public void getResult() throws IOException {
         // TODO Auto-generated method stub
+        String mLineBreak = ",";
+        String mLineTab = "\t";
+        BufferedWriter  mFileWriter = new BufferedWriter(new OutputStreamWriter (new FileOutputStream(Config.DataAnalyze.outputAnalyzerResultName,true),"UTF-8"));
+        
         System.out.println("股票代號: " + this.getStockID());
         System.out.println("當前資金: " + mBackTestInfo.getInitialCurrency());
         System.out.println("回測時間(天): " + mBackTestInfo.getBackTestTime());
         System.out.println("庫存: " + mBackTestInfo.getInStock(this.getStockID()));
         System.out.println("庫存成本: " + mBackTestInfo.getInStockCost(this.getStockID()));
+        
+        mFileWriter.write(this.getStockID().toString() + mLineBreak); // 股票代號
+        mFileWriter.write(mBackTestInfo.getInitialCurrency() + mLineBreak); // 當前資金
+        mFileWriter.write(mBackTestInfo.getBackTestTime() + mLineBreak); // 回測時間(天)
+        mFileWriter.write(mBackTestInfo.getInStock(this.getStockID()) + mLineBreak); // 庫存
+        mFileWriter.write(mBackTestInfo.getInStockCost(this.getStockID()) + mLineBreak); // 庫存成本
 
         System.out.println("買進數量紀錄:");
         Iterator mIter = mBackTestInfo.getBuyLog().entrySet().iterator();
-        while (mIter.hasNext()) {
+        while (mIter.hasNext()) { // 買進數量紀錄
             Map.Entry mEntry = (Map.Entry) mIter.next();
             System.out.println(mEntry.getKey() + " " + mEntry.getValue());
+            mFileWriter.write(mEntry.getKey() + " " + mEntry.getValue() + mLineTab);
         }
+        mFileWriter.write(mLineBreak);
 
         System.out.println("賣出數量紀錄:");
         mIter = mBackTestInfo.getSellLog().entrySet().iterator();
-        while (mIter.hasNext()) {
+        while (mIter.hasNext()) { // 賣出數量紀錄
             Map.Entry mEntry = (Map.Entry) mIter.next();
             System.out.println(mEntry.getKey() + " " + mEntry.getValue());
+            mFileWriter.write(mEntry.getKey() + " " + mEntry.getValue() + mLineTab);
         }
+        mFileWriter.write(mLineBreak);
 
         System.out.println("買進次數: " + mBackTestInfo.getBuyTimes());
         System.out.println("賣出次數: " + mBackTestInfo.getSellTimes());
         System.out.println("獲利次數: " + mBackTestInfo.getWinTimes());
-        System.out.println("勝率: " + mBackTestInfo.getTransactionWinPercentage());
+        System.out.println("勝率: " + mBackTestInfo.getTransactionWinPercentage()*100);
 
         System.out.println("已實現損益: " + mBackTestInfo.getProfitAmount(this.getStockID()));
         System.out.println("未實現損益: " + (int) getUnrealizedGains(this.getStockID()));
         System.out.println("總交易手續費: " + (int) mBackTestInfo.getTradeFee());
         System.out.println("總進場金額: " + (int) mBackTestInfo.getTotalEntryAmount());
         System.out.println("總出場金額: " + (int) mBackTestInfo.getTotalExitAmount());
-        float mTotalROI = mBackTestInfo.getProfitAmount(this.getStockID()) / mBackTestInfo.getTotalExitAmount();
+        float mTotalROI = (mBackTestInfo.getProfitAmount(this.getStockID()) / mBackTestInfo.getTotalExitAmount())*100;
         System.out.println("累積投資報酬率: " + mTotalROI + "%");
         // 年化報酬率(%) = (總報酬率+1)^(1/年數) -1
-        double mYears = ((double) mBackTestInfo.getBackTestTime() / (double) KeyDefine.DAY_PER_YEAR);
+        float mYears = ((float) mBackTestInfo.getBackTestTime() / (float) KeyDefine.DAY_PER_YEAR);
         // System.out.println(mYears);
-        System.out.println("年化報酬率: " + (Math.pow((double) mTotalROI + 1, (double) 1 / mYears) - 1) + "%");
+        float mIRR = (float) ((Math.pow((float) mTotalROI + 1, (float) 1 / mYears) - 1)*100);
+        System.out.println("年化報酬率: " + mIRR + "%");
         System.out.println();
+        
+        mFileWriter.write(mBackTestInfo.getBuyTimes() + mLineBreak); // 買進次數
+        mFileWriter.write(mBackTestInfo.getSellTimes() + mLineBreak); // 賣出次數
+        mFileWriter.write(mBackTestInfo.getWinTimes() + mLineBreak); // 獲利次數
+        mFileWriter.write(mBackTestInfo.getTransactionWinPercentage() + mLineBreak); // 勝率
+
+        mFileWriter.write(mBackTestInfo.getProfitAmount(this.getStockID()) + mLineBreak); // 已實現損益
+        mFileWriter.write((int) getUnrealizedGains(this.getStockID()) + mLineBreak); // 未實現損益
+        mFileWriter.write((int) mBackTestInfo.getTradeFee() + mLineBreak); // 總交易手續費
+        mFileWriter.write((int) mBackTestInfo.getTotalEntryAmount() + mLineBreak); // 總進場金額
+        mFileWriter.write((int) mBackTestInfo.getTotalExitAmount() + mLineBreak); // 總出場金額
+        mFileWriter.write(mTotalROI + "%" + mLineBreak); // 累積投資報酬率
+        mFileWriter.write(mIRR + "%" + mLineBreak); // 年化報酬率
+
+        mFileWriter.write("\n");
+        
+        mFileWriter.flush();
+        mFileWriter.close();
     }
 
     public float getUnrealizedGains(String aStockID) {
@@ -196,7 +235,7 @@ public class TechBackTestHandler extends BaseBackTestHandler implements BaseBack
         for (Map.Entry<String, StockTechInfo> mEntry : mInfo.getStockTechInfo().entrySet()) {
             if(bBuyFirstTime) {
                 // buy
-                this.buy(mStockID, mEntry.getValue().getStockDate(), (int)(this.getBackTestInfo().getInitialCurrency()/ mEntry.getValue().getStockClose()));
+                this.buy(mStockID, mEntry.getValue().getStockDate(), (int)((this.getBackTestInfo().getInitialCurrency()/ mEntry.getValue().getStockClose())/KeyDefine.THOUSAND_OF_SHARES)*KeyDefine.THOUSAND_OF_SHARES);
                 bBuyFirstTime = false;
             } else {
                 float mProfitPecentage = getProfitPercentage(this.mBackTestInfo.getInStockCost(mStockID),mEntry.getValue().getStockClose());
@@ -333,31 +372,54 @@ public class TechBackTestHandler extends BaseBackTestHandler implements BaseBack
      * @param args
      * @throws ParseException
      * @throws SQLException
+     * @throws IOException 
      */
-    public static void main(String[] args) throws SQLException, ParseException {
+    public static void main(String[] args) throws SQLException, ParseException, IOException {
         // TODO Auto-generated method stub
         boolean bIsSatisfiedSell = false;
         TechAnalyzerHandler mAnalyzer = new TechAnalyzerHandler();
         mAnalyzer.parseCalculatorData();
+        
+        // write BOM for CSV
+        FileOutputStream mFileOutputstream = new FileOutputStream(new File(Config.DataAnalyze.outputAnalyzerResultName));
+        byte [] bs = { (byte)0xEF, (byte)0xBB, (byte)0xBF};  //UTF-8 encoding
+        mFileOutputstream.write(bs);
+        mFileOutputstream.flush();
+        mFileOutputstream.close();
+        
+        String[] mCsvTitle = {"股票代號", "當前資金" , "回測時間(天)", "庫存", "庫存成本", "買進數量紀錄", "賣出數量紀錄", "買進次數", "賣出次數", "獲利次數", "勝率(%)", "已實現損益", "未實現損益", "總交易手續費", "總進場金額", "總出場金額", "累積投資報酬率", "年化報酬率"};
+        BufferedWriter  mFileWriter = new BufferedWriter(new OutputStreamWriter (new FileOutputStream(Config.DataAnalyze.outputAnalyzerResultName,true),"UTF-8"));
+        
+        for(String mStr: mCsvTitle) {
+            mFileWriter.write(mStr + ",");
+        }
+        mFileWriter.write("\n");
+        mFileWriter.flush();
+        mFileWriter.close();
+        
         ArrayList<TechCsvStruct> mTmp = mAnalyzer.getAnalyzerData();
         Iterator<TechCsvStruct> mIter = mTmp.iterator();
         while (mIter.hasNext()) {
             TechCsvStruct mTechData = mIter.next();
             System.out.println(mTechData.getStockID() + " " + Utility.date2String(mTechData.getDate()) + " "
                     + "BIAS: " + mTechData.getbIsBIAS() + " KDJ: " + mTechData.getbIsKDJ());
-            TechBackTestHandler mBackTest = new TechBackTestHandler(mTechData.getStockID(), Utility.date2String(mTechData.getDate()));
-            mBackTest.mBackTestInfo.setInitialCurrency(100000);
-            mBackTest.mStockInfo.setStockID(mTechData.getStockID());
             
+            if(mTechData.getbIsBIAS() && mTechData.getbIsKDJ()) { // condition filter for BIAS and KDJ
+                TechBackTestHandler mBackTest = new TechBackTestHandler(mTechData.getStockID(), Utility.date2String(mTechData.getDate()));
+                mBackTest.mBackTestInfo.setInitialCurrency(1000000);
+                mBackTest.mBackTestInfo.setBackTestTime(Config.DataAnalyze.BACK_TEST_TRACKING_DAY); // fixme
+                mBackTest.mStockInfo.setStockID(mTechData.getStockID());
+
+                bIsSatisfiedSell = mBackTest.execute(mTechData.getDate());
+
+//                if(bIsSatisfiedSell) {
+//                    mBackTest.getResult();
+//                    break;
+//                }
+                
+                mBackTest.getResult();
+            }
             
-            bIsSatisfiedSell = mBackTest.execute(mTechData.getDate());
-            
-//            if(bIsSatisfiedSell) {
-//                mBackTest.getResult();
-//                break;
-//            }
-            
-            mBackTest.getResult();
         }
 
         /*

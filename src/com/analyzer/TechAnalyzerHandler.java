@@ -33,7 +33,7 @@ public class TechAnalyzerHandler extends BaseAnalyzerHandler {
         private boolean bIsBIAS;
         private boolean bIsKDJ;
 
-        public TechCsvStruct(String mStockID, String mStockDate, Boolean bIsBIAS, Boolean bIsJDK) {
+        public TechCsvStruct(String mStockID, String mStockDate, Boolean bIsBIAS, Boolean bIsKDJ) {
             // TODO Auto-generated constructor stub
             this.mStockID = mStockID;
             this.bIsBIAS = bIsBIAS;
@@ -117,11 +117,8 @@ public class TechAnalyzerHandler extends BaseAnalyzerHandler {
                 mLines++;
                 if (mLines >= 2) { // skip csv title
                     mStrArr = Utility.removeCsvMessyStr(mTmpLine).split(",");
-                    // System.out.printf("stock_id:%s, stock_date:%s, is_BISA:%s
-                    // , is_JDK:%s\n", mStrArr[2], mStrArr[3],
-                    // mStrArr[13], mStrArr[14]);
-                    mAnalyzerData.add(new TechCsvStruct(String.format("%04d", Integer.parseInt(mStrArr[2])), mStrArr[3],
-                            Boolean.parseBoolean(mStrArr[13]), Boolean.parseBoolean(mStrArr[14])));
+//                    System.out.printf("stock_id:%s, stock_date:%s, is_BISA:%s  is_JDK:%s\n", mStrArr[2], mStrArr[3], mStrArr[13], mStrArr[14]);
+                    mAnalyzerData.add(new TechCsvStruct(String.format("%04d", Integer.parseInt(mStrArr[2])), mStrArr[3],"1".equals(mStrArr[13]), "1".equals(mStrArr[14])));
                 }
             }
             mBufferReader.close();
