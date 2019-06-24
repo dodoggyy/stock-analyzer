@@ -4,9 +4,9 @@ public class Config {
 
     // 資料分析參數
     public static class DataAnalyze {
-        public final static String outputDataDir = "F:\\Stock\\tmp\\";
-        public final static String outputAnalyzerDir = "F:\\Stock\\analyzer\\src";
-        public final static String outputAnalyzerResultName = "F:\\Stock\\analyzer\\result\\result.csv";
+        public final static String outputDataDir = "/home/chris/Stock/tmp/";
+        public final static String outputAnalyzerDir = "/home/chris/Stock/analyzer/src/";
+        public final static String outputAnalyzerResultName = "/home/chris/Stock/analyzer/result/result.csv";
         public final static int DOWNLOAD_FILE_SIZE = 10 * 1024; // 10Kb
         public final static int DOWNLOAD_DELAY_TIME = 5000;//10000; // 5 sec
         public final static int HTML_PARSER_DELAY_EACH_TIME = 100; // 0.1 sec
