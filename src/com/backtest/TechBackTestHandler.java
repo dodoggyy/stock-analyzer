@@ -380,6 +380,8 @@ public class TechBackTestHandler extends BaseBackTestHandler implements BaseBack
         TechAnalyzerHandler mAnalyzer = new TechAnalyzerHandler();
         mAnalyzer.parseCalculatorData();
         
+        Utility.timerStart();
+        
         // write BOM for CSV
         FileOutputStream mFileOutputstream = new FileOutputStream(new File(Config.DataAnalyze.outputAnalyzerResultName));
         byte [] bs = { (byte)0xEF, (byte)0xBB, (byte)0xBF};  //UTF-8 encoding
@@ -406,7 +408,7 @@ public class TechBackTestHandler extends BaseBackTestHandler implements BaseBack
             
             if(mTechData.getbIsBIAS() && mTechData.getbIsKDJ()) { // condition filter for BIAS and KDJ
                 TechBackTestHandler mBackTest = new TechBackTestHandler(mTechData.getStockID(), Utility.date2String(mTechData.getDate()));
-                mBackTest.mBackTestInfo.setInitialCurrency(1000000);
+                mBackTest.mBackTestInfo.setInitialCurrency(Config.DataAnalyze.BACK_TEST_INITIAL_MONEY);
                 mBackTest.mBackTestInfo.setBackTestTime(Config.DataAnalyze.BACK_TEST_TRACKING_DAY); // fixme
                 mBackTest.mStockInfo.setStockID(mTechData.getStockID());
 
@@ -421,6 +423,8 @@ public class TechBackTestHandler extends BaseBackTestHandler implements BaseBack
             }
             
         }
+
+        Utility.timerEnd();
 
         /*
         TechBackTestHandler mBackTest = new TechBackTestHandler("6116", "2019-05-01");

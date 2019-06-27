@@ -96,6 +96,11 @@ public abstract class DatabaseHandler {
         mConnection.commit();
         mPreparedStatement.clearBatch();
     }
+    
+    public void executeSqlPrepareCmd(String aSqlCmd) throws SQLException {
+        this.mPreparedStatement.addBatch(aSqlCmd);
+        executeSqlPrepareCmd();
+    }
 
     // execute SQL command for delete dublicate data
     abstract void deleteSqlDuplicateData() throws SQLException;

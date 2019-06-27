@@ -46,7 +46,7 @@ public class Utility {
 
     public static String getTodayDate() {
         Date mDate = new Date();
-        SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy/M/dd");
+        SimpleDateFormat mDateFormat = new SimpleDateFormat(Config.DataAnalyze.DATE_FORMAT);
         mDateFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
         String mDateStr = mDateFormat.format(mDate);
         // System.out.println(mDateStr);
@@ -142,9 +142,8 @@ public class Utility {
         if (aFloatValue.isEmpty()) {
             return 0;
         }
-        int mReturnInt = 0;
-        mReturnInt = (int) Math.round(Float.parseFloat(aFloatValue) * Math.pow(10, aDigit));
-        return mReturnInt;
+        
+        return float2Int(Float.parseFloat(aFloatValue), aDigit);
     }
 
     public static int float2Int(float aFloatValue, int aDigit) {
@@ -157,9 +156,8 @@ public class Utility {
         if (aIntValue.isEmpty()) {
             return 0;
         }
-        float mReturnFloat = 0;
-        mReturnFloat = (float) (Float.parseFloat(aIntValue) / Math.pow(10, aDigit));
-        return mReturnFloat;
+        
+        return int2Float(Float.parseFloat(aIntValue), aDigit);
     }
 
     public static float int2Float(float aIntValue, int aDigit) {
@@ -234,8 +232,7 @@ public class Utility {
     }
 
     public static Date string2Date(String aDate) throws ParseException {
-        SimpleDateFormat mSimpleDate = new SimpleDateFormat("yyyy-MM-dd");
-        return mSimpleDate.parse(aDate);
+        return string2Date(aDate, Config.DataAnalyze.DATE_FORMAT);
     }
 
     public static Date string2Date(String aDate, String aDateFormat) throws ParseException {
@@ -244,8 +241,7 @@ public class Utility {
     }
 
     public static String date2String(Date aDate) throws ParseException {
-        SimpleDateFormat mSimpleDate = new SimpleDateFormat("yyyy-MM-dd");
-        return mSimpleDate.format(aDate);
+        return date2String(aDate, Config.DataAnalyze.DATE_FORMAT);
     }
 
     public static String date2String(Date aDate, String aDateFormat) throws ParseException {
@@ -253,17 +249,16 @@ public class Utility {
         return mSimpleDate.format(aDate);
     }
 
-    public static String getDateAfterDay(Date aDate, int aAfterDay) {
-        SimpleDateFormat mSimpleDate = new SimpleDateFormat("yyyy-MM-dd");
-        Calendar mCalendar = Calendar.getInstance();
-        mCalendar.setTime(aDate);
-        mCalendar.add(Calendar.DAY_OF_MONTH, aAfterDay);
-
-        return mSimpleDate.format(mCalendar.getTime());
+    public static String getDateAfterDay(Date aDate, int aAfterDay) throws ParseException {
+        return getDateAfterDay(date2String(aDate), aAfterDay, Config.DataAnalyze.DATE_FORMAT);
     }
 
     public static String getDateAfterDay(String aDate, int aAfterDay) throws ParseException {
-        SimpleDateFormat mSimpleDate = new SimpleDateFormat("yyyy-MM-dd");
+        return getDateAfterDay(aDate, aAfterDay, Config.DataAnalyze.DATE_FORMAT);
+    }
+    
+    public static String getDateAfterDay(String aDate, int aAfterDay, String aDateFormat) throws ParseException {
+        SimpleDateFormat mSimpleDate = new SimpleDateFormat(aDateFormat);
         Date mDate = Utility.string2Date(aDate);
         Calendar mCalendar = Calendar.getInstance();
         mCalendar.setTime(mDate);
