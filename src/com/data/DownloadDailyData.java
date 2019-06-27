@@ -46,7 +46,7 @@ public class DownloadDailyData {
 
     public static void main(String[] args) {
         // download data from TWSE and OTC
-        String mDate = "2019/04/30";
+        String mDate = "2019-06-27";
         DownloadDailyData mDonloader = DownloadDailyData.getInstance();
 //        DownloadDailyData mDonloader = new DownloadDailyData();
         //DownloadDailyData mDonloader2 = DownloadDailyData.getInstance();
@@ -55,7 +55,7 @@ public class DownloadDailyData {
 //            mDonloader.downloadData(mDate, i);
 //        }
         
-        mDonloader.downloadData(mDate, KeyDefine.OTC_FUND);
+        mDonloader.downloadData(mDate, KeyDefine.TWSE_TECH);
     }
     
     public static DownloadDailyData getInstance() {
@@ -88,12 +88,12 @@ public class DownloadDailyData {
         System.setErr(System.out);
         System.out.println("\r\n*****Download Daily data(csv file) *****");
 
-        // 下載日期ex: "2018/4/29"
+        // 下載日期ex: "2019-6-27"
         mNow = aDownloadDate;
         System.out.println(mNow + " Dir:" + mDownloadDir);
 
         // 日期區間格式處理
-        mStr = mNow.split("/");
+        mStr = mNow.split("-");
         mYrOtc = String.valueOf(Integer.valueOf(mStr[0]) - 1911); // OTC年份格式處理
         mYr = mStr[0];
         mMth = String.valueOf(Integer.valueOf(mStr[1]) + 100).substring(1);
@@ -124,8 +124,8 @@ public class DownloadDailyData {
                 }
                 mUrlParm[aDownloadType] = mUrlParm[aDownloadType].substring(1);
                 mConnection = excutePost(mUrl[aDownloadType], mUrlParm[aDownloadType], KeyDefine.TWSE);
-                // System.out.println(mUrlParm[aDownloadType]);
-                // System.out.println(mDownloadDir + mFilename[aDownloadType]);
+                System.out.println(mUrlParm[aDownloadType]);
+                System.out.println(mDownloadDir + mFilename[aDownloadType]);
                 downloadFromUrl("", mDownloadDir + mFilename[aDownloadType], mConnection);
             } else if ((aDownloadType == KeyDefine.OTC_TECH) || (aDownloadType == KeyDefine.OTC_FUND)) {
                 //System.out.println(mUrl[aDownloadType] +" "+ mDownloadDir + mFilename[aDownloadType]);

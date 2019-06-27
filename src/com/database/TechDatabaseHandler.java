@@ -31,8 +31,14 @@ public class TechDatabaseHandler extends DatabaseHandler {
     public static void main(String[] args) throws SQLException {
         TechDatabaseHandler mStockDB = new TechDatabaseHandler();
         
-        DBOperation(mStockDB);
-
+//        DBOperation(mStockDB);
+        try {
+            System.out.println(mStockDB.getDbLatestDate());
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
         //mStockDB.deleteSqlDuplicateData();
 
 
@@ -42,10 +48,7 @@ public class TechDatabaseHandler extends DatabaseHandler {
         String mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_closing_price, stock_opening_price, stock_high_price, stock_low_price, stock_volume, stock_type)"
               + "VALUES ('6116', '2017-06-03', 802, 802, 804, 796, 21080000, 2);";
 
-        this.mPreparedStatement.addBatch(mInsertSql);
-        this.mPreparedStatement.executeBatch();
-        this.mConnection.commit();
-        mPreparedStatement.clearBatch();
+        executeSqlPrepareCmd(mInsertSql);
     }
     
     public TechDatabaseHandler() throws SQLException {
@@ -131,10 +134,7 @@ public class TechDatabaseHandler extends DatabaseHandler {
                 " WHERE stock_id=a.stock_id and stock_date=a.stock_date)"
                 + ")b);";
         System.out.println(mInsertSql);
-        this.mPreparedStatement.addBatch(mInsertSql);
-        this.mPreparedStatement.executeBatch();
-        this.mConnection.commit();
-        mPreparedStatement.clearBatch();
+        executeSqlPrepareCmd(mInsertSql);
     }
 
     @Override
@@ -151,5 +151,18 @@ public class TechDatabaseHandler extends DatabaseHandler {
             e.printStackTrace();
         }
         System.out.println(mQuerySql);
+    }
+    
+    public String getDbLatestDate() throws SQLException, ParseException{
+        String mDate = "";
+        String mLatestDate = "latest_date";
+        String mQueryDateSql = "SELECT MAX(stock_date) AS " + mLatestDate + " FROM " + mTableName;
+        
+        mResultSet = mStatement.executeQuery(mQueryDateSql);
+        while(mResultSet.next()) {
+            mDate = Utility.date2String(mResultSet.getDate(mLatestDate));
+        }
+        
+        return mDate;
     }
 }

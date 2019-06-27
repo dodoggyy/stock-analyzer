@@ -1,14 +1,17 @@
 package com.data;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Scanner;
 
+import com.common.Config;
 import com.common.KeyDefine;
 import com.common.Utility;
+import com.database.TechDatabaseHandler;
 import com.parser.BaseParserHandler;
 import com.parser.OTCFundParserHandler;
 import com.parser.OTCTechParserHandler;
@@ -35,6 +38,7 @@ public class DataHandlerMain {
     public static void main(String[] args) throws SQLException {
         // TODO Auto-generated method stub
         int mDowloadType, mStoreType;
+        String mBeginDay = "", mEndDay = "";
         Scanner mScanner = new Scanner(System.in);
         System.out.println("(0)Skip (1)DB last date to Today (2)defined range by self");
         mDowloadType = mScanner.nextInt();
@@ -46,11 +50,36 @@ public class DataHandlerMain {
             // not implement yet
             // System.out.println("Please select download type: (1)update to
             // newest date (2)insert old date data");
-            System.out.println("not implement yet");
-        } else if (mDowloadType == KeyDefine.DOWNLOAD_SPECIFIED_RANGE) {
-            String mBeginDay = "", mEndDay = "";
+            String mDbDate = "";
+            ArrayList<String> mDateStr = new ArrayList<String>();
+            TechDatabaseHandler mHandler = new TechDatabaseHandler();
 
-            System.out.printf("Please input begin day: ex:2018/4/23\n");
+            try {
+                mDbDate = mHandler.getDbLatestDate();
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            
+//            System.out.printf("Today:%s , DB date: %s\n",Utility.getTodayDate(), mDbDate);
+            
+            if(mDbDate == null) {
+                System.out.println("null date in Database");
+            } else {
+                try {
+                    mBeginDay = Utility.getDateAfterDay(mDbDate, 1);
+                } catch (ParseException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                mEndDay = Utility.getTodayDate();
+                DataHandlerMain mDataHandler = new DataHandlerMain(mBeginDay, mEndDay);
+                mDataHandler.downloadData(mDowloadType);
+            }
+            
+        } else if (mDowloadType == KeyDefine.DOWNLOAD_SPECIFIED_RANGE) {
+
+            System.out.printf("Please input begin day: ex:2019-06-27\n");
             mScanner = new Scanner(System.in);
             mBeginDay = mScanner.next();
             System.out.printf("Please input end day:\n");
@@ -97,11 +126,10 @@ public class DataHandlerMain {
         int mTotalDay = 0;
         boolean bRet = true;
         ArrayList<String> mDateArray = new ArrayList<String>();
-        SimpleDateFormat mFormatter = new SimpleDateFormat("yyyy/M/d");
+        SimpleDateFormat mFormatter = new SimpleDateFormat(Config.DataAnalyze.DATE_FORMAT);
 
-        if (aDowloadType == KeyDefine.DOWNLOAD_DB_UPDATE) {
-            System.out.println("not implement yet");
-        } else if (aDowloadType == KeyDefine.DOWNLOAD_SPECIFIED_RANGE) {
+        if ((aDowloadType == KeyDefine.DOWNLOAD_SPECIFIED_RANGE) || 
+                (aDowloadType == KeyDefine.DOWNLOAD_DB_UPDATE)) {
             try {
                 Date mDateBegin = mFormatter.parse(mBeginDay);
                 Calendar calendar = Calendar.getInstance();

@@ -7,6 +7,7 @@ public class Config {
         public final static String outputDataDir = "F:\\Stock\\tmp\\";
         public final static String outputAnalyzerDir = "F:\\Stock\\analyzer\\src";
         public final static String outputAnalyzerResultName = "F:\\Stock\\analyzer\\result\\result.csv";
+        public final static String DATE_FORMAT = "yyyy-MM-dd";
         public final static int DOWNLOAD_FILE_SIZE = 10 * 1024; // 10Kb
         public final static int DOWNLOAD_DELAY_TIME = 5000;//10000; // 5 sec
         public final static int HTML_PARSER_DELAY_EACH_TIME = 100; // 0.1 sec
@@ -15,10 +16,12 @@ public class Config {
         public final static int HTML_INITIAL_STOCK_ID = 1100;
         public final static int HTML_MAX_ETF_ID = 100;
         
+        
         public final static int DOWNLOAD_DELAY_TIME_TWSE = 5000; // 5 sec
         public final static int DOWNLOAD_DELAY_TIME_OTC = 5000; // 5 sec
         
         public final static int BACK_TEST_TRACKING_DAY = 240; // back test day
+        public final static int BACK_TEST_INITIAL_MONEY = 1000000; // back test initial money
 
         // TWSE:上市, OTC:上櫃, TECH:技術面, FUND:基本面
         public static final String[] downloadName = { "otc_tech", "otc_fund", "twse_tech", "twse_fund" };
