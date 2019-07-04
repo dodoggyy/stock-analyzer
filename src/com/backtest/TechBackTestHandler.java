@@ -56,7 +56,7 @@ public class TechBackTestHandler extends BaseBackTestHandler implements BaseBack
         // exit strategy setting
         TradeStrategyHandler mTradeExit = new TradeStrategyHandler();
         TechAnalyzerInfo enExitInfo = new TechAnalyzerInfo();
-        enExitInfo.setProfitPercentage(15);
+        enExitInfo.setProfitPercentage(Config.DataAnalyze.BACK_TEST_PROFIT_PERCENT);
 
         mTradeExit.add(EnAnalyzeStrategyType.EN_ANALYZE_STRATEGY_FUND_PROFIT, enExitInfo);
         this.setExitStrategy(mTradeExit);
@@ -90,7 +90,7 @@ public class TechBackTestHandler extends BaseBackTestHandler implements BaseBack
     public void getResult() throws IOException {
         // TODO Auto-generated method stub
         String mLineBreak = ",";
-        String mLineTab = "\t";
+        String mLineTab = "  ";
         BufferedWriter  mFileWriter = new BufferedWriter(new OutputStreamWriter (new FileOutputStream(Config.DataAnalyze.outputAnalyzerResultName,true),"UTF-8"));
         
         System.out.println("股票代號: " + this.getStockID());
@@ -168,8 +168,12 @@ public class TechBackTestHandler extends BaseBackTestHandler implements BaseBack
         // 持有成本＝(成交價＊股數)＋買進手續費(已含在庫存成本)
         float mTotalInStock = mBackTestInfo.getInStockCost(aStockID) * mInStock;
         // 抓取資料最後交易日之收盤價
-        float mLastDateClosePrice = Utility.getMapLastElement(this.getStockInfo().getStockTechInfo()).getValue()
-                .getStockClose();
+        float mLastDateClosePrice = 0;
+        if(Utility.getMapLastElement(this.getStockInfo().getStockTechInfo()) != null) {
+            mLastDateClosePrice = Utility.getMapLastElement(this.getStockInfo().getStockTechInfo()).getValue()
+                    .getStockClose();
+        }
+         
         // 預估收入＝(市價＊股數)－賣出手續費－交易稅
         float mExpectedIncome = mLastDateClosePrice * mBackTestInfo.getInStock(aStockID)
                 - calculateFee(mInStock, bIsSell);
@@ -238,8 +242,10 @@ public class TechBackTestHandler extends BaseBackTestHandler implements BaseBack
                 this.buy(mStockID, mEntry.getValue().getStockDate(), (int)((this.getBackTestInfo().getInitialCurrency()/ mEntry.getValue().getStockClose())/KeyDefine.THOUSAND_OF_SHARES)*KeyDefine.THOUSAND_OF_SHARES);
                 bBuyFirstTime = false;
             } else {
+                float mExitProfitPercent = Utility.int2Float(Config.DataAnalyze.BACK_TEST_PROFIT_PERCENT, 2);
+//                System.out.println("mExitProfitPercent:" + mExitProfitPercent);
                 float mProfitPecentage = getProfitPercentage(this.mBackTestInfo.getInStockCost(mStockID),mEntry.getValue().getStockClose());
-                if(mProfitPecentage < -0.15 || mProfitPecentage > 0.15) {
+                if(mProfitPecentage < -mExitProfitPercent || mProfitPecentage > mExitProfitPercent) {
                   this.sell(this.getStockID(), mEntry.getValue().getStockDate(), this.mBackTestInfo.getInStock(mStockID));
                   return true;
               }
