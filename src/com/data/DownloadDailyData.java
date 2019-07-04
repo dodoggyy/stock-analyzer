@@ -55,7 +55,7 @@ public class DownloadDailyData {
 //            mDonloader.downloadData(mDate, i);
 //        }
         
-        mDonloader.downloadData(mDate, KeyDefine.TWSE_TECH);
+        mDonloader.downloadData(mDate, KeyDefine.TWSE_FUND);
     }
     
     public static DownloadDailyData getInstance() {
@@ -108,12 +108,18 @@ public class DownloadDailyData {
             
             
         } else {
-            mUrl[aDownloadType] = KeyDefine.downloadUrl[aDownloadType];
+//            mUrl[aDownloadType] = KeyDefine.downloadUrl[aDownloadType];
+            if (aDownloadType == KeyDefine.TWSE_FUND) {
+                mUrl[aDownloadType] = String.format(KeyDefine.downloadUrl[aDownloadType] + "?response=csv&date=%s&type=%s", (mYr + mMth + mDay), SEL_TYPE[1]);
+            } else if(aDownloadType == KeyDefine.TWSE_TECH) {
+                mUrl[aDownloadType] = String.format(KeyDefine.downloadUrl[aDownloadType] + "?response=csv&date=%s&type=%s", (mYr + mMth + mDay), SEL_TYPE[0]);
+            }
+ 
         }
 
         try {
             if ((aDownloadType == KeyDefine.TWSE_TECH) || (aDownloadType == KeyDefine.TWSE_FUND)) {
-                mPostData[1] = mYr + mMth + mDay;
+                /*mPostData[1] = mYr + mMth + mDay;
                 if (aDownloadType == KeyDefine.TWSE_FUND) {
                     mPostData[2] = SEL_TYPE[1];
                 } else {
@@ -124,22 +130,23 @@ public class DownloadDailyData {
                 }
                 mUrlParm[aDownloadType] = mUrlParm[aDownloadType].substring(1);
                 mConnection = excutePost(mUrl[aDownloadType], mUrlParm[aDownloadType], KeyDefine.TWSE);
-                System.out.println(mUrlParm[aDownloadType]);
-                System.out.println(mDownloadDir + mFilename[aDownloadType]);
-                downloadFromUrl("", mDownloadDir + mFilename[aDownloadType], mConnection);
-            } else if ((aDownloadType == KeyDefine.OTC_TECH) || (aDownloadType == KeyDefine.OTC_FUND)) {
-                //System.out.println(mUrl[aDownloadType] +" "+ mDownloadDir + mFilename[aDownloadType]);
-                // downloadFromUrl(mUrl[aDownloadType], mDownloadDir +
-                // mFilename[aDownloadType], mConnection);
-                
-                //System.out.println("Target url: " + mUrl[aDownloadType]);
-                //System.out.println("Target path: " + mDownloadDir + mFilename[aDownloadType]);
-                // change from http to https
-                downloadFromUrlHTTPS("", mUrl[aDownloadType], mDownloadDir + mFilename[aDownloadType]);
-                /*
-                mConnection = excutePost(mUrl[aDownloadType], mUrlParm[aDownloadType], KeyDefine.OTC);
                 downloadFromUrl("", mDownloadDir + mFilename[aDownloadType], mConnection);
                 */
+                
+                
+//                System.out.println(mUrlParm[aDownloadType]);
+//                System.out.println(mDownloadDir + mFilename[aDownloadType]);
+//                System.out.println("Target url: " + mUrl[aDownloadType]);
+//                System.out.println("Target path: " + mDownloadDir + mFilename[aDownloadType]);
+                
+                
+                // change from http to https
+                downloadFromUrlHTTPS("", mUrl[aDownloadType], mDownloadDir + mFilename[aDownloadType]);
+            } else if ((aDownloadType == KeyDefine.OTC_TECH) || (aDownloadType == KeyDefine.OTC_FUND)) {
+                // change from http to https
+                downloadFromUrlHTTPS("", mUrl[aDownloadType], mDownloadDir + mFilename[aDownloadType]);
+                //System.out.println("Target url: " + mUrl[aDownloadType]);
+                //System.out.println("Target path: " + mDownloadDir + mFilename[aDownloadType]);
             }
 
             mFile = new File(mDownloadDir, mFilename[aDownloadType]);
