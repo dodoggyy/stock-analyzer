@@ -16,6 +16,8 @@ public class StockInfoDatabaseHandler extends DatabaseHandler{
      * sync with TWSEFundParserHandler, OTCFundParserHandler
      * id, "證券代號", "國際證券辨識號碼(ISIN Code)", "上市日", "市場別", "產業別", "CFICode"
      */
+    private String dropDbSQL = "DROP TABLE IF EXISTS " +  mTableName;
+    
     private String createDbSQL = "CREATE TABLE " + mTableName + " (" + 
             "id     INT NOT NULL AUTO_INCREMENT," +
             "PRIMARY KEY (id)," +
@@ -95,6 +97,7 @@ public class StockInfoDatabaseHandler extends DatabaseHandler{
         try {
             this.mConnection = DriverManager.getConnection(mUrl, username, password);
             this.mStatement = mConnection.createStatement();
+            this.mStatement.executeUpdate(dropDbSQL);
             this.mStatement.executeUpdate(createDbSQL);
             // System.out.println(createDbSQL);
         } catch (SQLException e) {

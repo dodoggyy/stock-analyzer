@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.security.cert.X509Certificate;
 
 import javax.net.ssl.SSLContext;

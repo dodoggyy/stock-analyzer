@@ -35,7 +35,7 @@ public class DataHandlerMain {
     private String mEndDay;
 
     @SuppressWarnings("resource")
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, InterruptedException {
         // TODO Auto-generated method stub
         int mDowloadType, mStoreType;
         String mBeginDay = "", mEndDay = "";
@@ -76,7 +76,7 @@ public class DataHandlerMain {
                 DataHandlerMain mDataHandler = new DataHandlerMain(mBeginDay, mEndDay);
                 mDataHandler.downloadData(mDowloadType);
             }
-            
+
         } else if (mDowloadType == KeyDefine.DOWNLOAD_SPECIFIED_RANGE) {
 
             System.out.printf("Please input begin day: ex:2019-06-27\n");
@@ -122,7 +122,7 @@ public class DataHandlerMain {
         mEndDay = aEndDay;
     }
 
-    public boolean downloadData(int aDowloadType) {
+    public boolean downloadData(int aDowloadType) throws InterruptedException {
         int mTotalDay = 0;
         boolean bRet = true;
         ArrayList<String> mDateArray = new ArrayList<String>();
@@ -178,6 +178,13 @@ public class DataHandlerMain {
             }
             mThreadTwseTech.start();
             mThreadOtcTech.start();
+            
+            synchronized (mThreadTwseTech) {
+                mThreadTwseTech.wait();
+            }
+            synchronized (mThreadOtcTech) {
+                mThreadOtcTech.wait();
+            }
         } else {
             System.out.println("Unknown type");
         }
@@ -204,6 +211,7 @@ public class DataHandlerMain {
                 Utility.scheduleDelay(Utility.getScheduleDelayTimeMs(mDowloadType));
                 //System.out.println("DowloadType:" + mDowloadType + " Date:" + mDateArray.get(i).toString());
             }
+            notify();
         }
        
     }

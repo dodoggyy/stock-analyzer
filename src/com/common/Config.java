@@ -23,6 +23,7 @@ public class Config {
         public final static int BACK_TEST_TRACKING_DAY = 240; // back test day
         public final static int BACK_TEST_INITIAL_MONEY = 1000000; // back test initial money
         public final static int BACK_TEST_PROFIT_PERCENT = 15; // back test profit percentage
+        public final static int BACK_TEST_STOP_LOST_PERCENT = -20; // back test stop lost percentage
 
         // TWSE:上市, OTC:上櫃, TECH:技術面, FUND:基本面
         public static final String[] downloadName = { "otc_tech", "otc_fund", "twse_tech", "twse_fund" };

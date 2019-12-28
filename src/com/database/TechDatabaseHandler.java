@@ -13,6 +13,8 @@ public class TechDatabaseHandler extends DatabaseHandler {
      * sync with TWSETechParserHandler, OTCTechParserHandler
      * id, "證券代號", "日期", "收盤價", "開盤價", "最高價", "最低價", "成交量", "交易類別"
      */
+    private String dropDbSQL = "DROP TABLE IF EXISTS " +  mTableName;
+    
     private String createDbSQL = "CREATE TABLE " + mTableName + " (" + 
             "id     INT NOT NULL AUTO_INCREMENT," +
             "PRIMARY KEY (id)," +
@@ -83,6 +85,7 @@ public class TechDatabaseHandler extends DatabaseHandler {
         try {
             this.mConnection = DriverManager.getConnection(mUrl, username, password);
             this.mStatement = mConnection.createStatement();
+            this.mStatement.executeUpdate(dropDbSQL);
             this.mStatement.executeUpdate(createDbSQL);
             // System.out.println(createDbSQL);
         } catch (SQLException e) {

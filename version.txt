@@ -4,12 +4,14 @@
 3.周,月,年線計算
 4.整合技術線 & 圖像顯示
 5.UML架構圖
-6.porting to Linux
-7.add daily script
-8.刪除DB重複資料,DB自動更新補齊
-9.log4j
+6.add daily script
+7.log4j2
 
 版本更新資訊:
+2019/12/29
+導入log4j2、AmaterasUML
+TechBackTest流程優化
+
 2019/7/4
 修正TWSE無法抓取檔案(從http改成https)
 refine code & bug fix (null data)
