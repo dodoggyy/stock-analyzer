@@ -6,50 +6,36 @@ package com.database;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import com.common.DatabaseConfig;
+
 /**
  * @author Chris Lin
  *
  */
 public class StockInfoDatabaseHandler extends DatabaseHandler{
 
-    /**
-     * sync with TWSEFundParserHandler, OTCFundParserHandler
-     * id, "證券代號", "國際證券辨識號碼(ISIN Code)", "上市日", "市場別", "產業別", "CFICode"
-     */
-    private String dropDbSQL = "DROP TABLE IF EXISTS " +  mTableName;
-    
-    private String createDbSQL = "CREATE TABLE " + mTableName + " (" + 
-            "id     INT NOT NULL AUTO_INCREMENT," +
-            "PRIMARY KEY (id)," +
-            "stock_id     VARCHAR(4), " +
-            "stock_name   VARCHAR(20), " +
-            "stock_isin_code  VARCHAR(12), " +
-            "stock_listing_date  DATE, " +
-            "stock_industry    VARCHAR(20), " +
-            "stock_cfi_code    VARCHAR(6), " +
-            "stock_type     INT, " +
-            "FOREIGN KEY(stock_type)REFERENCES listed_type(id)) ";
-
-    private String mFiledStockId = "";
-    private String mFieldStockName = "";
-    private String mFieldISIN = "";
-    private String mFieldListingDate = "";
-    private String mFieldIndustry = "";
-    private String mFieldCFI = "";
-    
     public StockInfoDatabaseHandler() throws SQLException {
         // TODO Auto-generated constructor stub
+        init();
     }
-
-    /**
-     * @param args
-     * @throws SQLException 
-     */
-    public static void main(String[] args) throws SQLException {
-     // TODO Auto-generated method stub
-        StockInfoDatabaseHandler mStockDB = new StockInfoDatabaseHandler();
-
-        DBOperation(mStockDB);
+    
+    public void init() {
+        super.init();
+        /**
+         * sync with TWSEFundParserHandler, OTCFundParserHandler
+         * id, "證券代號", "國際證券辨識號碼(ISIN Code)", "上市日", "市場別", "產業別", "CFICode"
+         */
+        createDbSQL = "CREATE TABLE " + mTableName + " (" + 
+                "id     INT NOT NULL AUTO_INCREMENT," +
+                "PRIMARY KEY (id)," +
+                "stock_id     VARCHAR(4), " +
+                "stock_name   VARCHAR(20), " +
+                "stock_isin_code  VARCHAR(12), " +
+                "stock_listing_date  DATE, " +
+                "stock_industry    VARCHAR(20), " +
+                "stock_cfi_code    VARCHAR(6), " +
+                "stock_type     INT, " +
+                "FOREIGN KEY(stock_type)REFERENCES listed_type(id)) ";
     }
     
     protected void TestInsertTable() throws SQLException {
@@ -63,50 +49,9 @@ public class StockInfoDatabaseHandler extends DatabaseHandler{
     }
 
     @Override
-    public void connectDatabase() {
-        // TODO Auto-generated method stub
-        try {
-            
-            mConnection = DriverManager.getConnection(mUrl, username, password);
-            mConnection.setAutoCommit(false);
-            this.mStatement = mConnection.createStatement();
-            this.mPreparedStatement = mConnection.prepareStatement(mInsertSql);
-            // System.out.println(mInsertTechSql);
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     public void setupDatabase() {
         // TODO Auto-generated method stub
-        mTableName = "stock_info";
-        
-        mFiledStockId = "stock_id";
-        mFieldStockName = "stock_name";
-        mFieldISIN = "stock_isin_code";
-        mFieldListingDate = "stock_listing_date";
-        mFieldIndustry = "stock_industry";
-        mFieldCFI = "stock_cfi_code";
-    }
-
-    @Override
-    void createTable() {
-        // TODO Auto-generated method stub
-        try {
-            this.mConnection = DriverManager.getConnection(mUrl, username, password);
-            this.mStatement = mConnection.createStatement();
-            this.mStatement.executeUpdate(dropDbSQL);
-            this.mStatement.executeUpdate(createDbSQL);
-            // System.out.println(createDbSQL);
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            System.out.println("DriverClassNotFound :"+e.toString());
-        } finally { 
-            this.closeObject(); 
-        }
+        setTableName(DatabaseConfig.TABLE_STOCK_INFO);
     }
 
     @Override
@@ -126,7 +71,7 @@ public class StockInfoDatabaseHandler extends DatabaseHandler{
                 mPreparedStatement = null;
             }
         } catch(SQLException e) { 
-            System.out.println("Close Exception :" + e.toString()); 
+            log.error("Close Exception :" + e.toString()); 
         }
     }
 
@@ -155,4 +100,14 @@ public class StockInfoDatabaseHandler extends DatabaseHandler{
         
     }
 
+    /**
+     * @param args
+     * @throws SQLException 
+     */
+    public static void main(String[] args) throws SQLException {
+     // TODO Auto-generated method stub
+        StockInfoDatabaseHandler mStockDB = new StockInfoDatabaseHandler();
+
+        DBOperation(mStockDB);
+    }
 }

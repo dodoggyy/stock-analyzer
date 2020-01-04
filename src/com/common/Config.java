@@ -8,6 +8,7 @@ public class Config {
         public final static String outputAnalyzerDir = "F:\\Stock\\analyzer\\src";
         public final static String outputAnalyzerResultName = "F:\\Stock\\analyzer\\result\\result.csv";
         public final static String DATE_FORMAT = "yyyy-MM-dd";
+        public final static String TIME_ZONE = "GMT+8";
         public final static int DOWNLOAD_FILE_SIZE = 10 * 1024; // 10Kb
         public final static int DOWNLOAD_DELAY_TIME = 5000;//10000; // 5 sec
         public final static int HTML_PARSER_DELAY_EACH_TIME = 100; // 0.1 sec

@@ -8,6 +8,9 @@
 7.log4j2
 
 版本更新資訊:
+2020/1/4
+Database Handler架構優化
+
 2019/12/29
 導入log4j2、AmaterasUML
 TechBackTest流程優化

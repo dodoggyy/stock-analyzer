@@ -1,22 +1,31 @@
 package com.database;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
+
 import com.common.DatabaseConfig;
 import com.common.Utility;
 
 public abstract class DatabaseHandler {
-    protected String createDbSQL = null;
+    protected static final Logger log = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
+    
+    protected String createDbSQL;
     protected PreparedStatement mPreparedStatement = null;
     protected String mUrl;
     protected String mTableName;
-    protected String mInsertSql = "";
-    protected String mQuerySql = "";
+    protected String mInsertSql;
+    protected String mQuerySql;
+    protected String dropDbSQL;
 
     protected String host, port, socket, username, password, database, chartset;
 
@@ -25,11 +34,15 @@ public abstract class DatabaseHandler {
     public Statement mStatement = null;
 
     public DatabaseHandler() throws SQLException {
-        this.closeObject();
-        this.setupDatabase();
-        this.initPrepareSql();
-        this.readConfig();
-        this.connectDatabase();
+    }
+    
+    public void init() {
+        Configurator.setRootLevel(Level.ALL);
+        closeObject();
+        setupDatabase();
+        initPrepareSql();
+        readConfig();
+        connectDatabase();
     }
 
     // read database config
@@ -42,20 +55,82 @@ public abstract class DatabaseHandler {
         database = DatabaseConfig.DB_KEY_DATABASE;
         mUrl = "jdbc:" + DatabaseConfig.DB_SECTION_MYSQL + "://localhost:" + port + "/" + database
                 + "?serverTimezone=UTC&characterEncoding=utf-8";
-        // System.out.println(mUrl);
+        dropDbSQL = "DROP TABLE IF EXISTS " +  getTableName();
+        log.debug(mUrl);
     }
 
     // connect Database
-    abstract void connectDatabase();
+    public void connectDatabase() {
+        try {
+            
+            mConnection = DriverManager.getConnection(mUrl, username, password);
+            mConnection.setAutoCommit(false);
+            this.mStatement = mConnection.createStatement();
+            this.mPreparedStatement = mConnection.prepareStatement(mInsertSql);
+            // System.out.println(mInsertTechSql);
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
     // setup related database parameters
     abstract void setupDatabase();
-
+    
     // initial SQL table
-    abstract void createTable();
+    public void createTable() {
+        try {
+            log.debug("Drop SQL:" + dropDbSQL);
+            log.debug("Create SQL:" + createDbSQL);
+            this.mConnection = DriverManager.getConnection(mUrl, username, password);
+            this.mStatement = mConnection.createStatement();
+            this.mStatement.executeUpdate(dropDbSQL);
+            this.mStatement.executeUpdate(createDbSQL);
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            log.error("DriverClassNotFound :"+e.toString());
+        } finally { 
+            this.closeObject(); 
+        }
+    }
+    
+    // initial SQL table
+    public void dropTable() {
+        try {
+            log.debug("Drop SQL:" + dropDbSQL);
+            this.mConnection = DriverManager.getConnection(mUrl, username, password);
+            this.mStatement = mConnection.createStatement();
+            this.mStatement.executeUpdate(dropDbSQL);
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            log.error("DriverClassNotFound :"+e.toString());
+        } finally { 
+            this.closeObject(); 
+        }
+    }
 
     // close SQL related object
-    abstract void closeObject();
+    public void closeObject() {
+        // TODO Auto-generated method stub
+        try {
+            if(mResultSet != null) { 
+                mResultSet.close(); 
+                mResultSet = null; 
+            } 
+            if(mStatement != null) { 
+                mStatement.close(); 
+                mStatement = null; 
+            }
+            if(mPreparedStatement != null) { 
+                mPreparedStatement.close(); 
+                mPreparedStatement = null;
+            }
+        } catch(SQLException e) { 
+            log.error("Close Exception :" + e.toString()); 
+        }
+    }
 
     // init prepare SQL cmd
     abstract void initPrepareSql();
@@ -119,21 +194,36 @@ public abstract class DatabaseHandler {
         switch (mOperationType) {
         case 0:
             // Only need execute create table in first time
-            System.out.println("create table");
+            log.info("create table");
             mStockDB.createTable();
             break;
         case 1:
             // for(int i = 0; i < 100;i++)
-            System.out.println("test insert table");
+            log.info("test insert table");
             mStockDB.TestInsertTable();
             break;
         case 2:
-            System.out.println("drop table");
+            log.info("drop table");
+            mStockDB.dropTable();
             break;
         default:
             break;
         }
 
         Utility.timerEnd();
+    }
+
+    /**
+     * @return the mTableName
+     */
+    public String getTableName() {
+        return mTableName;
+    }
+
+    /**
+     * @param mTableName the mTableName to set
+     */
+    public void setTableName(String mTableName) {
+        this.mTableName = mTableName;
     }
 }

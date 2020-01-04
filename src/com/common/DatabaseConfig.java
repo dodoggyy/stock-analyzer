@@ -9,4 +9,11 @@ public class DatabaseConfig {
             DB_KEY_PASSWORD="",
             DB_KEY_DATABASE="",
             DB_KEY_CHARSET="";
+    
+    public final static String TABLE_DAY_FUND = "listed_fund",
+            TABLE_DAY_TECH = "listed_tech",
+            TABLE_DAY_TYPE = "listed_type",
+            TABLE_STOCK_INFO = "stock_info",
+            TABLE_WEEK_TECH = "listed_tech_week";
+    
 }

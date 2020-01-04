@@ -46,7 +46,7 @@ public class Utility {
     public static String getTodayDate() {
         Date mDate = new Date();
         SimpleDateFormat mDateFormat = new SimpleDateFormat(Config.DataAnalyze.DATE_FORMAT);
-        mDateFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+        mDateFormat.setTimeZone(TimeZone.getTimeZone(Config.DataAnalyze.TIME_ZONE));
         String mDateStr = mDateFormat.format(mDate);
         // System.out.println(mDateStr);
 
@@ -219,7 +219,7 @@ public class Utility {
 
         mCalendar.setTime(aDate);
 
-        return mCalendar.get(Calendar.DAY_OF_WEEK);
+        return mCalendar.get(Calendar.WEEK_OF_YEAR);
     }
 
     public static int getDateOfCurrentYear(Date aDate) {
