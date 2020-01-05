@@ -3,7 +3,6 @@
  */
 package com.database;
 
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import com.common.DatabaseConfig;
@@ -54,26 +53,6 @@ public class StockInfoDatabaseHandler extends DatabaseHandler{
         setTableName(DatabaseConfig.TABLE_STOCK_INFO);
     }
 
-    @Override
-    public void closeObject() {
-        // TODO Auto-generated method stub
-        try {
-            if(mResultSet != null) { 
-                mResultSet.close(); 
-                mResultSet = null; 
-            } 
-            if(mStatement != null) { 
-                mStatement.close(); 
-                mStatement = null; 
-            }
-            if(mPreparedStatement != null) { 
-                mPreparedStatement.close(); 
-                mPreparedStatement = null;
-            }
-        } catch(SQLException e) { 
-            log.error("Close Exception :" + e.toString()); 
-        }
-    }
 
     @Override
     void initPrepareSql() {

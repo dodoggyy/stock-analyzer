@@ -98,7 +98,7 @@ public class TechDatabaseHandler extends DatabaseHandler {
         while(mResultSet.next()) {
             mDate = Utility.date2String(mResultSet.getDate(mLatestDate));
         }
-        
+
         return mDate;
     }
     

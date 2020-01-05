@@ -211,7 +211,7 @@ public class Utility {
 
         mCalendar.setTime(aDate);
 
-        return mCalendar.get(Calendar.DAY_OF_YEAR);
+        return mCalendar.get(Calendar.YEAR);
     }
 
     public static int getDateOfWeek(Date aDate) {
@@ -220,6 +220,18 @@ public class Utility {
         mCalendar.setTime(aDate);
 
         return mCalendar.get(Calendar.WEEK_OF_YEAR);
+    }
+    
+    public static int getDateOfMonth(Date aDate) {
+        Calendar mCalendar = Calendar.getInstance();
+
+        mCalendar.setTime(aDate);
+
+        return mCalendar.get(Calendar.MONTH);
+    }
+    
+    public static int getDateOfSeason(Date aDate) {
+        return getDateOfMonth(aDate) / 4;
     }
 
     public static int getDateOfCurrentYear(Date aDate) {

@@ -8,12 +8,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
 import com.common.DatabaseConfig;
+import com.common.KeyDefine;
 import com.common.Utility;
 
 public abstract class DatabaseHandler {
@@ -37,7 +37,8 @@ public abstract class DatabaseHandler {
     }
     
     public void init() {
-        Configurator.setRootLevel(Level.ALL);
+        // set log level
+        Configurator.setRootLevel(KeyDefine.LOG_LEVEL);
         closeObject();
         setupDatabase();
         initPrepareSql();
@@ -62,12 +63,11 @@ public abstract class DatabaseHandler {
     // connect Database
     public void connectDatabase() {
         try {
-            
+            log.debug(mInsertSql);
             mConnection = DriverManager.getConnection(mUrl, username, password);
             mConnection.setAutoCommit(false);
             this.mStatement = mConnection.createStatement();
             this.mPreparedStatement = mConnection.prepareStatement(mInsertSql);
-            // System.out.println(mInsertTechSql);
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

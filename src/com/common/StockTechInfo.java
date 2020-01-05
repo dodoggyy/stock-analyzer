@@ -21,6 +21,15 @@ public class StockTechInfo extends StockBaseInfo{
         
     }
     
+    public StockTechInfo(String stockID) {
+        this.stockID = stockID;
+        this.stockClose = 0;
+        this.stockOpen = 0;
+        this.stockHigh = Integer.MIN_VALUE;
+        this.stockLow = Integer.MAX_VALUE;
+        this.stockVolume = 0;
+    }
+    
     /**
      * @return the stockID
      */

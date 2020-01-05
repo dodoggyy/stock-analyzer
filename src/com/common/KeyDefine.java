@@ -1,6 +1,10 @@
 package com.common;
 
+import org.apache.logging.log4j.Level;
+
 public class KeyDefine {
+    public final static Level LOG_LEVEL = Level.DEBUG;
+    
     public final static int DATE_LENGTH = 10; // e.g.2018-06-11
     public final static int OLD_TWSE_FUND_LENGTH = 5;
     public final static int STOCK_INFO_LENGTH = 8;
@@ -103,20 +107,6 @@ public class KeyDefine {
         DEFAULT_UNKNOWN_LISTED_TECH,
     };
 
-    // K線週期
-    public static final String DEFAULT_AVERAGE_TECH = "listed_tech_",
-            DEFAULT_LISTED_TECH_WEEK = DEFAULT_AVERAGE_TECH + "week",
-            DEFAULT_LISTED_TECH_MONTH = DEFAULT_AVERAGE_TECH + "month",
-            DEFAULT_LISTED_TECH_SEASON = DEFAULT_AVERAGE_TECH + "season",
-            DEFAULT_LISTED_TECH_YEAR = DEFAULT_AVERAGE_TECH + "year";
-    
-    public static final String DEFAULT_LISTED_TECH_LIST[] = {
-            DEFAULT_LISTED_TECH_WEEK,
-            DEFAULT_LISTED_TECH_MONTH,
-            DEFAULT_LISTED_TECH_SEASON,
-            DEFAULT_LISTED_TECH_YEAR,
-        };
-    
     // 錯誤處理
     public class ErrorHandle {
         public static final int EXIT_ERROR = -1, // exit error
@@ -130,5 +120,5 @@ public class KeyDefine {
         DB_OPERATION_TYPE_TEST_INSERT_TABLE,
         DB_OPERATION_TYPE_DROP_TABLE,
         DB_OPERATION_TYPE_MAX,
-      }
+    }
 }

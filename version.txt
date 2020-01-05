@@ -1,13 +1,14 @@
 當前待做事項
 1.refine previous code flow
 2.技術線運算
-3.周,月,年線計算
-4.整合技術線 & 圖像顯示
-5.UML架構圖
-6.add daily script
-7.log4j2
+3.整合技術線 & 圖像顯示
+4.add daily script
+5.log4j2
 
 版本更新資訊:
+2020/1/6
+增加周,月,年線計算
+
 2020/1/4
 Database Handler架構優化
 

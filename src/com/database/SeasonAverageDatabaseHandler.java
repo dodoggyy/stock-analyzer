@@ -12,9 +12,9 @@ import com.common.DatabaseConfig;
  * @author Chris Lin
  *
  */
-public class WeekAverageDatabaseHandler extends AverageDatabaseHandler {
+public class SeasonAverageDatabaseHandler extends AverageDatabaseHandler {
 
-    public WeekAverageDatabaseHandler() throws SQLException {
+    public SeasonAverageDatabaseHandler() throws SQLException {
         // TODO Auto-generated constructor stub
         super();
     }
@@ -22,7 +22,7 @@ public class WeekAverageDatabaseHandler extends AverageDatabaseHandler {
     protected void setupDatabase() {
         // TODO Auto-generated method stub
         super.setupDatabase();
-        setTableName(DatabaseConfig.DEFAULT_LISTED_TECH_WEEK);
+        setTableName(DatabaseConfig.DEFAULT_LISTED_TECH_SEASON);
     }
 
     /**
@@ -32,7 +32,7 @@ public class WeekAverageDatabaseHandler extends AverageDatabaseHandler {
      */
     public static void main(String[] args) throws SQLException, ParseException {
         // TODO Auto-generated method stub
-        WeekAverageDatabaseHandler mStockDB = new WeekAverageDatabaseHandler();
+        SeasonAverageDatabaseHandler mStockDB = new SeasonAverageDatabaseHandler();
         DBOperation(mStockDB);
     }
 }

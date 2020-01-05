@@ -3,7 +3,6 @@
  */
 package com.database;
 
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -19,18 +18,20 @@ public class AverageDatabaseHandler extends DatabaseHandler{
         // TODO Auto-generated constructor stub
         init();
     }
-    
+
     public void init() {
+        setupDatabase();
         super.init();
         createDbSQL = "CREATE TABLE " + mTableName + " (" + 
                 "id     INT NOT NULL AUTO_INCREMENT," +
                 "PRIMARY KEY (id)," +
                 "stock_id     VARCHAR(4), " +
-                "stock_name   VARCHAR(20), " +
-                "stock_isin_code  VARCHAR(12), " +
-                "stock_listing_date  DATE, " +
-                "stock_industry    VARCHAR(20), " +
-                "stock_cfi_code    VARCHAR(6), " +
+                "stock_date     DATE, " +
+                "stock_closing_price     INT, " +
+                "stock_opening_price     INT, " +
+                "stock_high_price     INT, " +
+                "stock_low_price     INT, " +
+                "stock_volume     INT, " +
                 "stock_type     INT, " +
                 "FOREIGN KEY(stock_type)REFERENCES listed_type(id)) ";
     }
@@ -38,14 +39,14 @@ public class AverageDatabaseHandler extends DatabaseHandler{
     @Override
     protected void setupDatabase() {
         // TODO Auto-generated method stub
-        mTableName = DatabaseConfig.TABLE_WEEK_TECH;
+
     }
 
     @Override
     void initPrepareSql() {
         // TODO Auto-generated method stub
-//        mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_closing_price, stock_opening_price, stock_high_price, stock_low_price, stock_volume, stock_type)"
-//                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+        mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_closing_price, stock_opening_price, stock_high_price, stock_low_price, stock_volume)"
+                + "VALUES (?, ?, ?, ?, ?, ?, ?);";
     }
 
     @Override
@@ -61,33 +62,35 @@ public class AverageDatabaseHandler extends DatabaseHandler{
     }
 
     @Override
-    void TestInsertTable() throws SQLException {
-        // TODO Auto-generated method stub
-        
+    protected void TestInsertTable() throws SQLException {
+        String mInsertSql =  "INSERT INTO " + mTableName + " (stock_id, stock_date, stock_closing_price, stock_opening_price, stock_high_price, stock_low_price, stock_volume, stock_type)"
+              + "VALUES ('6116', '2099-06-03', 802, 802, 804, 796, 21080000, 2);";
+
+        executeSqlPrepareCmd(mInsertSql);
     }
 
-    ArrayList<String> queryAllStockId() {
+
+    @Override
+    void initQuerySql(String aStockID, String aDate) {
+        // TODO Auto-generated method stub
+    }
+    
+    public ArrayList<String> queryAllStockId() {
         ArrayList<String> mDbStockId = new ArrayList<String>();
-        String mQueryStockIdSql = "SELECT DISTINCT stock_id FROM listed_tech ORDER BY stock_id ASC";
+        String mQueryStockIdSql = "SELECT DISTINCT stock_id FROM " + DatabaseConfig.TABLE_DAY_TECH + " ORDER BY stock_id ASC";
         try {
             mStatement = mConnection.createStatement();
             mResultSet = mStatement.executeQuery(mQueryStockIdSql);
             while(mResultSet.next()) {
-                //System.out.println(mResultSet.getString("stock_id"));
+                log.trace(mResultSet.getString("stock_id"));
                 mDbStockId.add(mResultSet.getString("stock_id"));
             }
         } catch(SQLException e) {
-            System.out.println("QueryDB Exception :" + e.toString()); 
+            log.error("QueryDB Exception :" + e.toString()); 
         } finally {
             this.closeObject();
         }
         
         return mDbStockId;
-    }
-
-    @Override
-    void initQuerySql(String aStockID, String aDate) {
-        // TODO Auto-generated method stub
-        
     }
 }
