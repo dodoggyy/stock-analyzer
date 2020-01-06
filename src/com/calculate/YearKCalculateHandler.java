@@ -33,7 +33,7 @@ public class YearKCalculateHandler extends AverageKCalculateHandler {
     public void setTable() throws SQLException {
         // TODO Auto-generated method stub
         this.mStockDB = new YearAverageDatabaseHandler();
-        this.mTableSrc = DatabaseConfig.DEFAULT_LISTED_TECH_WEEK;
+        this.mTableSrc = DatabaseConfig.DEFAULT_LISTED_TECH_SEASON;
         this.mTableDst = DatabaseConfig.DEFAULT_LISTED_TECH_YEAR;
     }
 

@@ -68,7 +68,7 @@ public class DownloadDailyData {
     
     private DownloadDailyData() {
         mDataLength = KeyDefine.DOWNLOAD_DATA_MAX;
-        mDownloadDir = Config.DataAnalyze.outputDataDir;
+        mDownloadDir = Config.DataAnalyze.outputTmpDir;
     }
 
     public void downloadData(String aDownloadDate, int aDownloadType) {

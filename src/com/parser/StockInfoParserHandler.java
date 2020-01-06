@@ -24,7 +24,6 @@ import com.database.StockInfoDatabaseHandler;
  */
 public class StockInfoParserHandler extends BaseParserHandler {
 
-    private StockInfoDatabaseHandler mStockDB;
     /**
      * @param args
      * @throws IOException 
@@ -34,23 +33,6 @@ public class StockInfoParserHandler extends BaseParserHandler {
         mStockDB = new StockInfoDatabaseHandler();
     }
     
-    public static void main(String[] args) throws IOException, SQLException {
-        // TODO Auto-generated method stub
-        int mStartStockID, mEndStockID;
-        Scanner mScanner = new Scanner(System.in);
-        System.out.println("Start stock id:" );
-        mStartStockID = mScanner.nextInt();
-        System.out.println("End stock id:" );
-        mEndStockID = mScanner.nextInt();
-        
-        Utility.timerStart();
-        
-        StockInfoParserHandler mParser = new StockInfoParserHandler();
-        mParser.parseAllHTMLData(mStartStockID, mEndStockID);
-
-        Utility.timerEnd();
-    }
-
     @Override
     boolean writeData2DB(String aDate, String[] aStrArr) throws SQLException {
         // TODO Auto-generated method stub
@@ -159,5 +141,22 @@ public class StockInfoParserHandler extends BaseParserHandler {
         }
         
        return mStockType;
+    }
+    
+    public static void main(String[] args) throws IOException, SQLException {
+        // TODO Auto-generated method stub
+        int mStartStockID, mEndStockID;
+        Scanner mScanner = new Scanner(System.in);
+        System.out.println("Start stock id:" );
+        mStartStockID = mScanner.nextInt();
+        System.out.println("End stock id:" );
+        mEndStockID = mScanner.nextInt();
+        
+        Utility.timerStart();
+        
+        StockInfoParserHandler mParser = new StockInfoParserHandler();
+        mParser.parseAllHTMLData(mStartStockID, mEndStockID);
+
+        Utility.timerEnd();
     }
 }

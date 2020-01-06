@@ -4,7 +4,8 @@ public class Config {
 
     // 資料分析參數
     public static class DataAnalyze {
-        public final static String outputDataDir = "F:\\Stock\\tmp\\";
+        public final static String outputTmpDir = "F:\\Stock\\tmp\\";
+        public final static String outputDataDir = "F:\\Stock\\data\\";
         public final static String outputAnalyzerDir = "F:\\Stock\\analyzer\\src";
         public final static String outputAnalyzerResultName = "F:\\Stock\\analyzer\\result\\result.csv";
         public final static String DATE_FORMAT = "yyyy-MM-dd";

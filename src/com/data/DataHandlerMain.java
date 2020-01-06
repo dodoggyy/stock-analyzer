@@ -12,7 +12,6 @@ import com.common.Config;
 import com.common.KeyDefine;
 import com.common.Utility;
 import com.database.TechDatabaseHandler;
-import com.parser.BaseParserHandler;
 import com.parser.OTCFundParserHandler;
 import com.parser.OTCTechParserHandler;
 import com.parser.TWSEFundParserHandler;
@@ -166,6 +165,9 @@ public class DataHandlerMain {
             Thread mThreadOtcFund = new Thread(mDownloadOtcFund);
             Thread mThreadTwseTech = new Thread(mDownloadTwseTech);
             Thread mThreadOtcTech = new Thread(mDownloadOtcTech);
+            
+            mThreadTwseTech.setDaemon(true);
+            mThreadOtcTech.setDaemon(true);
 
             mThreadTwseFund.start();
             mThreadOtcFund.start();
@@ -179,12 +181,14 @@ public class DataHandlerMain {
             mThreadTwseTech.start();
             mThreadOtcTech.start();
             
-            synchronized (mThreadTwseTech) {
-                mThreadTwseTech.wait();
+            try {
+                mThreadTwseTech.join();
+                mThreadOtcFund.join();
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
-            synchronized (mThreadOtcTech) {
-                mThreadOtcTech.wait();
-            }
+            
         } else {
             System.out.println("Unknown type");
         }
@@ -211,7 +215,6 @@ public class DataHandlerMain {
                 Utility.scheduleDelay(Utility.getScheduleDelayTimeMs(mDowloadType));
                 //System.out.println("DowloadType:" + mDowloadType + " Date:" + mDateArray.get(i).toString());
             }
-            notify();
         }
        
     }

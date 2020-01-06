@@ -33,7 +33,7 @@ public class SeasonKCalculateHandler extends AverageKCalculateHandler {
     public void setTable() throws SQLException {
         // TODO Auto-generated method stub
         this.mStockDB = new SeasonAverageDatabaseHandler();
-        this.mTableSrc = DatabaseConfig.DEFAULT_LISTED_TECH_WEEK;
+        this.mTableSrc = DatabaseConfig.DEFAULT_LISTED_TECH_MONTH;
         this.mTableDst = DatabaseConfig.DEFAULT_LISTED_TECH_SEASON;
     }
 

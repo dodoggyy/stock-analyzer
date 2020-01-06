@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Comparator;
 
 import com.common.Config;
 import com.common.KeyDefine;
@@ -18,62 +16,10 @@ import com.database.TechDatabaseHandler;
 
 public class OTCTechParserHandler extends BaseParserHandler {
 
-    private TechDatabaseHandler mStockDB;
-    private int mfileType;
-
     public OTCTechParserHandler() throws SQLException {
-        this.ImportDir = new File(Config.DataAnalyze.outputDataDir);
+        super();
         mDownloadName = Config.DataAnalyze.downloadName[KeyDefine.OTC_TECH] + "_";
         mStockDB = new TechDatabaseHandler();
-
-        if (!this.ImportDir.exists()) {
-            System.err.println("沒有這個目錄 " + ImportDir);
-            System.exit(KeyDefine.ErrorHandle.EXIT_ERROR);
-        }
-        this.aFiles = ImportDir.listFiles();
-        if (this.aFiles.length == 0) {
-            System.err.println("No Files Match!");
-            System.exit(KeyDefine.ErrorHandle.EXIT_ERROR);
-        }
-        Arrays.sort(aFiles, new Comparator<Object>() {
-            @Override
-            public int compare(Object aFile1, Object aFile2) {
-                return ((File) aFile1).getName().compareTo(((File) aFile2).getName());
-            }
-        });
-    }
-
-    public static void main(String[] args) throws SQLException {
-        // TODO Auto-generated method stub
-        OTCTechParserHandler techParser = new OTCTechParserHandler();
-        techParser.parseAllFileData();
-    }
-
-    public boolean parseAllFileData() throws SQLException {
-        String mFileName = "", mFileExt = "";
-        int mSeparateIndex = 0;
-
-        for (int i = 0; i < aFiles.length; i++) {
-            if (!aFiles[i].isDirectory()) {
-                mFileName = aFiles[i].getName();
-                mSeparateIndex = mFileName.indexOf(".");
-                mFileExt = mFileName.substring(mSeparateIndex);
-                System.out.println("Deal SQL data with " + mFileName);
-            }
-//            System.out.println(" " + mFileName.substring(0, mDownloadName.length()));
-//            System.out.printf("mDownloadName.length():%d\n",mDownloadName.length());
-//            System.out.printf("%s\n",mFileName.substring(mDownloadName.length(), mDownloadName.length()
-//                    + Config.DataAnalyze.DATE_LENGTH));
-            if (mFileName.substring(0, mDownloadName.length()).equals(mDownloadName)
-                    && KeyDefine.csvFilter.contains(mFileExt)) {
-                parseFileData(aFiles[i], mFileName.substring(mDownloadName.length(), mDownloadName.length()
-                        + KeyDefine.DATE_LENGTH));
-            }
-        }
-
-        //mStockDB.deleteSqlDuplicateData();
-        mStockDB.executeSqlPrepareCmd();
-        return true;
     }
 
     @Override
@@ -83,11 +29,8 @@ public class OTCTechParserHandler extends BaseParserHandler {
         int mLines = 0;
         String mTmpLine = "";
         String[] mStrArr;
-        mfileType = KeyDefine.ErrorHandle.ERROR_MAX;
         try {
             // csv file need to set decode as MS950 to prevent garbled
-            mfileType = (aFile.getName().contains("BUT")) ? KeyDefine.ErrorHandle.TRANSCATION_DATA_EXCEPTION
-                    : KeyDefine.ErrorHandle.TRANSCATION_DATA_NORMAL;
             InputStreamReader mStreamReader = new InputStreamReader(new FileInputStream(aFile), "MS950");
             mBufferReader = new BufferedReader(mStreamReader);
 
@@ -149,4 +92,9 @@ public class OTCTechParserHandler extends BaseParserHandler {
         return true;
     }
 
+    public static void main(String[] args) throws SQLException {
+        // TODO Auto-generated method stub
+        OTCTechParserHandler techParser = new OTCTechParserHandler();
+        techParser.parseAllFileData();
+    }
 }
