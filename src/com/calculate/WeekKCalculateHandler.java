@@ -53,7 +53,8 @@ public class WeekKCalculateHandler extends AverageKCalculateHandler {
 //                mCalculator.calculateValue(mStockID, false);
 //            }
             
-            mCalculator.calculateValue("1102", false);
+//            mCalculator.calculateValue("8093", false);
+            mCalculator.calculateValueWholeData();
             
         } catch (SQLException | ParseException e) {
             // TODO Auto-generated catch block

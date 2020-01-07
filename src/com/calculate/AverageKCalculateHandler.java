@@ -7,13 +7,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
-import com.common.DatabaseConfig;
 import com.common.StockTechInfo;
 import com.common.Utility;
 import com.database.AverageDatabaseHandler;
-import com.database.WeekAverageDatabaseHandler;
 
 /**
  * @author Chris Lin
@@ -22,12 +25,14 @@ import com.database.WeekAverageDatabaseHandler;
 public abstract class AverageKCalculateHandler extends BaseCalculateHandler {
     protected AverageDatabaseHandler mStockDB;
     private ArrayList<StockTechInfo> mTechAvg;
+    private HashMap<String, ArrayList<StockTechInfo>> mMap;
     protected String mTableSrc;
     protected String mTableDst;
     
     public AverageKCalculateHandler() throws SQLException {
         // TODO Auto-generated constructor stub
         mTechAvg = new ArrayList<>();
+        mMap = new HashMap<>();
     }
     
     @Override
@@ -80,7 +85,9 @@ public abstract class AverageKCalculateHandler extends BaseCalculateHandler {
                     }
                 }
                 mStockInfo.setStockVolume(mStockInfo.getStockVolume() + mResultSet.getInt("stock_volume"));
-                mStockInfo.setStockLow(Math.min(mStockInfo.getStockLow(), mTmpLow));
+                if(mTmpLow != 0) { // prevent 0 compare
+                    mStockInfo.setStockLow(Math.min(mStockInfo.getStockLow(), mTmpLow));
+                }
                 mStockInfo.setStockHigh(Math.max(mStockInfo.getStockHigh(), mTmpHigh));
             }
             mTechAvg.add(mStockInfo);
@@ -102,6 +109,109 @@ public abstract class AverageKCalculateHandler extends BaseCalculateHandler {
 
         writeData2DB();
         clearData();
+    }
+    
+    public void calculateValueWholeData() throws SQLException, ParseException {
+        StockTechInfo mStockInfo = new StockTechInfo();
+        ResultSet mResultSet = null;
+        String mPreKey = null;
+
+        mSqlWhere = " WHERE 1";
+        mSqlQueryCmd = "SELECT * FROM "
+                + mTableSrc + mSqlWhere + " ORDER BY stock_id ASC";
+
+        log.debug(mSqlQueryCmd);
+
+        try {
+            mResultSet = mStockDB.mResultSet = mStockDB.mStatement.executeQuery(mSqlQueryCmd);
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        try {
+            while (mResultSet.next()) {
+                String mStockID = mResultSet.getString("stock_id");
+                mStockInfo = new StockTechInfo(mStockID);
+                mStockInfo.setStockDate(mResultSet.getString("stock_date"));
+                mStockInfo.setStockClose(mResultSet.getInt("stock_closing_price"));
+                mStockInfo.setStockOpen(mResultSet.getInt("stock_opening_price"));
+                mStockInfo.setStockHigh(mResultSet.getInt("stock_high_price"));
+                mStockInfo.setStockLow(mResultSet.getInt("stock_low_price"));
+                mStockInfo.setStockVolume(mResultSet.getInt("stock_volume"));
+
+                ArrayList<StockTechInfo> mListStockInfo;
+                if(!mMap.containsKey(mStockID)) {
+                    mListStockInfo = new ArrayList<StockTechInfo>();
+                } else {
+                    mListStockInfo = mMap.get(mStockID);
+                }
+                mListStockInfo.add(mStockInfo);
+                mMap.put(mStockID, mListStockInfo);
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        mResultSet.close();
+        
+        Iterator<Entry<String, ArrayList<StockTechInfo>>> mIter = mMap.entrySet().iterator();
+        while(mIter.hasNext()) {
+            Map.Entry<String, ArrayList<StockTechInfo>> mPair = (Map.Entry<String, ArrayList<StockTechInfo>>) mIter.next();
+            ArrayList<StockTechInfo> mList = mPair.getValue();
+            mStockInfo = new StockTechInfo(mPair.getKey());
+            Collections.sort(mList); // sort by date
+            if(!mList.isEmpty()) {
+                // prevent null date in first data
+                mStockInfo.setStockDate(mList.get(0).getStockDate());
+            }
+            
+            for(StockTechInfo mCurInfo : mList) {
+                // ignore no trade case
+                if (mCurInfo.getStockVolume() == 0) {
+                    continue;
+                }
+                String mCurrentKey = getHashKey(Utility.string2Date(mCurInfo.getStockDate()));
+                
+                if (mCurrentKey.equals(mPreKey)) {
+                    
+                    if (mStockInfo.getStockOpen() == 0) {
+                        mStockInfo.setStockOpen(mCurInfo.getStockOpen());
+                    }
+                } else {
+                    if (mStockInfo.getStockVolume() != 0) {
+                        mTechAvg.add(mStockInfo);
+                    }
+                    float mTmpOpen = mStockInfo.getStockOpen();
+
+                    mPreKey = mCurrentKey;
+                    mStockInfo = new StockTechInfo(mCurInfo.getStockID());
+                    
+                    mStockInfo.setStockDate(mCurInfo.getStockDate());
+                    if (mCurInfo.getStockVolume() == 0) {
+                        mStockInfo.setStockOpen(mTmpOpen);
+                    } else {
+                        mStockInfo.setStockOpen(mCurInfo.getStockOpen());
+                    }
+                }
+                float mTmpLow = mCurInfo.getStockLow();
+                float mTmpHigh = mCurInfo.getStockHigh();
+                float mTmpClose = mCurInfo.getStockClose();
+                
+                if(mTmpLow == 0 || mTmpHigh == 0 || mTmpClose == 0) {
+                    continue;
+                }
+                
+                mStockInfo.setStockVolume(mStockInfo.getStockVolume() + mCurInfo.getStockVolume());
+                mStockInfo.setStockLow(Math.min(mStockInfo.getStockLow(), mTmpLow));
+                mStockInfo.setStockHigh(Math.max(mStockInfo.getStockHigh(), mTmpHigh));
+                mStockInfo.setStockClose(mTmpClose);
+            }
+            mTechAvg.add(mStockInfo);
+            writeData2DB();
+            clearData();
+            mIter.remove();
+        }
     }
     
     // return specific hash key to judge different type

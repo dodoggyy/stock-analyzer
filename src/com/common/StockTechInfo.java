@@ -3,11 +3,14 @@
  */
 package com.common;
 
+import java.text.ParseException;
+import java.util.Date;
+
 /**
  * @author Chris Lin
  *
  */
-public class StockTechInfo extends StockBaseInfo{
+public class StockTechInfo extends StockBaseInfo implements Comparable<StockTechInfo>{
     private String stockID;
     private String stockDate; 
     private float stockClose;
@@ -126,6 +129,20 @@ public class StockTechInfo extends StockBaseInfo{
      */
     public void setStockVolume(int stockVolume) {
         this.stockVolume = stockVolume;
+    }
+
+    @Override
+    public int compareTo(StockTechInfo other) {
+        // TODO Auto-generated method stub
+        try {
+            Date date1 = Utility.string2Date(this.stockDate);
+            Date date2 = Utility.string2Date(other.stockDate);
+            return date1.compareTo(date2);
+        } catch (ParseException e1) {
+            // TODO Auto-generated catch block
+            //e1.printStackTrace();
+            return 0;
+        }
     }
 
     
