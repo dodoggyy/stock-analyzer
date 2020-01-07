@@ -7,20 +7,24 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.common.DatabaseConfig;
+import com.common.KeyDefine;
+import com.common.KeyDefine.CalculateCycle;
 
 /**
  * @author Chris
  *
  */
 public class AverageDatabaseHandler extends DatabaseHandler{
-
-    public AverageDatabaseHandler() throws SQLException {
+    private CalculateCycle mCalculateCycle = KeyDefine.CalculateCycle.CYCLE_MAX;
+    
+    public AverageDatabaseHandler(CalculateCycle enCycleType) throws SQLException {
         // TODO Auto-generated constructor stub
-        init();
+        this.mCalculateCycle = enCycleType;
+        this.init();
     }
 
     public void init() {
-        setupDatabase();
+        this.setupDatabase();
         super.init();
         createDbSQL = "CREATE TABLE " + mTableName + " (" + 
                 "id     INT NOT NULL AUTO_INCREMENT," +
@@ -39,7 +43,23 @@ public class AverageDatabaseHandler extends DatabaseHandler{
     @Override
     protected void setupDatabase() {
         // TODO Auto-generated method stub
-
+        switch(mCalculateCycle) {
+        case CYCLE_WEEK:
+            setTableName(DatabaseConfig.DEFAULT_LISTED_TECH_WEEK);
+            break;
+        case CYCLE_MONTH:
+            setTableName(DatabaseConfig.DEFAULT_LISTED_TECH_MONTH);
+            break;
+        case CYCLE_SEASON:
+            setTableName(DatabaseConfig.DEFAULT_LISTED_TECH_SEASON);
+            break;
+        case CYCLE_YEAR:
+            setTableName(DatabaseConfig.DEFAULT_LISTED_TECH_YEAR);
+            break;
+        default:
+            log.error("Unknown cycle or not define");
+            break;
+        }
     }
 
     @Override

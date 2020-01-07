@@ -9,6 +9,7 @@
 2020/1/7
 增加一次性查詢計算
 修正Calculator計算錯誤
+refine K線Calculator和Database架構
 
 2020/1/6
 增加周,月,年線計算

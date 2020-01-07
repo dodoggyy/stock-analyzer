@@ -4,7 +4,6 @@
 package com.common;
 
 import java.text.ParseException;
-import java.util.Date;
 
 /**
  * @author Chris Lin
@@ -135,9 +134,7 @@ public class StockTechInfo extends StockBaseInfo implements Comparable<StockTech
     public int compareTo(StockTechInfo other) {
         // TODO Auto-generated method stub
         try {
-            Date date1 = Utility.string2Date(this.stockDate);
-            Date date2 = Utility.string2Date(other.stockDate);
-            return date1.compareTo(date2);
+            return Utility.string2Date(this.stockDate).compareTo(Utility.string2Date(other.stockDate));
         } catch (ParseException e1) {
             // TODO Auto-generated catch block
             //e1.printStackTrace();

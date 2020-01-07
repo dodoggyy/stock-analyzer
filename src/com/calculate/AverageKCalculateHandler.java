@@ -14,6 +14,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.common.DatabaseConfig;
+import com.common.KeyDefine;
+import com.common.KeyDefine.CalculateCycle;
 import com.common.StockTechInfo;
 import com.common.Utility;
 import com.database.AverageDatabaseHandler;
@@ -22,15 +25,19 @@ import com.database.AverageDatabaseHandler;
  * @author Chris Lin
  *
  */
-public abstract class AverageKCalculateHandler extends BaseCalculateHandler {
+public class AverageKCalculateHandler extends BaseCalculateHandler {
     protected AverageDatabaseHandler mStockDB;
     private ArrayList<StockTechInfo> mTechAvg;
     private HashMap<String, ArrayList<StockTechInfo>> mMap;
+    private CalculateCycle mCycleType = KeyDefine.CalculateCycle.CYCLE_MAX;
     protected String mTableSrc;
     protected String mTableDst;
-    
-    public AverageKCalculateHandler() throws SQLException {
+
+    public AverageKCalculateHandler(CalculateCycle mCycleType) throws SQLException {
         // TODO Auto-generated constructor stub
+        this.mCycleType = mCycleType;
+        this.setTable();
+        this.mStockDB = new AverageDatabaseHandler(mCycleType);
         mTechAvg = new ArrayList<>();
         mMap = new HashMap<>();
     }
@@ -215,10 +222,46 @@ public abstract class AverageKCalculateHandler extends BaseCalculateHandler {
     }
     
     // return specific hash key to judge different type
-    public abstract String getHashKey(Date aDate);
+    public String getHashKey(Date aDate) {
+        switch(mCycleType) {
+        case CYCLE_WEEK:
+            return Utility.getDateOfWeek(aDate) + "";
+        case CYCLE_MONTH:
+            return Utility.getDateOfMonth(aDate) + "";
+        case CYCLE_SEASON:
+            return Utility.getDateOfSeason(aDate) + "";
+        case CYCLE_YEAR:
+            return Utility.getDateOfYear(aDate) + "";
+        default:
+            log.error("Unknown calculate type or not define to set hash key");
+            return "";
+        }
+    }
     
     // set table source
-    public abstract void setTable() throws SQLException;
+    public void setTable() throws SQLException {
+        switch(mCycleType) {
+        case CYCLE_WEEK:
+            this.mTableSrc = DatabaseConfig.TABLE_DAY_TECH;
+            this.mTableDst = DatabaseConfig.DEFAULT_LISTED_TECH_YEAR;
+            break;
+        case CYCLE_MONTH:
+            this.mTableSrc = DatabaseConfig.DEFAULT_LISTED_TECH_WEEK;
+            this.mTableDst = DatabaseConfig.DEFAULT_LISTED_TECH_MONTH;
+            break;
+        case CYCLE_SEASON:
+            this.mTableSrc = DatabaseConfig.DEFAULT_LISTED_TECH_MONTH;
+            this.mTableDst = DatabaseConfig.DEFAULT_LISTED_TECH_SEASON;
+            break;
+        case CYCLE_YEAR:
+            this.mTableSrc = DatabaseConfig.DEFAULT_LISTED_TECH_SEASON;
+            this.mTableDst = DatabaseConfig.DEFAULT_LISTED_TECH_YEAR;
+            break;
+        default:
+            log.error("Unknown calculate type or not define to set table");
+            break;
+        }
+    }
     
     public void clearData() {
         mTechAvg.clear();
@@ -265,6 +308,52 @@ public abstract class AverageKCalculateHandler extends BaseCalculateHandler {
      */
     public static void main(String[] args) {
         // TODO Auto-generated method stub
-
+        Utility.timerStart();
+        /*
+        try {
+            AverageDatabaseHandler mStockDB = new AverageDatabaseHandler(KeyDefine.CalculateCycle.CYCLE_WEEK);
+            ArrayList<String> mStockIdList = new ArrayList<>();
+            mStockIdList = mStockDB.queryAllStockId();
+            AverageKCalculateHandler mCalculator = new AverageKCalculateHandler(KeyDefine.CalculateCycle.CYCLE_WEEK);
+            for (String mStockID : mStockIdList) {
+                mCalculator.calculateValue(mStockID, false);
+            }
+            
+            mCalculator = new AverageKCalculateHandler(KeyDefine.CalculateCycle.CYCLE_MONTH);
+            for (String mStockID : mStockIdList) {
+                mCalculator.calculateValue(mStockID, false);
+            }
+            
+            mCalculator = new AverageKCalculateHandler(KeyDefine.CalculateCycle.CYCLE_SEASON);
+            for (String mStockID : mStockIdList) {
+                mCalculator.calculateValue(mStockID, false);
+            }
+            
+            mCalculator = new AverageKCalculateHandler(KeyDefine.CalculateCycle.CYCLE_YEAR);
+            for (String mStockID : mStockIdList) {
+                mCalculator.calculateValue(mStockID, false);
+            }
+        } catch (SQLException | ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        */
+        
+        try {
+            AverageKCalculateHandler mCalulate = new AverageKCalculateHandler(KeyDefine.CalculateCycle.CYCLE_WEEK);
+            mCalulate.calculateValueWholeData();
+            mCalulate = new AverageKCalculateHandler(KeyDefine.CalculateCycle.CYCLE_MONTH);
+            mCalulate.calculateValueWholeData();
+            mCalulate = new AverageKCalculateHandler(KeyDefine.CalculateCycle.CYCLE_SEASON);
+            mCalulate.calculateValueWholeData();
+            mCalulate = new AverageKCalculateHandler(KeyDefine.CalculateCycle.CYCLE_YEAR);
+            mCalulate.calculateValueWholeData();
+        } catch (SQLException | ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            log.error(e);
+        }
+        
+        Utility.timerEnd();
     }
 }

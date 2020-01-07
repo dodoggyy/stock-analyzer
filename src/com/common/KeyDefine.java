@@ -121,4 +121,12 @@ public class KeyDefine {
         DB_OPERATION_TYPE_DROP_TABLE,
         DB_OPERATION_TYPE_MAX,
     }
+    
+    public enum CalculateCycle {
+        CYCLE_WEEK,
+        CYCLE_MONTH,
+        CYCLE_SEASON,
+        CYCLE_YEAR,
+        CYCLE_MAX,
+    }
 }
