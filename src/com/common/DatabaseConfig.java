@@ -15,13 +15,27 @@ public class DatabaseConfig {
             TABLE_DAY_TYPE = "listed_type",
             TABLE_STOCK_INFO = "stock_info",
             TABLE_WEEK_TECH = "listed_tech_week";
+
+    public static final String CYCLE_DAY = "day",
+            CYCLE_WEEK = "week",
+            CYCLE_MONTH = "month",
+            CYCLE_SEASON = "season",
+            CYCLE_YEAR = "year";
     
     // K線週期
     public static final String DEFAULT_AVERAGE_TECH = "listed_tech_",
-            DEFAULT_LISTED_TECH_WEEK = DEFAULT_AVERAGE_TECH + "week",
-            DEFAULT_LISTED_TECH_MONTH = DEFAULT_AVERAGE_TECH + "month",
-            DEFAULT_LISTED_TECH_SEASON = DEFAULT_AVERAGE_TECH + "season",
-            DEFAULT_LISTED_TECH_YEAR = DEFAULT_AVERAGE_TECH + "year";
+            DEFAULT_LISTED_TECH_WEEK = DEFAULT_AVERAGE_TECH + CYCLE_WEEK,
+            DEFAULT_LISTED_TECH_MONTH = DEFAULT_AVERAGE_TECH + CYCLE_MONTH,
+            DEFAULT_LISTED_TECH_SEASON = DEFAULT_AVERAGE_TECH + CYCLE_SEASON,
+            DEFAULT_LISTED_TECH_YEAR = DEFAULT_AVERAGE_TECH + CYCLE_YEAR;
+    
+    // KDJ線週期
+    public static final String DEFAULT_KDJ_TECH = "tech_kdj_",
+            DEFAULT_TECH_KDJ_DAY = DEFAULT_KDJ_TECH + CYCLE_DAY,
+            DEFAULT_TECH_KDJ_WEEK = DEFAULT_KDJ_TECH + CYCLE_WEEK,
+            DEFAULT_TECH_KDJ_MONTH = DEFAULT_KDJ_TECH + CYCLE_MONTH,
+            DEFAULT_TECH_KDJ_SEASON = DEFAULT_KDJ_TECH + CYCLE_SEASON,
+            DEFAULT_TECH_KDJ_YEAR = DEFAULT_KDJ_TECH + CYCLE_YEAR;
     
     public static final String DEFAULT_LISTED_TECH_LIST[] = {
             DEFAULT_LISTED_TECH_WEEK,

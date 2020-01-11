@@ -3,8 +3,9 @@ package com.common;
 import org.apache.logging.log4j.Level;
 
 public class KeyDefine {
-    public final static Level LOG_LEVEL = Level.DEBUG;
+    public final static Level LOG_LEVEL = Level.OFF;
     
+    // Parser parameters
     public final static int DATE_LENGTH = 10; // e.g.2018-06-11
     public final static int OLD_TWSE_FUND_LENGTH = 5;
     public final static int STOCK_INFO_LENGTH = 8;
@@ -17,10 +18,16 @@ public class KeyDefine {
     public final static float  PERCENT_LOWER_BOUND = 0f;
     public final static int DAY_PER_YEAR = 365; // 1年 = 365天
     
+    // Back Test parameters 
     public final static float  SECURITIES_FEE_PERCETAGE = 1.425f/1000; // 券商手續費 0.1425%
     public final static float  SECURITIES_FEE_DISCOUNT = 0.5f; // 券商手續費折扣, 50%
     public final static float  TRADE_TAX = 3/1000; // 證交稅,賣出 0.30%
 
+    // Analyzer parameters
+    public final static int KDJ_DAY = 9;
+    public final static int KDJ_RSV_WEIGHT = 3;
+    public final static int KDJ_KT_WEIGHT = 3;
+    
     public static final int OTC_TECH = 0, // 上櫃盤後
             TWSE_TECH = 2, // 上市盤後
             TWSE_FUND = 3, // 上市基本面
@@ -123,6 +130,7 @@ public class KeyDefine {
     }
     
     public enum CalculateCycle {
+        CYCLE_DAY,
         CYCLE_WEEK,
         CYCLE_MONTH,
         CYCLE_SEASON,

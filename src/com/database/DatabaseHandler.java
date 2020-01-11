@@ -90,7 +90,7 @@ public abstract class DatabaseHandler {
             // TODO Auto-generated catch block
             e.printStackTrace();
             log.error("DriverClassNotFound :"+e.toString());
-        } finally { 
+        } finally {
             this.closeObject(); 
         }
     }

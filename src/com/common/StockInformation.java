@@ -6,6 +6,9 @@ import java.text.ParseException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.common.KeyDefine.EnQueryType;
 import com.database.FundDatabaseHandler;
 import com.database.TechDatabaseHandler;
@@ -15,8 +18,10 @@ import com.database.TechDatabaseHandler;
  *
  */
 public class StockInformation {
-    private TechDatabaseHandler mTechDb;
-    private FundDatabaseHandler mFundDb;
+    //private TechDatabaseHandler mTechDb;
+    //private FundDatabaseHandler mFundDb;
+    
+    protected static final Logger log = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
     private String stockID;
     private LinkedHashMap<String, StockTechInfo> stockTechInfo;
@@ -139,6 +144,10 @@ public class StockInformation {
             break;
         case EN_QUERY_FUND:
             FundDatabaseHandler mFundStockDB = new FundDatabaseHandler();
+            // todo
+            break;
+        default:
+            log.error("Unknown query type or not defined");
             break;
         }
     }
