@@ -6,6 +6,12 @@
 5.log4j2
 
 版本更新資訊:
+2020/1/13
+增加KDJ線一次性查詢計算
+
+2020/1/11
+增加KDJ線個股Calculator和Database
+
 2020/1/7
 增加一次性查詢計算
 修正Calculator計算錯誤

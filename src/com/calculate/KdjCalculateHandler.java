@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,7 +49,7 @@ public class KdjCalculateHandler extends BaseCalculateHandler {
     protected KdjDatabaseHandler mStockDB;
     private ArrayList<StockTechInfo> mTechSrc;
     private ArrayList<KDJ> mTechDst;
-    private HashMap<String, ArrayList<KDJ>> mMap;
+    private HashMap<String, ArrayList<StockTechInfo>> mMap;
     private CalculateCycle mCycleType = KeyDefine.CalculateCycle.CYCLE_MAX;
 
     protected String mTableSrc;
@@ -125,7 +126,7 @@ public class KdjCalculateHandler extends BaseCalculateHandler {
             mListMin.offer(mDataSrc.getStockLow());
             mListMax.offer(mDataSrc.getStockHigh());
             
-            //log.trace(System.out.printf("%s Low: %.2f High: %.2f",mDataSrc.getStockDate(), mDataSrc.getStockLow(), mDataSrc.getStockHigh()));
+            log.trace("%s min:%.2f, max:%.2f",mCurKDJ.stockDate, mMinPrice, mMaxPrice);
             
             if(i >= KDJ_DAY) {
                 float mTmpMin = mListMin.remove();
@@ -137,11 +138,11 @@ public class KdjCalculateHandler extends BaseCalculateHandler {
                     mMaxPrice = Collections.max(mListMax);
                 }
             }
-            //log.trace(System.out.printf("%s min:%.2f, max:%.2f",mCurKDJ.stockDate, mMinPrice, mMaxPrice));
+            log.trace("%s min:%.2f, max:%.2f",mCurKDJ.stockDate, mMinPrice, mMaxPrice);
             
             if(i > (KDJ_DAY - 2)) {
                 float mClosePrice = mDataSrc.getStockClose();
-                //log.trace(System.out.printf("Close: %.2f",mClosePrice));
+                log.trace("Close: %.2f",mClosePrice);
                 
                 float mRsv = ((mClosePrice - mMinPrice) / (mMaxPrice - mMinPrice)) * 100;
                 //  need refine due to KDJ formula parameter RSV Kt weight always set as 3
@@ -152,7 +153,7 @@ public class KdjCalculateHandler extends BaseCalculateHandler {
                 mCurKDJ.D = mCurKDJ.K / 3 + (2 * mTechDst.get(mTechDst.size() - 1).D) / 3;
                 mCurKDJ.J = 3 * mCurKDJ.D - 2 * mCurKDJ.K;
                 
-                //log.trace(System.out.printf("%s RSV:%.2f ,K: %.2f, D: %.2f, J: %.2f",mCurKDJ.stockDate, mRsv, mCurKDJ.K, mCurKDJ.D,mCurKDJ.J));
+                log.trace("%s RSV:%.2f ,K: %.2f, D: %.2f, J: %.2f",mCurKDJ.stockDate, mRsv, mCurKDJ.K, mCurKDJ.D,mCurKDJ.J);
                 mCurKDJ = checkKDJ(mCurKDJ);
             } else if (i < (KDJ_DAY - 2)) {
                 mCurKDJ.K = 0;
@@ -190,12 +191,10 @@ public class KdjCalculateHandler extends BaseCalculateHandler {
         
         return mKDJ;
     }
-    
-    /*
+
     public void calculateValueWholeData() throws SQLException, ParseException {
-        KDJ mStockInfo = new KDJ();
+        StockTechInfo mStockInfo = new StockTechInfo();
         ResultSet mResultSet = null;
-        String mPreKey = null;
 
         mSqlWhere = " WHERE 1";
         mSqlQueryCmd = "SELECT * FROM "
@@ -246,55 +245,65 @@ public class KdjCalculateHandler extends BaseCalculateHandler {
                 // prevent null date in first data
                 mStockInfo.setStockDate(mList.get(0).getStockDate());
             }
-            
-            for(StockTechInfo mCurInfo : mList) {
-                // ignore no trade case
-                if (mCurInfo.getStockVolume() == 0) {
-                    continue;
-                }
-                String mCurrentKey = getHashKey(Utility.string2Date(mCurInfo.getStockDate()));
-                
-                if (mCurrentKey.equals(mPreKey)) {
-                    
-                    if (mStockInfo.getStockOpen() == 0) {
-                        mStockInfo.setStockOpen(mCurInfo.getStockOpen());
-                    }
-                } else {
-                    if (mStockInfo.getStockVolume() != 0) {
-                        mTechAvg.add(mStockInfo);
-                    }
-                    float mTmpOpen = mStockInfo.getStockOpen();
 
-                    mPreKey = mCurrentKey;
-                    mStockInfo = new StockTechInfo(mCurInfo.getStockID());
-                    
-                    mStockInfo.setStockDate(mCurInfo.getStockDate());
-                    if (mCurInfo.getStockVolume() == 0) {
-                        mStockInfo.setStockOpen(mTmpOpen);
-                    } else {
-                        mStockInfo.setStockOpen(mCurInfo.getStockOpen());
+            float mMinPrice = Float.MAX_VALUE;
+            float mMaxPrice = Float.MIN_VALUE;
+            Queue<Float> mListMin = new LinkedList<>();
+            Queue<Float> mListMax = new LinkedList<>();
+            
+            for(int i = 0; i < mList.size(); i++) {
+                KDJ mCurKDJ = new KDJ();
+                StockTechInfo mDataSrc = mList.get(i);
+                mCurKDJ.stockDate = mDataSrc.getStockDate();
+                mCurKDJ.stockID = mDataSrc.getStockID();
+                
+                mListMin.offer(mDataSrc.getStockLow());
+                mListMax.offer(mDataSrc.getStockHigh());
+                
+                if(i >= KDJ_DAY) {
+                    float mTmpMin = mListMin.remove();
+                    float mTmpMax = mListMax.remove();
+                    if(mMinPrice == mTmpMin || mDataSrc.getStockLow() < mMinPrice) {
+                        mMinPrice = Collections.min(mListMin);
+                    }
+                    if(mMaxPrice == mTmpMax || mDataSrc.getStockHigh() > mMaxPrice) {
+                        mMaxPrice = Collections.max(mListMax);
                     }
                 }
-                float mTmpLow = mCurInfo.getStockLow();
-                float mTmpHigh = mCurInfo.getStockHigh();
-                float mTmpClose = mCurInfo.getStockClose();
+                log.trace("%s min:%.2f, max:%.2f",mCurKDJ.stockDate, mMinPrice, mMaxPrice);
                 
-                if(mTmpLow == 0 || mTmpHigh == 0 || mTmpClose == 0) {
-                    continue;
+                if(i > (KDJ_DAY - 2)) {
+                    float mClosePrice = mDataSrc.getStockClose();
+                    //log.trace(System.out.printf("Close: %.2f",mClosePrice));
+                    
+                    float mRsv = ((mClosePrice - mMinPrice) / (mMaxPrice - mMinPrice)) * 100;
+                    //  need refine due to KDJ formula parameter RSV Kt weight always set as 3
+                    // 當日K值 =  2/3 前一日 K值 + 1/3 RSV
+                    // 當日D值 =  2/3 前一日 D值＋ 1/3 當日K值
+                    // J = 3*D - 2*K
+                    mCurKDJ.K = mRsv / 3 + (2 * mTechDst.get(mTechDst.size() - 1).K) / 3;
+                    mCurKDJ.D = mCurKDJ.K / 3 + (2 * mTechDst.get(mTechDst.size() - 1).D) / 3;
+                    mCurKDJ.J = 3 * mCurKDJ.D - 2 * mCurKDJ.K;
+                    
+                    log.trace("%s RSV:%.2f ,K: %.2f, D: %.2f, J: %.2f",mCurKDJ.stockDate, mRsv, mCurKDJ.K, mCurKDJ.D,mCurKDJ.J);
+                    mCurKDJ = checkKDJ(mCurKDJ);
+                } else if (i < (KDJ_DAY - 2)) {
+                    mCurKDJ.K = 0;
+                    mCurKDJ.D = 0;
+                    mCurKDJ.J = 0;
+                    
+                } else {
+                    mCurKDJ.K = 50;
+                    mCurKDJ.D = 50;
+                    mCurKDJ.J = 50;
                 }
-                
-                mStockInfo.setStockVolume(mStockInfo.getStockVolume() + mCurInfo.getStockVolume());
-                mStockInfo.setStockLow(Math.min(mStockInfo.getStockLow(), mTmpLow));
-                mStockInfo.setStockHigh(Math.max(mStockInfo.getStockHigh(), mTmpHigh));
-                mStockInfo.setStockClose(mTmpClose);
+                mTechDst.add(mCurKDJ);
             }
-            mTechAvg.add(mStockInfo);
             writeData2DB();
             clearData();
             mIter.remove();
         }
     }
-    */
     
     // set table source
     public void setTable() throws SQLException {
@@ -385,6 +394,7 @@ public class KdjCalculateHandler extends BaseCalculateHandler {
         // TODO Auto-generated method stub
         Utility.timerStart();
         
+        /*
         try {
             KdjCalculateHandler mCalculator = new KdjCalculateHandler(KeyDefine.CalculateCycle.CYCLE_DAY);
             //mCalculator.calculateValue("6116", true);
@@ -413,10 +423,13 @@ public class KdjCalculateHandler extends BaseCalculateHandler {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        */
         
-        /*
+
         try {
-            KdjCalculateHandler mCalulate = new KdjCalculateHandler(KeyDefine.CalculateCycle.CYCLE_WEEK);
+            KdjCalculateHandler mCalulate = new KdjCalculateHandler(KeyDefine.CalculateCycle.CYCLE_DAY);
+            mCalulate.calculateValueWholeData();
+            mCalulate = new KdjCalculateHandler(KeyDefine.CalculateCycle.CYCLE_WEEK);
             mCalulate.calculateValueWholeData();
             mCalulate = new KdjCalculateHandler(KeyDefine.CalculateCycle.CYCLE_MONTH);
             mCalulate.calculateValueWholeData();
@@ -429,7 +442,7 @@ public class KdjCalculateHandler extends BaseCalculateHandler {
             e.printStackTrace();
             log.error(e);
         }
-        */
+
         
         Utility.timerEnd();
     }
