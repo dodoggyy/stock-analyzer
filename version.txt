@@ -3,9 +3,11 @@
 2.技術線運算
 3.整合技術線 & 圖像顯示
 4.add daily script
-5.log4j2
 
 版本更新資訊:
+2020/1/15
+增加CCI線Calculator和Database
+
 2020/1/13
 增加KDJ線一次性查詢計算
 

@@ -94,23 +94,4 @@ public class AverageDatabaseHandler extends DatabaseHandler{
     void initQuerySql(String aStockID, String aDate) {
         // TODO Auto-generated method stub
     }
-    
-    public ArrayList<String> queryAllStockId() {
-        ArrayList<String> mDbStockId = new ArrayList<String>();
-        String mQueryStockIdSql = "SELECT DISTINCT stock_id FROM " + DatabaseConfig.TABLE_DAY_TECH + " ORDER BY stock_id ASC";
-        try {
-            mStatement = mConnection.createStatement();
-            mResultSet = mStatement.executeQuery(mQueryStockIdSql);
-            while(mResultSet.next()) {
-                log.trace(mResultSet.getString("stock_id"));
-                mDbStockId.add(mResultSet.getString("stock_id"));
-            }
-        } catch(SQLException e) {
-            log.error("QueryDB Exception :" + e.toString()); 
-        } finally {
-            this.closeObject();
-        }
-        
-        return mDbStockId;
-    }
 }

@@ -10,51 +10,50 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Queue;
 
 import com.common.DatabaseConfig;
 import com.common.KeyDefine;
 import com.common.KeyDefine.CalculateCycle;
 import com.common.StockTechInfo;
 import com.common.Utility;
-import com.database.KdjDatabaseHandler;
+import com.database.CciDatabaseHandler;
 
 /**
  * @author Chris Lin
  *
  */
-public class KdjCalculateHandler extends BaseCalculateHandler {
-    public class KDJ {
+public class CciCalculateHandler extends BaseCalculateHandler {
+    public class CCI {
         public String stockID;
-        public String stockDate; 
-        public float K;
-        public float D;
-        public float J;
+        public String stockDate;
+        public float cci;
+        public float mAPs;
+        public float mMAPs;
+        public float mMDs;
         
-        public KDJ() {
-            this.K = this.D = this.J = 0;
+        public CCI() {
+            this.cci = this.mAPs = this.mMAPs = this.mMDs = 0;
         }
     }
     
-    private int KDJ_DAY = KeyDefine.KDJ_DAY;
+    private int CCI_DAY = KeyDefine.CCI_DAY;
     
-    protected KdjDatabaseHandler mStockDB;
+    protected CciDatabaseHandler mStockDB;
     private ArrayList<StockTechInfo> mTechSrc;
-    private ArrayList<KDJ> mTechDst;
+    private ArrayList<CCI> mTechDst;
     private HashMap<String, ArrayList<StockTechInfo>> mMap;
     private CalculateCycle mCycleType = KeyDefine.CalculateCycle.CYCLE_MAX;
 
     protected String mTableSrc;
     protected String mTableDst;
 
-    public KdjCalculateHandler(CalculateCycle mCycleType) throws SQLException {
+    public CciCalculateHandler(CalculateCycle mCycleType) throws SQLException {
         // TODO Auto-generated constructor stub
         this.mCycleType = mCycleType;
         this.setTable();
-        this.mStockDB = new KdjDatabaseHandler(mCycleType);
+        this.mStockDB = new CciDatabaseHandler(mCycleType);
         mTechSrc = new ArrayList<>();
         mTechDst = new ArrayList<>();
         mMap = new HashMap<>();
@@ -66,7 +65,8 @@ public class KdjCalculateHandler extends BaseCalculateHandler {
         ResultSet mResultSet = null;
 
         mSqlWhere = " WHERE stock_id=" + "'" + aStockId + "'";
-        mSqlQueryCmd = "SELECT stock_date,stock_high_price,stock_low_price,stock_closing_price, stock_opening_price, stock_volume FROM "
+        // no need to query open for CCI
+        mSqlQueryCmd = "SELECT stock_date,stock_high_price,stock_low_price,stock_closing_price, stock_volume FROM "
                 + mTableSrc + mSqlWhere + " ORDER BY stock_date ASC";
 
         log.trace(mSqlQueryCmd);
@@ -86,7 +86,6 @@ public class KdjCalculateHandler extends BaseCalculateHandler {
                 mStockInfo.setStockLow(Utility.int2Float(mResultSet.getInt("stock_low_price"), KeyDefine.DB_PRICE_SHIFT));
                 mStockInfo.setStockHigh(Utility.int2Float(mResultSet.getInt("stock_high_price"), KeyDefine.DB_PRICE_SHIFT));
                 mStockInfo.setStockClose(Utility.int2Float(mResultSet.getInt("stock_closing_price"), KeyDefine.DB_PRICE_SHIFT));
-                mStockInfo.setStockOpen(Utility.int2Float(mResultSet.getInt("stock_opening_price"), KeyDefine.DB_PRICE_SHIFT));
                 mTechSrc.add(mStockInfo);
             }
             mResultSet.close();
@@ -98,7 +97,6 @@ public class KdjCalculateHandler extends BaseCalculateHandler {
         if(log.isTraceEnabled()) {
             for (StockTechInfo mTechInfo : mTechSrc) {
                 log.trace(mTechInfo.getStockDate() + " ");
-                log.trace("Open:\t" + mTechInfo.getStockOpen() + " ");
                 log.trace("High:\t" + mTechInfo.getStockHigh() + "");
                 log.trace("Low:\t" + mTechInfo.getStockLow() + " ");
                 log.trace("Close:\t" + mTechInfo.getStockClose() + "\n");
@@ -106,85 +104,65 @@ public class KdjCalculateHandler extends BaseCalculateHandler {
         }
         
         /**
-                         * 前N-2天 KDJ不列入計算 設為0 第N-1天 KDJ設為50, N天開始做KDJ計算
-        */
-        float mMinPrice = Float.MAX_VALUE;
-        float mMaxPrice = Float.MIN_VALUE;
-        Queue<Float> mListMin = new LinkedList<>();
-        Queue<Float> mListMax = new LinkedList<>();
+                       * 前N-1天只計算AP ,第N天開始做MAP計算  ,第(N-1)*2天開始做MD,CCI計算
+         * AP: Average Price
+         * MAP: Mean of Average Prices
+         * MD: Mean Deviation
+         */
         for(int i = 0; i < mTechSrc.size(); i++) {
+            int mInitialDay = i - CCI_DAY + 1;
             StockTechInfo mDataSrc = mTechSrc.get(i);
-            KDJ mCurKDJ = new KDJ();
-            mCurKDJ.stockDate = mDataSrc.getStockDate();
-            mCurKDJ.stockID = mDataSrc.getStockID();
+            CCI mCurCCI = new CCI();
             
-            mListMin.offer(mDataSrc.getStockLow());
-            mListMax.offer(mDataSrc.getStockHigh());
+            mCurCCI.stockDate = mDataSrc.getStockDate();
+            mCurCCI.stockID = mDataSrc.getStockID();
+            //Average Price
+            mCurCCI.mAPs = (mDataSrc.getStockHigh() + mDataSrc.getStockLow() + mDataSrc.getStockClose() )/3;
             
-            log.trace("%s min:%.2f, max:%.2f",mCurKDJ.stockDate, mMinPrice, mMaxPrice);
-            
-            if(i >= KDJ_DAY) {
-                float mTmpMin = mListMin.remove();
-                float mTmpMax = mListMax.remove();
-                if(mMinPrice == mTmpMin || mDataSrc.getStockLow() < mMinPrice) {
-                    mMinPrice = Collections.min(mListMin);
+            if(i >= (CCI_DAY - 1)) {
+                float mTotalMean = 0;
+                float mTotalMeanDeviation = 0;
+
+                //Mean of Average Prices
+                for(int j = mInitialDay; j < i; j++) {
+                    mTotalMean += (mTechDst.get(j).mAPs);
                 }
-                if(mMaxPrice == mTmpMax || mDataSrc.getStockHigh() > mMaxPrice) {
-                    mMaxPrice = Collections.max(mListMax);
+                mTotalMean += mCurCCI.mAPs;
+                mCurCCI.mMAPs = mTotalMean / CCI_DAY;
+                log.trace("mMap: " + mCurCCI.mMAPs);
+                
+                //According to formula, it may valid start from 2*(CCI_DAY -1)
+                if(i > (CCI_DAY - 1) * 2) {
+                    // Mean Deviation
+                    for(int k = mInitialDay; k < i; k++) {
+                        mTotalMeanDeviation += Math.abs(mTechDst.get(k).mMAPs - mTechDst.get(k).mAPs);
+                    }
+                    mTotalMeanDeviation += Math.abs(mCurCCI.mMAPs - mCurCCI.mAPs);
+                    mCurCCI.mMDs = mTotalMeanDeviation / CCI_DAY;
+                    mCurCCI.cci = (float) ((mCurCCI.mAPs - mCurCCI.mMAPs) / (0.015 * mCurCCI.mMDs));
+                    mCurCCI = checkCCI(mCurCCI);
+                    log.trace(mCurCCI.stockDate + " CCI: " + mCurCCI.cci + "mMAPs: " + mCurCCI.mMAPs);
+                    log.trace("mAPs: " + mCurCCI.mAPs + "mMDs: " + mCurCCI.mMDs);
                 }
             }
-            log.trace("%s min:%.2f, max:%.2f",mCurKDJ.stockDate, mMinPrice, mMaxPrice);
-            
-            if(i > (KDJ_DAY - 2)) {
-                float mClosePrice = mDataSrc.getStockClose();
-                log.trace("Close: %.2f",mClosePrice);
-                
-                float mRsv = ((mClosePrice - mMinPrice) / (mMaxPrice - mMinPrice)) * 100;
-                //  need refine due to KDJ formula parameter RSV Kt weight always set as 3
-                // 當日K值 =  2/3 前一日 K值 + 1/3 RSV
-                // 當日D值 =  2/3 前一日 D值＋ 1/3 當日K值
-                // J = 3*D - 2*K
-                mCurKDJ.K = mRsv / 3 + (2 * mTechDst.get(mTechDst.size() - 1).K) / 3;
-                mCurKDJ.D = mCurKDJ.K / 3 + (2 * mTechDst.get(mTechDst.size() - 1).D) / 3;
-                mCurKDJ.J = 3 * mCurKDJ.D - 2 * mCurKDJ.K;
-                
-                log.trace("%s RSV:%.2f ,K: %.2f, D: %.2f, J: %.2f",mCurKDJ.stockDate, mRsv, mCurKDJ.K, mCurKDJ.D,mCurKDJ.J);
-                mCurKDJ = checkKDJ(mCurKDJ);
-            } else if (i < (KDJ_DAY - 2)) {
-                mCurKDJ.K = 0;
-                mCurKDJ.D = 0;
-                mCurKDJ.J = 0;
-                
-            } else {
-                mCurKDJ.K = 50;
-                mCurKDJ.D = 50;
-                mCurKDJ.J = 50;
-            }
-            mTechDst.add(mCurKDJ);
+            mTechDst.add(mCurCCI);
         }
 
         writeData2DB();
         clearData();
     }
     
-    private KDJ checkKDJ(KDJ mKDJ) {
-        if (mKDJ.K < 0 || Double.isNaN(mKDJ.K)) {
-            mKDJ.K = 0;
+    private CCI checkCCI(CCI mCCI) {
+        if (Double.isNaN(mCCI.cci)) {
+            mCCI.cci = KeyDefine.CCI_LOWER_BOUND;
         }
-        if (mKDJ.K > 100) {
-            mKDJ.K = 100;
-        }
-        if (mKDJ.D < 0 || Double.isNaN(mKDJ.D)) {
-            mKDJ.D = 0;
-        }
-        if (mKDJ.D > 100) {
-            mKDJ.D = 100;
-        }
-        if (Double.isNaN(mKDJ.J)) {
-            mKDJ.J = 0;
+        if(mCCI.cci > KeyDefine.CCI_UPPER_BOUND) {
+            mCCI.cci = KeyDefine.CCI_UPPER_BOUND;
+        } else if(mCCI.cci < KeyDefine.CCI_LOWER_BOUND) {
+            mCCI.cci = KeyDefine.CCI_LOWER_BOUND;
         }
         
-        return mKDJ;
+        return mCCI;
     }
 
     public void calculateValueWholeData() throws SQLException, ParseException {
@@ -212,8 +190,6 @@ public class KdjCalculateHandler extends BaseCalculateHandler {
                 mStockInfo.setStockLow(Utility.int2Float(mResultSet.getInt("stock_low_price"), KeyDefine.DB_PRICE_SHIFT));
                 mStockInfo.setStockHigh(Utility.int2Float(mResultSet.getInt("stock_high_price"), KeyDefine.DB_PRICE_SHIFT));
                 mStockInfo.setStockClose(Utility.int2Float(mResultSet.getInt("stock_closing_price"), KeyDefine.DB_PRICE_SHIFT));
-                mStockInfo.setStockOpen(Utility.int2Float(mResultSet.getInt("stock_opening_price"), KeyDefine.DB_PRICE_SHIFT));
-                mStockInfo.setStockVolume(mResultSet.getInt("stock_volume"));
 
                 ArrayList<StockTechInfo> mListStockInfo;
                 if(!mMap.containsKey(mStockID)) {
@@ -241,58 +217,49 @@ public class KdjCalculateHandler extends BaseCalculateHandler {
                 mStockInfo.setStockDate(mList.get(0).getStockDate());
             }
 
-            float mMinPrice = Float.MAX_VALUE;
-            float mMaxPrice = Float.MIN_VALUE;
-            Queue<Float> mListMin = new LinkedList<>();
-            Queue<Float> mListMax = new LinkedList<>();
+            /**
+                                 * 前N-1天只計算AP ,第N天開始做MAP計算  ,第(N-1)*2天開始做MD,CCI計算
+            * AP: Average Price
+            * MAP: Mean of Average Prices
+            * MD: Mean Deviation
+            */
             
             for(int i = 0; i < mList.size(); i++) {
-                KDJ mCurKDJ = new KDJ();
+                int mInitialDay = i - CCI_DAY + 1;
                 StockTechInfo mDataSrc = mList.get(i);
-                mCurKDJ.stockDate = mDataSrc.getStockDate();
-                mCurKDJ.stockID = mDataSrc.getStockID();
+                CCI mCurCCI = new CCI();
                 
-                mListMin.offer(mDataSrc.getStockLow());
-                mListMax.offer(mDataSrc.getStockHigh());
+                mCurCCI.stockDate = mDataSrc.getStockDate();
+                mCurCCI.stockID = mDataSrc.getStockID();
+                //Average Price
+                mCurCCI.mAPs = (mDataSrc.getStockHigh() + mDataSrc.getStockLow() + mDataSrc.getStockClose() )/3;
                 
-                if(i >= KDJ_DAY) {
-                    float mTmpMin = mListMin.remove();
-                    float mTmpMax = mListMax.remove();
-                    if(mMinPrice == mTmpMin || mDataSrc.getStockLow() < mMinPrice) {
-                        mMinPrice = Collections.min(mListMin);
+                if(i >= CCI_DAY - 1) {
+                    float mTotalMean = 0;
+                    float mTotalMeanDeviation = 0;
+
+                    //Mean of Average Prices
+                    for(int j = mInitialDay; j < i; j++) {
+                        mTotalMean += (mTechDst.get(j).mAPs);
                     }
-                    if(mMaxPrice == mTmpMax || mDataSrc.getStockHigh() > mMaxPrice) {
-                        mMaxPrice = Collections.max(mListMax);
+                    mTotalMean += mCurCCI.mAPs;
+                    mCurCCI.mMAPs = mTotalMean / CCI_DAY;
+                    log.trace("mMap: " + mCurCCI.mMAPs);
+                    
+                    //According to formula, it may valid start from 2*(CCI_DAY -1)
+                    if(i > (CCI_DAY - 1) * 2) {
+                        // Mean Deviation
+                        for(int k = mInitialDay; k < i; k++) {
+                            mTotalMeanDeviation += Math.abs(mTechDst.get(k).mMAPs - mTechDst.get(k).mAPs);
+                        }
+                        mTotalMeanDeviation += Math.abs(mCurCCI.mMAPs - mCurCCI.mAPs);
+                        mCurCCI.mMDs = mTotalMeanDeviation / CCI_DAY;
+                        mCurCCI.cci = (float) ((mCurCCI.mAPs - mCurCCI.mMAPs) / (0.015 * mCurCCI.mMDs));
+                        mCurCCI = checkCCI(mCurCCI);
                     }
                 }
-                log.trace("%s min:%.2f, max:%.2f",mCurKDJ.stockDate, mMinPrice, mMaxPrice);
-                
-                if(i > (KDJ_DAY - 2)) {
-                    float mClosePrice = mDataSrc.getStockClose();
-                    //log.trace(System.out.printf("Close: %.2f",mClosePrice));
-                    
-                    float mRsv = ((mClosePrice - mMinPrice) / (mMaxPrice - mMinPrice)) * 100;
-                    //  need refine due to KDJ formula parameter RSV Kt weight always set as 3
-                    // 當日K值 =  2/3 前一日 K值 + 1/3 RSV
-                    // 當日D值 =  2/3 前一日 D值＋ 1/3 當日K值
-                    // J = 3*D - 2*K
-                    mCurKDJ.K = mRsv / 3 + (2 * mTechDst.get(mTechDst.size() - 1).K) / 3;
-                    mCurKDJ.D = mCurKDJ.K / 3 + (2 * mTechDst.get(mTechDst.size() - 1).D) / 3;
-                    mCurKDJ.J = 3 * mCurKDJ.D - 2 * mCurKDJ.K;
-                    
-                    log.trace("%s RSV:%.2f ,K: %.2f, D: %.2f, J: %.2f",mCurKDJ.stockDate, mRsv, mCurKDJ.K, mCurKDJ.D,mCurKDJ.J);
-                    mCurKDJ = checkKDJ(mCurKDJ);
-                } else if (i < (KDJ_DAY - 2)) {
-                    mCurKDJ.K = 0;
-                    mCurKDJ.D = 0;
-                    mCurKDJ.J = 0;
-                    
-                } else {
-                    mCurKDJ.K = 50;
-                    mCurKDJ.D = 50;
-                    mCurKDJ.J = 50;
-                }
-                mTechDst.add(mCurKDJ);
+
+                mTechDst.add(mCurCCI);
             }
             writeData2DB();
             clearData();
@@ -305,23 +272,23 @@ public class KdjCalculateHandler extends BaseCalculateHandler {
         switch(mCycleType) {
         case CYCLE_DAY:
             this.mTableSrc = DatabaseConfig.TABLE_DAY_TECH;
-            this.mTableDst = DatabaseConfig.DEFAULT_TECH_KDJ_DAY;
+            this.mTableDst = DatabaseConfig.DEFAULT_TECH_CCI_DAY;
             break;
         case CYCLE_WEEK:
             this.mTableSrc = DatabaseConfig.DEFAULT_LISTED_TECH_WEEK;
-            this.mTableDst = DatabaseConfig.DEFAULT_TECH_KDJ_WEEK;
+            this.mTableDst = DatabaseConfig.DEFAULT_TECH_CCI_WEEK;
             break;
         case CYCLE_MONTH:
             this.mTableSrc = DatabaseConfig.DEFAULT_LISTED_TECH_MONTH;
-            this.mTableDst = DatabaseConfig.DEFAULT_TECH_KDJ_MONTH;
+            this.mTableDst = DatabaseConfig.DEFAULT_TECH_CCI_MONTH;
             break;
         case CYCLE_SEASON:
             this.mTableSrc = DatabaseConfig.DEFAULT_LISTED_TECH_SEASON;
-            this.mTableDst = DatabaseConfig.DEFAULT_TECH_KDJ_SEASON;
+            this.mTableDst = DatabaseConfig.DEFAULT_TECH_CCI_SEASON;
             break;
         case CYCLE_YEAR:
             this.mTableSrc = DatabaseConfig.DEFAULT_LISTED_TECH_YEAR;
-            this.mTableDst = DatabaseConfig.DEFAULT_TECH_KDJ_YEAR;
+            this.mTableDst = DatabaseConfig.DEFAULT_TECH_CCI_YEAR;
             break;
         default:
             log.error("Unknown calculate type or not define to set table");
@@ -337,13 +304,11 @@ public class KdjCalculateHandler extends BaseCalculateHandler {
     @Override
     boolean writeData2DB() throws SQLException {
         // TODO Auto-generated method stub
-        for (KDJ mStockInfo : mTechDst) {
+        for (CCI mStockInfo : mTechDst) {
             try {
                 mStockDB.generateSqlPrepareStrCmd(1, mStockInfo.stockID); // stock_id
                 mStockDB.generateSqlPrepareStrCmd(2, mStockInfo.stockDate); // stock_date
-                mStockDB.generateSqlPrepareIntCmd(3, Utility.float2Int(mStockInfo.K, KeyDefine.DB_PRICE_SHIFT) ); // K
-                mStockDB.generateSqlPrepareIntCmd(4, Utility.float2Int(mStockInfo.D, KeyDefine.DB_PRICE_SHIFT)); // D
-                mStockDB.generateSqlPrepareIntCmd(5, Utility.float2Int(mStockInfo.J, KeyDefine.DB_PRICE_SHIFT)); // J
+                mStockDB.generateSqlPrepareIntCmd(3, Utility.float2Int(mStockInfo.cci, KeyDefine.DB_PRICE_SHIFT) ); // K
                 // mStockDB.generateSqlPrepareIntCmd(8, KeyDefine.OTC_TECH + 1);
                 // // stock_type
 
@@ -369,17 +334,17 @@ public class KdjCalculateHandler extends BaseCalculateHandler {
     }
     
     /**
-     * @return the kDJ_DAY
+     * @return the CCI_DAY
      */
-    public int getKDJ_DAY() {
-        return KDJ_DAY;
+    public int getCCI_DAY() {
+        return CCI_DAY;
     }
 
     /**
-     * @param kDJ_DAY the kDJ_DAY to set
+     * @param CCI_DAY the CCI_DAY to set
      */
-    public void setKDJ_DAY(int kDJ_DAY) {
-        KDJ_DAY = kDJ_DAY;
+    public void setCCI_DAY(int CCI_DAY) {
+        this.CCI_DAY = CCI_DAY;
     }
     
     /**
@@ -388,29 +353,28 @@ public class KdjCalculateHandler extends BaseCalculateHandler {
     public static void main(String[] args) {
         // TODO Auto-generated method stub
         Utility.timerStart();
-        
         /*
         try {
-            KdjCalculateHandler mCalculator = new KdjCalculateHandler(KeyDefine.CalculateCycle.CYCLE_DAY);
-            //mCalculator.calculateValue("6116", true);
+            CciCalculateHandler mCalculator = new CciCalculateHandler(KeyDefine.CalculateCycle.CYCLE_DAY);
+//            mCalculator.calculateValue("6116", true);
             ArrayList<String> mStockIdList = new ArrayList<>();
-            KdjDatabaseHandler mStockDB = new KdjDatabaseHandler(KeyDefine.CalculateCycle.CYCLE_WEEK);
+            CciDatabaseHandler mStockDB = new CciDatabaseHandler(KeyDefine.CalculateCycle.CYCLE_WEEK);
             mStockIdList = mStockDB.queryAllStockId();
             for (String mStockID : mStockIdList) {
                 mCalculator.calculateValue(mStockID, false);
             }
             
-            mCalculator = new KdjCalculateHandler(KeyDefine.CalculateCycle.CYCLE_MONTH);
+            mCalculator = new CciCalculateHandler(KeyDefine.CalculateCycle.CYCLE_MONTH);
             for (String mStockID : mStockIdList) {
                 mCalculator.calculateValue(mStockID, false);
             }
             
-            mCalculator = new KdjCalculateHandler(KeyDefine.CalculateCycle.CYCLE_SEASON);
+            mCalculator = new CciCalculateHandler(KeyDefine.CalculateCycle.CYCLE_SEASON);
             for (String mStockID : mStockIdList) {
                 mCalculator.calculateValue(mStockID, false);
             }
             
-            mCalculator = new KdjCalculateHandler(KeyDefine.CalculateCycle.CYCLE_YEAR);
+            mCalculator = new CciCalculateHandler(KeyDefine.CalculateCycle.CYCLE_YEAR);
             for (String mStockID : mStockIdList) {
                 mCalculator.calculateValue(mStockID, false);
             }
@@ -420,24 +384,24 @@ public class KdjCalculateHandler extends BaseCalculateHandler {
         }
         */
         
-
+        
         try {
-            KdjCalculateHandler mCalulate = new KdjCalculateHandler(KeyDefine.CalculateCycle.CYCLE_DAY);
+            CciCalculateHandler mCalulate = new CciCalculateHandler(KeyDefine.CalculateCycle.CYCLE_DAY);
             mCalulate.calculateValueWholeData();
-            mCalulate = new KdjCalculateHandler(KeyDefine.CalculateCycle.CYCLE_WEEK);
+            mCalulate = new CciCalculateHandler(KeyDefine.CalculateCycle.CYCLE_WEEK);
             mCalulate.calculateValueWholeData();
-            mCalulate = new KdjCalculateHandler(KeyDefine.CalculateCycle.CYCLE_MONTH);
+            mCalulate = new CciCalculateHandler(KeyDefine.CalculateCycle.CYCLE_MONTH);
             mCalulate.calculateValueWholeData();
-            mCalulate = new KdjCalculateHandler(KeyDefine.CalculateCycle.CYCLE_SEASON);
+            mCalulate = new CciCalculateHandler(KeyDefine.CalculateCycle.CYCLE_SEASON);
             mCalulate.calculateValueWholeData();
-            mCalulate = new KdjCalculateHandler(KeyDefine.CalculateCycle.CYCLE_YEAR);
+            mCalulate = new CciCalculateHandler(KeyDefine.CalculateCycle.CYCLE_YEAR);
             mCalulate.calculateValueWholeData();
         } catch (SQLException | ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
             log.error(e);
         }
-
+        
         
         Utility.timerEnd();
     }

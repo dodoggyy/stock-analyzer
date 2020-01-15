@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import org.apache.logging.log4j.LogManager;
@@ -225,5 +226,25 @@ public abstract class DatabaseHandler {
      */
     public void setTableName(String mTableName) {
         this.mTableName = mTableName;
+    }
+    
+    // need refine
+    public ArrayList<String> queryAllStockId() {
+        ArrayList<String> mDbStockId = new ArrayList<String>();
+        String mQueryStockIdSql = "SELECT DISTINCT stock_id FROM " + DatabaseConfig.TABLE_DAY_TECH + " ORDER BY stock_id ASC";
+        try {
+            mStatement = mConnection.createStatement();
+            mResultSet = mStatement.executeQuery(mQueryStockIdSql);
+            while(mResultSet.next()) {
+                log.trace(mResultSet.getString("stock_id"));
+                mDbStockId.add(mResultSet.getString("stock_id"));
+            }
+        } catch(SQLException e) {
+            log.error("QueryDB Exception :" + e.toString()); 
+        } finally {
+            this.closeObject();
+        }
+        
+        return mDbStockId;
     }
 }

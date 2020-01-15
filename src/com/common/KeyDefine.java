@@ -23,10 +23,15 @@ public class KeyDefine {
     public final static float  SECURITIES_FEE_DISCOUNT = 0.5f; // 券商手續費折扣, 50%
     public final static float  TRADE_TAX = 3/1000; // 證交稅,賣出 0.30%
 
-    // Analyzer parameters
+    // Calculator parameters
+    // KDJ
     public final static int KDJ_DAY = 9;
     public final static int KDJ_RSV_WEIGHT = 3;
     public final static int KDJ_KT_WEIGHT = 3;
+    // CCI
+    public final static int CCI_DAY = 14;
+    public final static float CCI_UPPER_BOUND = (float) 999.99d;
+    public final static float CCI_LOWER_BOUND = (float)-999.99d;
     
     public static final int OTC_TECH = 0, // 上櫃盤後
             TWSE_TECH = 2, // 上市盤後
